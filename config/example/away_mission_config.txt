@@ -15,7 +15,10 @@
 #_maps/map_files/RandomZLevels/clownplanet.dmm
 #_maps/map_files/RandomZLevels/example.dmm
 #_maps/map_files/RandomZLevels/spacebattle.dmm
+<<<<<<< HEAD:config/example/away_mission_config.txt
 #_maps/map_files/RandomZLevels/stationCollision.dmm
+=======
+>>>>>>> master:_maps/map_files/RandomZLevels/fileList.txt
 
 #===================================#
 # USABLE AWAY MISSIONS              #
@@ -27,6 +30,10 @@ _maps/map_files/RandomZLevels/undergroundoutpost45.dmm
 _maps/map_files/RandomZLevels/academy.dmm
 _maps/map_files/RandomZLevels/blackmarketpackers.dmm
 _maps/map_files/RandomZLevels/spacehotel.dmm
+<<<<<<< HEAD:config/example/away_mission_config.txt
+=======
+_maps/map_files/RandomZLevels/stationCollision.dmm
+>>>>>>> master:_maps/map_files/RandomZLevels/fileList.txt
 _maps/map_files/RandomZLevels/wildwest.dmm
 
 #===================================#
