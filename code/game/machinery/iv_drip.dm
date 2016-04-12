@@ -60,17 +60,17 @@
 /obj/machinery/iv_drip/attackby(obj/item/weapon/W as obj, mob/user as mob, params)
 	if (istype(W, /obj/item/weapon/reagent_containers))
 		if(!isnull(src.beaker))
-			to_chat(user, "There is already a reagent container loaded!")
+			user << "There is already a reagent container loaded!"
 			return
 
 		if(user.drop_item())
 			W.forceMove(src)
 			src.beaker = W
-			to_chat(user, "You attach \the [W] to \the [src].")
+			user << "You attach \the [W] to \the [src]."
 			src.update_icon()
 			return
 		else
-			to_chat(user, "\The [W] is stuck to you!")
+			user << "\The [W] is stuck to you!"
 	else
 		return ..()
 
@@ -146,27 +146,27 @@
 	set src in view(1)
 
 	if(!istype(usr, /mob/living))
-		to_chat(usr, "\red You can't do that.")
+		usr << "\red You can't do that."
 		return
 
 	if(usr.stat)
 		return
 
 	mode = !mode
-	to_chat(usr, "The IV drip is now [mode ? "injecting" : "taking blood"].")
+	usr << "The IV drip is now [mode ? "injecting" : "taking blood"]."
 
 /obj/machinery/iv_drip/examine(mob/user)
 	..(user)
 	if (!(user in view(2)) && usr != src.loc) return
 
-	to_chat(usr, "The IV drip is [mode ? "injecting" : "taking blood"].")
+	usr << "The IV drip is [mode ? "injecting" : "taking blood"]."
 
 	if(beaker)
 		if(beaker.reagents && beaker.reagents.reagent_list.len)
-			to_chat(user, "\blue Attached is \a [beaker] with [beaker.reagents.total_volume] units of liquid.")
+			user << "\blue Attached is \a [beaker] with [beaker.reagents.total_volume] units of liquid."
 		else
-			to_chat(user, "\blue Attached is an empty [beaker].")
+			user << "\blue Attached is an empty [beaker]."
 	else
-		to_chat(user, "\blue No chemicals are attached.")
+		user << "\blue No chemicals are attached."
 
-	to_chat(user, "\blue [attached ? attached : "No one"] is attached.")
+	user << "\blue [attached ? attached : "No one"] is attached."

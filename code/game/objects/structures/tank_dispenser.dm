@@ -49,9 +49,9 @@
 			I.loc = src
 			oxytanks.Add(I)
 			oxygentanks++
-			to_chat(user, "<span class='notice'>You put [I] in [src].</span>")
+			user << "<span class='notice'>You put [I] in [src].</span>"
 		else
-			to_chat(user, "<span class='notice'>[src] is full.</span>")
+			user << "<span class='notice'>[src] is full.</span>"
 		updateUsrDialog()
 		return
 	if(istype(I, /obj/item/weapon/tank/plasma))
@@ -60,17 +60,17 @@
 			I.loc = src
 			platanks.Add(I)
 			plasmatanks++
-			to_chat(user, "<span class='notice'>You put [I] in [src].</span>")
+			user << "<span class='notice'>You put [I] in [src].</span>"
 		else
-			to_chat(user, "<span class='notice'>[src] is full.</span>")
+			user << "<span class='notice'>[src] is full.</span>"
 		updateUsrDialog()
 		return
 	if(istype(I, /obj/item/weapon/wrench))
 		if(anchored)
-			to_chat(user, "<span class='notice'>You lean down and unwrench [src].</span>")
+			user << "<span class='notice'>You lean down and unwrench [src].</span>"
 			anchored = 0
 		else
-			to_chat(user, "<span class='notice'>You wrench [src] into place.</span>")
+			user << "<span class='notice'>You wrench [src] into place.</span>"
 			anchored = 1
 		return
 
@@ -88,7 +88,7 @@
 				else
 					O = new /obj/item/weapon/tank/oxygen(loc)
 				O.loc = loc
-				to_chat(usr, "<span class='notice'>You take [O] out of [src].</span>")
+				usr << "<span class='notice'>You take [O] out of [src].</span>"
 				oxygentanks--
 				update_icon()
 		if(href_list["plasma"])
@@ -100,7 +100,7 @@
 				else
 					P = new /obj/item/weapon/tank/plasma(loc)
 				P.loc = loc
-				to_chat(usr, "<span class='notice'>You take [P] out of [src].</span>")
+				usr << "<span class='notice'>You take [P] out of [src].</span>"
 				plasmatanks--
 				update_icon()
 		add_fingerprint(usr)

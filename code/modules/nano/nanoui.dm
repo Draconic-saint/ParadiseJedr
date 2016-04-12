@@ -187,7 +187,7 @@ nanoui is used to open and update nano browser uis
 			"showMap" = show_map,
 			"mapZLevel" = map_z_level,
 			"user" = list(
-				"name" = sanitize(user.name),
+				"name" = user.name,
 				"fancy" = user.client.prefs.nanoui_fancy
 			),
 			"window" = list(
@@ -456,8 +456,7 @@ nanoui is used to open and update nano browser uis
 
 	var/list/send_data = get_send_data(data)
 
-//	to_chat(user, list2json_usecache(send_data))// used for debugging //NANO DEBUG HOOK
-
+	//user << list2json_usecache(send_data) // used for debugging //NANO DEBUG HOOK
 	user << output(list2params(list(list2json_usecache(send_data))),"[window_id].browser:receiveUpdateData")
 
  /**

@@ -28,7 +28,7 @@
 			// State 0
 			if(iswrench(W) && isturf(src.loc))
 				playsound(src.loc, 'sound/items/Ratchet.ogg', 50, 1)
-				to_chat(user, "You wrench the assembly into place.")
+				user << "You wrench the assembly into place."
 				anchored = 1
 				state = 1
 				update_icon()
@@ -39,14 +39,14 @@
 			// State 1
 			if(iswelder(W))
 				if(weld(W, user))
-					to_chat(user, "You weld the assembly securely into place.")
+					user << "You weld the assembly securely into place."
 					anchored = 1
 					state = 2
 				return
 
 			else if(iswrench(W))
 				playsound(src.loc, 'sound/items/Ratchet.ogg', 50, 1)
-				to_chat(user, "You unattach the assembly from it's place.")
+				user << "You unattach the assembly from it's place."
 				anchored = 0
 				update_icon()
 				state = 0
@@ -57,16 +57,16 @@
 			if(iscoil(W))
 				var/obj/item/stack/cable_coil/C = W
 				if(C.use(2))
-					to_chat(user, "<span class='notice'>You add wires to the assembly.</span>")
+					user << "<span class='notice'>You add wires to the assembly.</span>"
 					state = 3
 				else
-					to_chat(user, "<span class='warning'>You need 2 coils of wire to wire the assembly.</span>")
+					user << "<span class='warning'>You need 2 coils of wire to wire the assembly.</span>"
 				return
 
 			else if(iswelder(W))
 
 				if(weld(W, user))
-					to_chat(user, "You unweld the assembly from it's place.")
+					user << "You unweld the assembly from it's place."
 					state = 1
 					anchored = 1
 				return
@@ -79,12 +79,12 @@
 
 				var/input = strip_html(input(usr, "Which networks would you like to connect this camera to? Seperate networks with a comma. No Spaces!\nFor example: SS13,Security,Secret ", "Set Network", "SS13"))
 				if(!input)
-					to_chat(usr, "No input found please hang up and try your call again.")
+					usr << "No input found please hang up and try your call again."
 					return
 
-				var/list/tempnetwork = splittext(input, ",")
+				var/list/tempnetwork = text2list(input, ",")
 				if(tempnetwork.len < 1)
-					to_chat(usr, "No network found please hang up and try your call again.")
+					usr << "No network found please hang up and try your call again."
 					return
 
 				var/area/camera_area = get_area(src)
@@ -119,13 +119,13 @@
 
 				new/obj/item/stack/cable_coil(get_turf(src), 2)
 				playsound(src.loc, 'sound/items/Wirecutter.ogg', 50, 1)
-				to_chat(user, "You cut the wires from the circuits.")
+				user << "You cut the wires from the circuits."
 				state = 2
 				return
 
 	// Upgrades!
 	if(is_type_in_list(W, possible_upgrades) && !is_type_in_list(W, upgrades)) // Is a possible upgrade and isn't in the camera already.
-		to_chat(user, "You attach \the [W] into the assembly inner circuits.")
+		user << "You attach \the [W] into the assembly inner circuits."
 		upgrades += W
 		user.drop_item(W)
 		W.loc = src
@@ -135,7 +135,7 @@
 	else if(iscrowbar(W) && upgrades.len)
 		var/obj/U = locate(/obj) in upgrades
 		if(U)
-			to_chat(user, "You unattach an upgrade from the assembly.")
+			user << "You unattach an upgrade from the assembly."
 			playsound(src.loc, 'sound/items/Crowbar.ogg', 50, 1)
 			U.loc = get_turf(src)
 			upgrades -= U
@@ -153,15 +153,16 @@
 	if(!anchored)
 		..()
 
-/obj/item/weapon/camera_assembly/proc/weld(var/obj/item/weapon/weldingtool/WT, var/mob/living/user)
+/obj/item/weapon/camera_assembly/proc/weld(var/obj/item/weapon/weldingtool/WT, var/mob/user)
 
 	if(busy)
 		return 0
-	if(!WT.remove_fuel(0, user))
+	if(!WT.isOn())
 		return 0
 
-	to_chat(user, "<span class='notice'>You start to weld the [src]..</span>")
+	user << "<span class='notice'>You start to weld the [src]..</span>"
 	playsound(src.loc, 'sound/items/Welder.ogg', 50, 1)
+	WT.eyecheck(user)
 	busy = 1
 	if(do_after(user, 20, target = src))
 		busy = 0

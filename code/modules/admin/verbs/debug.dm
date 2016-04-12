@@ -72,7 +72,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 		if(!procname)	return
 
 		if(targetselected && !hascall(target,procname))
-			to_chat(usr, "<font color='red'>Error: callproc(): target has no such call [procname].</font>")
+			usr << "<font color='red'>Error: callproc(): target has no such call [procname].</font>"
 			return
 
 		var/list/lst = get_callproc_args()
@@ -81,7 +81,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 
 		if(targetselected)
 			if(!target)
-				to_chat(usr, "<font color='red'>Error: callproc(): owner of proc no longer exists.</font>")
+				usr << "<font color='red'>Error: callproc(): owner of proc no longer exists.</font>"
 				return
 			message_admins("[key_name_admin(src)] called [target]'s [procname]() with [lst.len ? "the arguments [list2params(lst)]":"no arguments"].")
 			log_admin("[key_name(src)] called [target]'s [procname]() with [lst.len ? "the arguments [list2params(lst)]":"no arguments"].")
@@ -92,7 +92,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 			log_admin("[key_name(src)] called [procname]() with [lst.len ? "the arguments [list2params(lst)]":"no arguments"]")
 			returnval = call(procname)(arglist(lst)) // Pass the lst as an argument list to the proc
 
-		to_chat(usr, "<font color='blue'>[procname] returned: [returnval ? returnval : "null"]</font>")
+		usr << "<font color='blue'>[procname] returned: [returnval ? returnval : "null"]</font>"
 		feedback_add_details("admin_verb","APC") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
 /client/proc/callproc_datum(var/A as null|area|mob|obj|turf)
@@ -107,7 +107,7 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 		return
 
 	if(!hascall(A,procname))
-		to_chat(usr, "<span class='warning'>Error: callproc_datum(): target has no such call [procname].</span>")
+		usr << "<span class='warning'>Error: callproc_datum(): target has no such call [procname].</span>"
 		return
 
 	var/list/lst = get_callproc_args()
@@ -115,14 +115,14 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 		return
 
 	if(!A || !IsValidSrc(A))
-		to_chat(usr, "<span class='warning'>Error: callproc_datum(): owner of proc no longer exists.</span>")
+		usr << "<span class='warning'>Error: callproc_datum(): owner of proc no longer exists.</span>"
 		return
 	message_admins("[key_name_admin(src)] called [A]'s [procname]() with [lst.len ? "the arguments [list2params(lst)]":"no arguments"]")
 	log_admin("[key_name(src)] called [A]'s [procname]() with [lst.len ? "the arguments [list2params(lst)]":"no arguments"]")
 
 	spawn()
 		var/returnval = call(A,procname)(arglist(lst)) // Pass the lst as an argument list to the proc
-		to_chat(usr, "<span class='notice'>[procname] returned: [returnval ? returnval : "null"]</span>")
+		usr << "<span class='notice'>[procname] returned: [returnval ? returnval : "null"]</span>"
 
 	feedback_add_details("admin_verb","DPC") //If you are copy-pasting this, ensure the 2nd parameter is unique to the new proc!
 
@@ -506,41 +506,41 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 	var/list/areas_without_intercom = areas_all - areas_with_intercom
 	var/list/areas_without_camera = areas_all - areas_with_camera
 
-	to_chat(world, "<b>AREAS WITHOUT AN APC:</b>")
+	world << "<b>AREAS WITHOUT AN APC:</b>"
 	for(var/areatype in areas_without_APC)
-		to_chat(world, "* [areatype]")
+		world << "* [areatype]"
 
-	to_chat(world, "<b>AREAS WITHOUT AN AIR ALARM:</b>")
+	world << "<b>AREAS WITHOUT AN AIR ALARM:</b>"
 	for(var/areatype in areas_without_air_alarm)
-		to_chat(world, "* [areatype]")
+		world << "* [areatype]"
 
-	to_chat(world, "<b>AREAS WITH TOO MANY APCS:</b>")
+	world << "<b>AREAS WITH TOO MANY APCS:</b>"
 	for(var/areatype in areas_with_multiple_APCs)
-		to_chat(world, "* [areatype]")
+		world << "* [areatype]"
 
-	to_chat(world, "<b>AREAS WITH TOO MANY AIR ALARMS:</b>")
+	world << "<b>AREAS WITH TOO MANY AIR ALARMS:</b>"
 	for(var/areatype in areas_with_multiple_air_alarms)
-		to_chat(world, "* [areatype]")
+		world << "* [areatype]"
 
-	to_chat(world, "<b>AREAS WITHOUT A REQUEST CONSOLE:</b>")
+	world << "<b>AREAS WITHOUT A REQUEST CONSOLE:</b>"
 	for(var/areatype in areas_without_RC)
-		to_chat(world, "* [areatype]")
+		world << "* [areatype]"
 
-	to_chat(world, "<b>AREAS WITHOUT ANY LIGHTS:</b>")
+	world << "<b>AREAS WITHOUT ANY LIGHTS:</b>"
 	for(var/areatype in areas_without_light)
-		to_chat(world, "* [areatype]")
+		world << "* [areatype]"
 
-	to_chat(world, "<b>AREAS WITHOUT A LIGHT SWITCH:</b>")
+	world << "<b>AREAS WITHOUT A LIGHT SWITCH:</b>"
 	for(var/areatype in areas_without_LS)
-		to_chat(world, "* [areatype]")
+		world << "* [areatype]"
 
-	to_chat(world, "<b>AREAS WITHOUT ANY INTERCOMS:</b>")
+	world << "<b>AREAS WITHOUT ANY INTERCOMS:</b>"
 	for(var/areatype in areas_without_intercom)
-		to_chat(world, "* [areatype]")
+		world << "* [areatype]"
 
-	to_chat(world, "<b>AREAS WITHOUT ANY CAMERAS:</b>")
+	world << "<b>AREAS WITHOUT ANY CAMERAS:</b>"
 	for(var/areatype in areas_without_camera)
-		to_chat(world, "* [areatype]")
+		world << "* [areatype]"
 
 /client/proc/cmd_admin_dress(var/mob/living/carbon/human/M in mob_list)
 	set category = "Event"
@@ -1166,21 +1166,21 @@ But you can call procs that are of type /mob/living/carbon/human/proc/ for that 
 
 	switch(input("Which list?") in list("Players","Admins","Mobs","Living Mobs","Dead Mobs","Silicons","Clients","Respawnable Mobs"))
 		if("Players")
-			to_chat(usr, jointext(player_list,","))
+			usr << list2text(player_list,",")
 		if("Admins")
-			to_chat(usr, jointext(admins,","))
+			usr << list2text(admins,",")
 		if("Mobs")
-			to_chat(usr, jointext(mob_list,","))
+			usr << list2text(mob_list,",")
 		if("Living Mobs")
-			to_chat(usr, jointext(living_mob_list,","))
+			usr << list2text(living_mob_list,",")
 		if("Dead Mobs")
-			to_chat(usr, jointext(dead_mob_list,","))
+			usr << list2text(dead_mob_list,",")
 		if("Silicons")
-			to_chat(usr, jointext(silicon_mob_list,","))
+			usr << list2text(silicon_mob_list,",")
 		if("Clients")
-			to_chat(usr, jointext(clients,","))
+			usr << list2text(clients,",")
 		if("Respawnable Mobs")
-			to_chat(usr, jointext(respawnable_list,","))
+			usr << list2text(respawnable_list,",")
 
 
 /client/proc/cmd_admin_toggle_block(var/mob/M,var/block)

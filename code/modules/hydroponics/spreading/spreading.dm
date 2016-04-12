@@ -92,7 +92,7 @@
 	if(!plant_controller)
 		sleep(250) // ugly hack, should mean roundstart plants are fine.
 	if(!plant_controller)
-		to_chat(world, "<span class='danger'>Plant controller does not exist and [src] requires it. Aborting.</span>")
+		world << "<span class='danger'>Plant controller does not exist and [src] requires it. Aborting.</span>"
 		qdel(src)
 		return
 
@@ -243,7 +243,7 @@
 
 	if(istype(W, /obj/item/weapon/wirecutters) || istype(W, /obj/item/weapon/scalpel))
 		if(!seed)
-			to_chat(user, "There is nothing to take a sample from.")
+			user << "There is nothing to take a sample from."
 			return
 		seed.harvest(user,0,1)
 		health -= (rand(3,5)*10)

@@ -28,11 +28,11 @@
 
 /obj/machinery/space_heater/examine(mob/user)
 	..(user)
-	to_chat(user, "The heater is [on ? "on" : "off"] and the hatch is [open ? "open" : "closed"].")
+	user << "The heater is [on ? "on" : "off"] and the hatch is [open ? "open" : "closed"]."
 	if(open)
-		to_chat(user, "The power cell is [cell ? "installed" : "missing"].")
+		user << "The power cell is [cell ? "installed" : "missing"]."
 	else
-		to_chat(user, "The charge meter reads [cell ? round(cell.percent(),1) : 0]%")
+		user << "The charge meter reads [cell ? round(cell.percent(),1) : 0]%"
 
 
 /obj/machinery/space_heater/emp_act(severity)
@@ -47,7 +47,7 @@
 	if(istype(I, /obj/item/weapon/stock_parts/cell))
 		if(open)
 			if(cell)
-				to_chat(user, "There is already a power cell inside.")
+				user << "There is already a power cell inside."
 				return
 			else
 				// insert cell
@@ -60,7 +60,7 @@
 
 					user.visible_message("\blue [user] inserts a power cell into [src].", "\blue You insert the power cell into [src].")
 		else
-			to_chat(user, "The hatch must be open to insert a power cell.")
+			user << "The hatch must be open to insert a power cell."
 			return
 	else if(istype(I, /obj/item/weapon/screwdriver))
 		open = !open

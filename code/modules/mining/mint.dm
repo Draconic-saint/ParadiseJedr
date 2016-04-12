@@ -14,7 +14,6 @@
 	var/amt_plasma = 0
 	var/amt_uranium = 0
 	var/amt_clown = 0
-	var/amt_mime = 0
 	var/amt_adamantine = 0
 	var/amt_mythril = 0
 	var/newCoins = 0   //how many coins the machine made in it's last load
@@ -46,9 +45,6 @@
 				O.loc = null
 			if (istype(O, /obj/item/stack/sheet/mineral/bananium))
 				amt_clown += 100 * O.amount
-				O.loc = null
-			if (istype(O, /obj/item/stack/sheet/mineral/tranquillite))
-				amt_mime += 100 * O.amount
 				O.loc = null
 			return
 
@@ -82,7 +78,7 @@
 		dat += text("chosen")
 	else
 		dat += text("<A href='?src=\ref[src];choose=plasma'>Choose</A>")
-	dat += text("<br><font color='#008800'><b>Uranium inserted: </b>[amt_uranium]</font> ")
+	dat += text("<br><font color='#008800'><b>uranium inserted: </b>[amt_uranium]</font> ")
 	if (chosen == "uranium")
 		dat += text("chosen")
 	else
@@ -93,12 +89,6 @@
 			dat += text("chosen")
 		else
 			dat += text("<A href='?src=\ref[src];choose=clown'>Choose</A>")
-	if(amt_mime > 0)
-		dat += text("<br><font color='#666666'><b>Tranquillite inserted: </b>[amt_mime]</font> ")
-		if (chosen == "mime")
-			dat += text("chosen")
-		else
-			dat += text("<A href='?src=\ref[src];choose=mime'>Choose</A>")
 	dat += text("<br><font color='#888888'><b>Adamantine inserted: </b>[amt_adamantine]</font> ")//I don't even know these color codes, so fuck it.
 	if (chosen == "adamantine")
 		dat += text("chosen")
@@ -124,7 +114,7 @@
 	usr.set_machine(src)
 	src.add_fingerprint(usr)
 	if(processing==1)
-		to_chat(usr, "<span class='notice'>The machine is processing.</span>")
+		usr << "<span class='notice'>The machine is processing.</span>"
 		return
 	if(href_list["choose"])
 		chosen = href_list["choose"]
@@ -142,7 +132,7 @@
 					coinsToProduce--
 					newCoins++
 					src.updateUsrDialog()
-					sleep(5)
+					sleep(5);
 			if("gold")
 				while(amt_gold > 0 && coinsToProduce > 0)
 					create_coins(/obj/item/weapon/coin/gold)
@@ -150,7 +140,7 @@
 					coinsToProduce--
 					newCoins++
 					src.updateUsrDialog()
-					sleep(5)
+					sleep(5);
 			if("silver")
 				while(amt_silver > 0 && coinsToProduce > 0)
 					create_coins(/obj/item/weapon/coin/silver)
@@ -158,7 +148,7 @@
 					coinsToProduce--
 					newCoins++
 					src.updateUsrDialog()
-					sleep(5)
+					sleep(5);
 			if("diamond")
 				while(amt_diamond > 0 && coinsToProduce > 0)
 					create_coins(/obj/item/weapon/coin/diamond)
@@ -166,7 +156,7 @@
 					coinsToProduce--
 					newCoins++
 					src.updateUsrDialog()
-					sleep(5)
+					sleep(5);
 			if("plasma")
 				while(amt_plasma > 0 && coinsToProduce > 0)
 					create_coins(/obj/item/weapon/coin/plasma)
@@ -174,7 +164,7 @@
 					coinsToProduce--
 					newCoins++
 					src.updateUsrDialog()
-					sleep(5)
+					sleep(5);
 			if("uranium")
 				while(amt_uranium > 0 && coinsToProduce > 0)
 					create_coins(/obj/item/weapon/coin/uranium)
@@ -190,15 +180,7 @@
 					coinsToProduce--
 					newCoins++
 					src.updateUsrDialog()
-					sleep(5)
-			if("mime")
-				while(amt_mime > 0 && coinsToProduce > 0)
-					create_coins(/obj/item/weapon/coin/mime)
-					amt_mime -= 20
-					coinsToProduce--
-					newCoins++
-					src.updateUsrDialog()
-					sleep(5)
+					sleep(5);
 			if("adamantine")
 				while(amt_adamantine > 0 && coinsToProduce > 0)
 					create_coins(/obj/item/weapon/coin/adamantine)
@@ -206,7 +188,7 @@
 					coinsToProduce--
 					newCoins++
 					src.updateUsrDialog()
-					sleep(5)
+					sleep(5);
 			if("mythril")
 				while(amt_adamantine > 0 && coinsToProduce > 0)
 					create_coins(/obj/item/weapon/coin/mythril)
@@ -214,9 +196,9 @@
 					coinsToProduce--
 					newCoins++
 					src.updateUsrDialog()
-					sleep(5)
+					sleep(5);
 		icon_state = "coinpress0"
-		processing = 0
+		processing = 0;
 		coinsToProduce = temp_coins
 	src.updateUsrDialog()
 	return

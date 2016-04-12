@@ -190,6 +190,7 @@
 			if(temp.len)
 				L.Add(C)
 
+		cameranet.process_sort()
 
 		return L
 	verify_machine(var/obj/machinery/camera/C,var/datum/file/camnet_key/key = null)
@@ -316,7 +317,7 @@
 			if(key)
 				interact()
 			else
-				to_chat(usr, "The screen turns to static.")
+				usr << "The screen turns to static."
 			return
 
 			// Atlantis: Required for camnetkeys to work.

@@ -67,11 +67,10 @@
 /obj/item/clothing/suit/armor/hos/alt
 	name = "armored trenchoat"
 	desc = "A trenchcoat enchanced with a special lightweight kevlar. The epitome of tactical plainclothes."
-	icon_state = "hostrench_open"
-	item_state = "hostrench_open"
+	icon_state = "hostrench"
+	item_state = "hostrench"
 	flags_inv = 0
 	ignore_suitadjust = 0
-	suit_adjusted = 1
 	action_button_name = "Open/Close Trenchcoat"
 	adjust_flavour = "unbutton"
 
@@ -174,11 +173,11 @@
 /obj/item/clothing/suit/armor/reactive/attack_self(mob/user as mob)
 	src.active = !( src.active )
 	if (src.active)
-		to_chat(user, "\blue The reactive armor is now active.")
+		user << "\blue The reactive armor is now active."
 		src.icon_state = "reactive"
 		src.item_state = "reactive"
 	else
-		to_chat(user, "\blue The reactive armor is now inactive.")
+		user << "\blue The reactive armor is now inactive."
 		src.icon_state = "reactiveoff"
 		src.item_state = "reactiveoff"
 		src.add_fingerprint(user)

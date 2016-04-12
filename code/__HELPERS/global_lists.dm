@@ -20,9 +20,7 @@
 	init_sprite_accessory_subtypes(/datum/sprite_accessory/socks, socks_list, socks_m, socks_f)
 
 	init_subtypes(/datum/surgery_step, surgery_steps)
-
-	for(var/path in (subtypesof(/datum/surgery)))
-		surgeries_list += new path()
+	sort_surgeries()
 
 	init_datum_subtypes(/datum/job, joblist, list(/datum/job/ai, /datum/job/cyborg), "title")
 	init_datum_subtypes(/datum/superheroes, all_superheroes, null, "name")
@@ -58,7 +56,7 @@
 			var/list/L = chemical_reactions_list[reaction]
 			for(var/t in L)
 				. += "    has: [t]\n"
-	to_chat(world, .)
+	world << .
 */
 
 

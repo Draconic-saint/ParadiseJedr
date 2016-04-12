@@ -45,7 +45,7 @@
 
 /obj/machinery/emergency_authentication_device/attack_hand(mob/user)
 	if(activated)
-		to_chat(user, "\blue \The [src] is already active!")
+		user << "\blue \The [src] is already active!"
 		return
 
 	if(!mode.current_directive.directives_complete())
@@ -55,7 +55,7 @@
 	check_key_existence()
 	if(captains_key && secondary_key)
 		activated = 1
-		to_chat(user, "\blue You activate \the [src]!")
+		user << "\blue You activate \the [src]!"
 		state("Command acknowledged. Initiating quantum entanglement relay to Nanotrasen High Command.")
 		launch_shuttle()
 		return
@@ -77,7 +77,7 @@
 
 /obj/machinery/emergency_authentication_device/attackby(obj/item/weapon/O, mob/user, params)
 	if(activated)
-		to_chat(user, "\blue \The [src] is already active!")
+		user << "\blue \The [src] is already active!"
 		return
 
 	if(!mode.current_directive.directives_complete())
@@ -107,6 +107,5 @@
 	..()
 
 /obj/machinery/emergency_authentication_device/examine(mob/user)
-	to_chat(user, {"This is a specialized communications device that is able to instantly send a message to <b>Nanotrasen High Command</b> via quantum entanglement
-	                with a sister device at CentComm.<br>
-			        The EAD's status is [get_status()]."})
+	user << {"This is a specialized communications device that is able to instantly send a message to <b>Nanotrasen High Command</b> via quantum entanglement with a sister device at CentComm.<br>
+			  The EAD's status is [get_status()]."}

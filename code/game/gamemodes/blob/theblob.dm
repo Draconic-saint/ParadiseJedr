@@ -35,11 +35,6 @@
 	if(istype(mover) && mover.checkpass(PASSBLOB))	return 1
 	return 0
 
-/obj/effect/blob/CanAStarPass(ID, dir, caller)
-	. = 0
-	if(ismovableatom(caller))
-		var/atom/movable/mover = caller
-		. = . || mover.checkpass(PASSBLOB)
 
 /obj/effect/blob/process()
 	Life()
@@ -196,7 +191,7 @@
 
 /obj/effect/blob/examine(mob/user)
 	..(user)
-	to_chat(user, "It looks like it's of a [get_chem_name()] kind.")
+	user << "It looks like it's of a [get_chem_name()] kind."
 
 
 /obj/effect/blob/proc/get_chem_name()

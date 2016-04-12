@@ -72,7 +72,7 @@
 /obj/machinery/mineral/labor_claim_console/proc/emag(mob/user as mob)
 	if(!emagged)
 		emagged = 1
-		to_chat(user, "<span class='warning'>PZZTTPFFFT</span>")
+		user << "<span class='warning'>PZZTTPFFFT</span>"
 
 
 
@@ -88,31 +88,30 @@
 			if(href_list["choice"] == "claim")
 				inserted_id.points += machine.points
 				machine.points = 0
-				to_chat(src, "Points transferred.")
+				src << "Points transferred."
 		else if(href_list["choice"] == "insert")
 			var/obj/item/weapon/card/id/prisoner/I = usr.get_active_hand()
 			if(istype(I))
 				usr.drop_item()
 				I.loc = src
 				inserted_id = I
-			else
-				to_chat(usr, "<span class='warning'>Invalid ID.</span>")
+			else usr << "<span class='warning'>Invalid ID.</span>"
 		if(check_auth()) //Sanity check against hef spoofs
 			if(href_list["choice"] == "station")
 				if(!alone_in_area(get_area(src), usr))
-					to_chat(usr, "<span class='warning'>Prisoners are only allowed to be released while alone.</span>")
+					usr << "<span class='warning'>Prisoners are only allowed to be released while alone.</span>"
 				else
 					switch(shuttle_master.moveShuttle("laborcamp","laborcamp_home"))
 						if(1)
-							to_chat(usr, "<span class='notice'>Shuttle not found</span>")
+							usr << "<span class='notice'>Shuttle not found</span>"
 						if(2)
-							to_chat(usr, "<span class='notice'>Shuttle already at station</span>")
+							usr << "<span class='notice'>Shuttle already at station</span>"
 						if(3)
-							to_chat(usr, "<span class='notice'>No permission to dock could be granted.</span>")
+							usr << "<span class='notice'>No permission to dock could be granted.</span>"
 						else
 							var/message = "[inserted_id.registered_name] has returned to the station. Minerals and Prisoner ID card ready for retrieval."
 							announcer.autosay(message, "Labor Camp Controller", "Security")
-							to_chat(usr, "<span class='notice'>Shuttle received message and will be sent shortly.</span>")
+							usr << "<span class='notice'>Shuttle received message and will be sent shortly.</span>"
 
 			if(href_list["choice"] == "release")
 				if(alone_in_area(get_area(loc), usr))
@@ -121,9 +120,9 @@
 						if(release_door && release_door.density)
 							release_door.open()
 					else
-						to_chat(usr, "<span class='warning'>Prisoners can only be released while docked with the station.</span>")
+						usr << "<span class='warning'>Prisoners can only be released while docked with the station.</span>"
 				else
-					to_chat(usr, "<span class='warning'>Prisoners are only allowed to be released while alone.</span>")
+					usr << "<span class='warning'>Prisoners are only allowed to be released while alone.</span>"
 
 		src.updateUsrDialog()
 	return
@@ -134,7 +133,7 @@
 
 /obj/machinery/mineral/stacking_machine/laborstacker
 	var/points = 0 //The unclaimed value of ore stacked.  Value for each ore loosely relative to its rarity.
-	var/list/ore_values = list(("glass" = 1), ("metal" = 2), ("solid plasma" = 20), ("plasteel" = 23), ("reinforced glass" = 4), ("gold" = 20), ("silver" = 20), ("uranium" = 20), ("diamond" = 25), ("bananium" = 50), ("tranquillite" = 50))
+	var/list/ore_values = list(("glass" = 1), ("metal" = 2), ("solid plasma" = 20), ("plasteel" = 23), ("reinforced glass" = 4), ("gold" = 20), ("silver" = 20), ("uranium" = 20), ("diamond" = 25), ("bananium" = 50))
 
 /obj/machinery/mineral/stacking_machine/laborstacker/proc/get_ore_values()
 	var/dat = "<table border='0' width='200'>"
@@ -169,11 +168,11 @@
 	if(istype(I, /obj/item/weapon/card/id))
 		if(istype(I, /obj/item/weapon/card/id/prisoner))
 			var/obj/item/weapon/card/id/prisoner/prisoner_id = I
-			to_chat(user, "<span class='notice'><B>ID: [prisoner_id.registered_name]</B></span>")
-			to_chat(user, "<span class='notice'>Points Collected:[prisoner_id.points]</span>")
-			to_chat(user, "<span class='notice'>Point Quota: [prisoner_id.goal]</span>")
-			to_chat(user, "<span class='notice'>Collect points by bringing smelted minerals to the Labor Shuttle stacking machine. Reach your quota to earn your release.</span>")
+			user << "<span class='notice'><B>ID: [prisoner_id.registered_name]</B></span>"
+			user << "<span class='notice'>Points Collected:[prisoner_id.points]</span>"
+			user << "<span class='notice'>Point Quota: [prisoner_id.goal]</span>"
+			user << "<span class='notice'>Collect points by bringing smelted minerals to the Labor Shuttle stacking machine. Reach your quota to earn your release.</span>"
 		else
-			to_chat(user, "<span class='warning'>Error: Invalid ID</span>")
+			user << "<span class='warning'>Error: Invalid ID</span>"
 		return
 	..()

@@ -1,3 +1,5 @@
+/mob/living/silicon/ai/proc/IsVocal()
+
 var/announcing_vox = 0 // Stores the time of the last announcement
 var/const/VOX_CHANNEL = 200
 var/const/VOX_DELAY = 100
@@ -28,22 +30,22 @@ var/const/VOX_PATH = "sound/vox_fem/"
 /mob/living/silicon/ai/proc/ai_announcement()
 	if(check_unable(AI_CHECK_WIRELESS | AI_CHECK_RADIO))
 		return
-
+		
 	if(announcing_vox > world.time)
-		to_chat(src, "<span class='warning'>Please wait [round((announcing_vox - world.time) / 10)] seconds.</span>")
+		src << "<span class='warning'>Please wait [round((announcing_vox - world.time) / 10)] seconds.</span>"
 		return
 
 	var/message = input(src, "WARNING: Misuse of this verb can result in you being job banned. More help is available in 'Announcement Help'", "Announcement", last_announcement) as text|null
 
 	last_announcement = message
-
+	
 	if(check_unable(AI_CHECK_WIRELESS | AI_CHECK_RADIO))
 		return
 
 	if(!message || announcing_vox > world.time)
 		return
 
-	var/list/words = splittext(trim(message), " ")
+	var/list/words = text2list(trim(message), " ")
 	var/list/incorrect_words = list()
 
 	if(words.len > 30)
@@ -58,7 +60,7 @@ var/const/VOX_PATH = "sound/vox_fem/"
 			incorrect_words += word
 
 	if(incorrect_words.len)
-		to_chat(src, "<span class='warning'>These words are not available on the announcement system: [english_list(incorrect_words)].</span>")
+		src << "<span class='warning'>These words are not available on the announcement system: [english_list(incorrect_words)].</span>"
 		return
 
 	announcing_vox = world.time + VOX_DELAY
@@ -83,9 +85,9 @@ var/const/VOX_PATH = "sound/vox_fem/"
 				if(M.client)
 					var/turf/T = get_turf(M)
 					if(T && T.z == z_level && !isdeaf(M))
-						to_chat(M, voice)
+						M << voice
 		else
-			to_chat(only_listener, voice)
+			only_listener << voice
 		return 1
 	return 0
 
@@ -94,6 +96,6 @@ var/const/VOX_PATH = "sound/vox_fem/"
 /client/proc/preload_vox()
 	var/list/vox_files = flist(VOX_PATH)
 	for(var/file in vox_files)
-//	to_chat(src, "Downloading [file]")
+	//  src << "Downloading [file]"
 		var/sound/S = sound("[VOX_PATH][file]")
 		src << browse_rsc(S)

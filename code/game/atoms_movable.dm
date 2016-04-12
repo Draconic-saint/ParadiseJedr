@@ -1,6 +1,5 @@
 /atom/movable
 	layer = 3
-	appearance_flags = TILE_BOUND
 	var/last_move = null
 	var/anchored = 0
 	// var/elevation = 2    - not used anywhere
@@ -109,27 +108,13 @@
 		..()
 
 /atom/movable/proc/forceMove(atom/destination)
-	var/turf/old_loc = loc
-	if(old_loc)
-		old_loc.Exited(src)
-
+	if(loc)
+		loc.Exited(src)
 	loc = destination
-
 	if(destination)
-		destination.Entered(src)
-		for(var/atom/movable/AM in destination)
+		loc.Entered(src)
+		for(var/atom/movable/AM in loc)
 			AM.Crossed(src)
-
-		if(isturf(destination) && opacity)
-			var/turf/new_loc = destination
-			new_loc.reconsider_lights()
-
-	if(isturf(old_loc) && opacity)
-		old_loc.reconsider_lights()
-
-	for(var/datum/light_source/L in light_sources)
-		L.source_atom.update_light()
-
 	return 1
 
 //called when src is thrown into hit_atom

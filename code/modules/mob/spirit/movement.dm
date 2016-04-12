@@ -36,10 +36,10 @@ mob/spirit/proc/Spirit_Move(direct)
 	var/mob/spirit/U = usr
 
 	if (!currentView)
-		to_chat(U, "As a spirit, you may only track cultists.")
+		U << "As a spirit, you may only track cultists."
 
 	U.follow_target = target
-	to_chat(U, "Now following [currentView.get_cult_name()].")
+	U << "Now following [currentView.get_cult_name()]."
 
 	spawn (0)
 		while (U.follow_target == target)
@@ -58,4 +58,4 @@ mob/spirit/verb/toggle_acceleration()
 	set name = "Toggle Acceleration"
 
 	acceleration = !acceleration
-	to_chat(usr, "Acceleration has been toggled [acceleration ? "on" : "off"].")
+	usr << "Acceleration has been toggled [acceleration ? "on" : "off"]."

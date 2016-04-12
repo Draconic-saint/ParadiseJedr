@@ -29,7 +29,7 @@
 //Override this to avoid a runtime with suicide handling.
 /obj/item/weapon/gun/launcher/attack(mob/living/M as mob, mob/living/user as mob, def_zone)
 	if (M == user && user.zone_sel.selecting == "mouth")
-		to_chat(user, "\red Shooting yourself with \a [src] is pretty tricky. You can't seem to manage it.")
+		user << "\red Shooting yourself with \a [src] is pretty tricky. You can't seem to manage it."
 		return
 	..()
 
@@ -39,7 +39,7 @@
 /obj/item/weapon/gun/launcher/Fire(atom/target as mob|obj|turf|area, mob/living/user as mob|obj, params, reflex = 0)
 
 	if (!user.IsAdvancedToolUser())
-		to_chat(user, "\red You don't have the dexterity to do this!")
+		user << "\red You don't have the dexterity to do this!"
 		return 0
 
 	add_fingerprint(user)
@@ -55,7 +55,7 @@
 
 	if (!ready_to_fire())
 		if (world.time % 3) //to prevent spam
-			to_chat(user, "<span class='warning'>[src] is not ready to fire again!")
+			user << "<span class='warning'>[src] is not ready to fire again!"
 		return 0
 
 	if(!chamber_round()) //CHECK

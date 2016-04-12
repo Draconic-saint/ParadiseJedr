@@ -27,63 +27,63 @@
 			var/message = generate_ion_law(ionMessage)
 			if(message)
 				M.add_ion_law(message)
-				to_chat(M, "<br>")
-				to_chat(M, "<span class='danger'>[message] ...LAWS UPDATED</span>")
-				to_chat(M, "<br>")
+				M << "<br>"
+				M << "<span class='danger'>[message] ...LAWS UPDATED</span>"
+				M << "<br>"
 
 	if(botEmagChance)
-		for(var/mob/living/simple_animal/bot/bot in machines)
+		for(var/obj/machinery/bot/bot in machines)
 			if(prob(botEmagChance))
-				bot.emag_act()
+				bot.Emag()
 
 /proc/generate_ion_law(ionMessage)
 	if(ionMessage)
 		return ionMessage
 
 	//Threats are generally bad things, silly or otherwise. Plural.
-	var/ionthreats = pick_list("ion_laws.json", "ionthreats")
+	var/ionthreats = pick_list("ion_laws.txt", "ionthreats")
 	//Objects are anything that can be found on the station or elsewhere, plural.
-	var/ionobjects = pick_list("ion_laws.json", "ionobjects")
+	var/ionobjects = pick_list("ion_laws.txt", "ionobjects")
 	//Crew is any specific job. Specific crewmembers aren't used because of capitalization
 	//issues. There are two crew listings for laws that require two different crew members
 	//and I can't figure out how to do it better.
-	var/ioncrew1 = pick_list("ion_laws.json", "ioncrew")
-	var/ioncrew2 = pick_list("ion_laws.json", "ioncrew")
+	var/ioncrew1 = pick_list("ion_laws.txt", "ioncrew")
+	var/ioncrew2 = pick_list("ion_laws.txt", "ioncrew")
 	//Adjectives are adjectives. Duh. Half should only appear sometimes. Make sure both
 	//lists are identical! Also, half needs a space at the end for nicer blank calls.
-	var/ionadjectives = pick_list("ion_laws.json", "ionadjectives")
-	var/ionadjectiveshalf = pick("", 400;(pick_list("ion_laws.json", "ionadjectives") + " "))
+	var/ionadjectives = pick_list("ion_laws.txt", "ionadjectives")
+	var/ionadjectiveshalf = pick("", 400;(pick_list("ion_laws.txt", "ionadjectives") + " "))
 	//Verbs are verbs
-	var/ionverb = pick_list("ion_laws.json", "ionverb")
+	var/ionverb = pick_list("ion_laws.txt", "ionverb")
 	//Number base and number modifier are combined. Basehalf and mod are unused currently.
 	//Half should only appear sometimes. Make sure both lists are identical! Also, half
 	//needs a space at the end to make it look nice and neat when it calls a blank.
-	var/ionnumberbase = pick_list("ion_laws.json", "ionnumberbase")
-	//var/ionnumbermod = pick_list("ion_laws.json", "ionnumbermod")
-	var/ionnumbermodhalf = pick(900;"",(pick_list("ion_laws.json", "ionnumbermod") + " "))
+	var/ionnumberbase = pick_list("ion_laws.txt", "ionnumberbase")
+	//var/ionnumbermod = pick_list("ion_laws.txt", "ionnumbermod")
+	var/ionnumbermodhalf = pick(900;"",(pick_list("ion_laws.txt", "ionnumbermod") + " "))
 	//Areas are specific places, on the station or otherwise.
-	var/ionarea = pick_list("ion_laws.json", "ionarea")
+	var/ionarea = pick_list("ion_laws.txt", "ionarea")
 	//Thinksof is a bit weird, but generally means what X feels towards Y.
-	var/ionthinksof = pick_list("ion_laws.json", "ionthinksof")
+	var/ionthinksof = pick_list("ion_laws.txt", "ionthinksof")
 	//Musts are funny things the AI or crew has to do.
-	var/ionmust = pick_list("ion_laws.json", "ionmust")
+	var/ionmust = pick_list("ion_laws.txt", "ionmust")
 	//Require are basically all dumb internet memes.
-	var/ionrequire = pick_list("ion_laws.json", "ionrequire")
+	var/ionrequire = pick_list("ion_laws.txt", "ionrequire")
 	//Things are NOT objects; instead, they're specific things that either harm humans or
 	//must be done to not harm humans. Make sure they're plural and "not" can be tacked
 	//onto the front of them.
-	var/ionthings = pick_list("ion_laws.json", "ionthings")
+	var/ionthings = pick_list("ion_laws.txt", "ionthings")
 	//Allergies should be broad and appear somewhere on the station for maximum fun. Severity
 	//is how bad the allergy is.
-	var/ionallergy = pick_list("ion_laws.json", "ionallergy")
-	var/ionallergysev = pick_list("ion_laws.json", "ionallergysev")
+	var/ionallergy = pick_list("ion_laws.txt", "ionallergy")
+	var/ionallergysev = pick_list("ion_laws.txt", "ionallergysev")
 	//Species, for when the AI has to commit genocide. Plural.
-	var/ionspecies = pick_list("ion_laws.json", "ionspecies")
+	var/ionspecies = pick_list("ion_laws.txt", "ionspecies")
 	//Abstract concepts for the AI to decide on it's own definition of.
-	var/ionabstract = pick_list("ion_laws.json", "ionabstract")
+	var/ionabstract = pick_list("ion_laws.txt", "ionabstract")
 	//Foods. Drinks aren't included due to grammar; if you want to add drinks, make a new set
 	//of possible laws for best effect. Unless you want the crew having to drink hamburgers.
-	var/ionfood = pick_list("ion_laws.json", "ionfood")
+	var/ionfood = pick_list("ion_laws.txt", "ionfood")
 
 	var/message = ""
 

@@ -35,10 +35,10 @@
 	else if(istype(Proj ,/obj/item/projectile/energy/florayield))
 		if(!yieldmod)
 			yieldmod += 1
-//			to_chat(world, "Yield increased by 1, from 0, to a total of [myseed.yield]")
+			//world << "Yield increased by 1, from 0, to a total of [myseed.yield]"
 		else if (prob(1/(yieldmod * yieldmod) *100))//This formula gives you diminishing returns based on yield. 100% with 1 yield, decreasing to 25%, 11%, 6, 4, 2...
 			yieldmod += 1
-//			to_chat(world, "Yield increased by 1, to a total of [myseed.yield]")
+			//world << "Yield increased by 1, to a total of [myseed.yield]"
 	else
 		..()
 		return
@@ -46,56 +46,56 @@
 /obj/machinery/apiary/attackby(var/obj/item/O as obj, var/mob/user as mob)
 	if(istype(O, /obj/item/queen_bee))
 		if(health > 0)
-			to_chat(user, "\red There is already a queen in there.")
+			user << "\red There is already a queen in there."
 		else
 			health = 10
 			nutrilevel += 10
 			user.drop_item()
 			qdel(O)
-			to_chat(user, "\blue You carefully insert the queen into [src], she gets busy making a hive.")
+			user << "\blue You carefully insert the queen into [src], she gets busy making a hive."
 			bees_in_hive = 0
 	else if(istype(O, /obj/item/beezeez))
 		beezeez += 100
 		nutrilevel += 10
 		user.drop_item()
 		if(health > 0)
-			to_chat(user, "\blue You insert [O] into [src]. A relaxed humming appears to pick up.")
+			user << "\blue You insert [O] into [src]. A relaxed humming appears to pick up."
 		else
-			to_chat(user, "\blue You insert [O] into [src]. Now it just needs some bees.")
+			user << "\blue You insert [O] into [src]. Now it just needs some bees."
 		qdel(O)
 	else if(istype(O, /obj/item/weapon/minihoe))
 		if(health > 0)
-			to_chat(user, "\red <b>You begin to dislodge the apiary from the tray, the bees don't like that.</b>")
+			user << "\red <b>You begin to dislodge the apiary from the tray, the bees don't like that.</b>"
 			angry_swarm(user)
 		else
-			to_chat(user, "\blue You begin to dislodge the dead apiary from the tray.")
+			user << "\blue You begin to dislodge the dead apiary from the tray."
 		if(do_after(user, 50, target = src))
 			new hydrotray_type(src.loc)
 			new /obj/item/apiary(src.loc)
-			to_chat(user, "\red You dislodge the apiary from the tray.")
+			user << "\red You dislodge the apiary from the tray."
 			qdel(src)
 	else if(istype(O, /obj/item/weapon/bee_net))
 		var/obj/item/weapon/bee_net/N = O
 		if(N.caught_bees > 0)
-			to_chat(user, "\blue You empty the bees into the apiary.")
+			user << "\blue You empty the bees into the apiary."
 			bees_in_hive += N.caught_bees
 			N.caught_bees = 0
 		else
-			to_chat(user, "\blue There are no more bees in the net.")
+			user << "\blue There are no more bees in the net."
 	else if(istype(O, /obj/item/weapon/reagent_containers/glass))
 		var/obj/item/weapon/reagent_containers/glass/G = O
 		if(harvestable_honey > 0)
 			if(health > 0)
-				to_chat(user, "\red You begin to harvest the honey. The bees don't seem to like it.")
+				user << "\red You begin to harvest the honey. The bees don't seem to like it."
 				angry_swarm(user)
 			else
-				to_chat(user, "\blue You begin to harvest the honey.")
+				user << "\blue You begin to harvest the honey."
 			if(do_after(user,50, target = src))
 				G.reagents.add_reagent("honey",harvestable_honey)
 				harvestable_honey = 0
-				to_chat(user, "\blue You successfully harvest the honey.")
+				user << "\blue You successfully harvest the honey."
 		else
-			to_chat(user, "\blue There is no honey left to harvest.")
+			user << "\blue There is no honey left to harvest."
 	else
 		angry_swarm(user)
 		..()
@@ -236,5 +236,5 @@
 		if(toxic > 0)
 			H.reagents.add_reagent("toxin", toxic)
 
-	to_chat(usr, "\blue You harvest the honeycomb from the hive. There is a wild buzzing!")
+	usr << "\blue You harvest the honeycomb from the hive. There is a wild buzzing!"
 	angry_swarm(usr)

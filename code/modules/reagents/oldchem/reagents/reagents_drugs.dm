@@ -4,13 +4,11 @@
 	description = "A chemical compound that promotes concentrated production of the serotonin neurotransmitter in humans."
 	reagent_state = LIQUID
 	color = "#202040" // rgb: 20, 20, 40
-	metabolization_rate = 0.25 * REAGENTS_METABOLISM
 
 /datum/reagent/serotrotium/on_mob_life(var/mob/living/M as mob)
 	if(ishuman(M))
-		if(prob(7))
-			M.emote(pick("twitch","drool","moan","gasp"))
-	..()
+		if(prob(7)) M.emote(pick("twitch","drool","moan","gasp"))
+		holder.remove_reagent(src.id, 0.25 * REAGENTS_METABOLISM)
 	return
 
 
@@ -23,9 +21,8 @@
 
 /datum/reagent/lithium/on_mob_life(var/mob/living/M as mob)
 	if(!M) M = holder.my_atom
-	if(isturf(M.loc) && !istype(M.loc, /turf/space))
-		if(M.canmove && !M.restrained())
-			step(M, pick(cardinal))
+	if(M.canmove && !M.restrained() && istype(M.loc, /turf/space))
+		step(M, pick(cardinal))
 	if(prob(5)) M.emote(pick("twitch","drool","moan"))
 	..()
 	return
@@ -74,7 +71,6 @@
 
 /datum/reagent/lsd/on_mob_life(var/mob/living/M)
 	if(!M) M = holder.my_atom
-	M.druggy = max(M.druggy, 15)
 	M.hallucination += 10
 	..()
 	return
@@ -87,14 +83,13 @@
 	reagent_state = LIQUID
 	color = "#9087A2"
 	metabolization_rate = 0.2
-	addiction_chance = 65
 
 /datum/reagent/space_drugs/on_mob_life(var/mob/living/M as mob)
 	if(!M) M = holder.my_atom
 	M.druggy = max(M.druggy, 15)
 	if(isturf(M.loc) && !istype(M.loc, /turf/space))
 		if(M.canmove && !M.restrained())
-			step(M, pick(cardinal))
+			if(prob(10)) step(M, pick(cardinal))
 	if(prob(7)) M.emote(pick("twitch","drool","moan","giggle"))
 	..()
 	return

@@ -10,9 +10,8 @@
 	speak_chance = 1
 	turns_per_move = 5
 	see_in_dark = 0 //I'm so funny
-	butcher_results = list(/obj/item/weapon/reagent_containers/food/snacks/meat = 4)
+	meat_type = /obj/item/weapon/reagent_containers/food/snacks/meat
+	meat_amount = 3
 	response_help = "pets"
 	response_disarm = "gently pushes aside"
 	response_harm = "kicks"
-	can_collar = 1
-	gold_core_spawnable = CHEM_MOB_SPAWN_FRIENDLY

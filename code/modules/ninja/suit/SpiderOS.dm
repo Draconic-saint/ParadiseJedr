@@ -9,7 +9,7 @@
 	if(!s_busy)
 		display_spideros()
 	else
-		to_chat(affecting, "<span class='danger'>The interface is locked!</span>")
+		affecting << "<span class='danger'>The interface is locked!</span>"
 
 
 /obj/item/clothing/suit/space/space_ninja/proc/display_spideros()
@@ -194,7 +194,7 @@
 
 
 	if(!affecting||U.stat||!s_initialized)//Check to make sure the guy is wearing the suit after clicking and it's on.
-		to_chat(U, "<span class='danger'>Your suit must be worn and active to use this function.</span>")
+		U << "<span class='danger'>Your suit must be worn and active to use this function.</span>"
 		U << browse(null, "window=spideros")//Closes the window.
 		return
 
@@ -217,21 +217,31 @@
 				display_to << browse(null, "window=spideros")
 				return
 			if(isnull(P)||P.toff)//So it doesn't freak out if the object no-longer exists.
-				to_chat(display_to, "<span class='danger'>Error: unable to deliver message.</span>")
+				display_to << "<span class='danger'>Error: unable to deliver message.</span>"
 				display_spideros()
 				return
-			
+			//Search for holder of the PDA.
+			var/mob/living/L = null
+			if(P.loc && isliving(P.loc))
+				L = P.loc
+			//Maybe they are a pAI!
+			else
+				L = get(P, /mob/living/silicon)
+
+			if(L)
+				L << "\icon[P] <b>Message from unknown source: </b>\"[t]\" (Unable to Reply)"
+			P.play_ringtone()
 			var/datum/data/pda/app/messenger/M = P.find_program(/datum/data/pda/app/messenger)
-			M.notify("<b>Message from unknown source: </b>\"[t]\" (Unable to Reply)", 0)
+			M.set_new(1)
 
 		if("Inject")
 			if( (href_list["tag"]=="radium"? (reagents.get_reagent_amount("radium"))<=(a_boost*a_transfer) : !reagents.get_reagent_amount(href_list["tag"])) )//Special case for radium. If there are only a_boost*a_transfer radium units left.
-				to_chat(display_to, "<span class='danger'>Error: the suit cannot perform this function. Out of [href_list["name"]].</span>")
+				display_to << "<span class='danger'>Error: the suit cannot perform this function. Out of [href_list["name"]].</span>"
 			else
 				reagents.reaction(U, 2)
 				reagents.trans_id_to(U, href_list["tag"], href_list["tag"]=="nutriment"?5:a_transfer)//Nutriment is a special case since it's very potent. Shouldn't influence actual refill amounts or anything.
-				to_chat(display_to, "Injecting...")
-				to_chat(U, "You feel a tiny prick and a sudden rush of substance in to your veins.")
+				display_to << "Injecting..."
+				U << "You feel a tiny prick and a sudden rush of substance in to your veins."
 
 		if("Trigger Ability")
 			var/ability_name = href_list["name"]+href_list["cost"]//Adds the name and cost to create the full proc name.
@@ -251,7 +261,7 @@
 				proc_arguments = pick(targets)
 				safety = 0
 			if(!safety)
-				to_chat(U, "[href_list["name"]] suddenly triggered!")
+				U << "[href_list["name"]] suddenly triggered!"
 				call(src,ability_name)(proc_arguments)
 
 		if("Eject Disk")
@@ -265,11 +275,11 @@
 					t_disk.loc = T
 					t_disk = null
 				else
-					to_chat(U, "<span class='userdanger'>ERROR</span>: Could not eject disk.")
+					U << "<span class='userdanger'>ERROR</span>: Could not eject disk."
 
 		if("Copy to Disk")
 			var/datum/tech/current_data = locate(href_list["target"])
-			to_chat(U, "[current_data.name] successfully [(!t_disk.stored) ? "copied" : "overwritten"] to disk.")
+			U << "[current_data.name] successfully [(!t_disk.stored) ? "copied" : "overwritten"] to disk."
 			t_disk.stored = current_data
 
 

@@ -8,7 +8,7 @@
 		if(silence_time)
 			if(world.timeofday >= silence_time)
 				silence_time = null
-				to_chat(src, "<font color=green>Communication circuit reinitialized. Speech and messaging functionality restored.</font>")
+				src << "<font color=green>Communication circuit reinitialized. Speech and messaging functionality restored.</font>"
 
 		if(cable)
 			if(get_dist(src, cable) > 1)

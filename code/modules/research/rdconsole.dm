@@ -90,8 +90,6 @@ proc/CallMaterialName(ID)
 				return_name = "Diamond"
 			if("clown")
 				return_name = "Bananium"
-			if("mime")
-				return_name = "Tranquillite"
 	else
 		for(var/R in subtypesof(/datum/reagent))
 			temp_reagent = null
@@ -159,18 +157,18 @@ proc/CallMaterialName(ID)
 	//Loading a disk into it.
 	if(istype(D, /obj/item/weapon/disk))
 		if(t_disk || d_disk)
-			to_chat(user, "A disk is already loaded into the machine.")
+			user << "A disk is already loaded into the machine."
 			return
 
 		if(istype(D, /obj/item/weapon/disk/tech_disk)) t_disk = D
 		else if (istype(D, /obj/item/weapon/disk/design_disk)) d_disk = D
 		else
-			to_chat(user, "<span class='danger'>Machine cannot accept disks in that format.</span>")
+			user << "<span class='danger'>Machine cannot accept disks in that format.</span>"
 			return
 		if(!user.drop_item())
 			return
 		D.loc = src
-		to_chat(user, "<span class='notice'>You add the disk to the machine!</span>")
+		user << "<span class='notice'>You add the disk to the machine!</span>"
 	else
 		..()
 	src.updateUsrDialog()
@@ -181,7 +179,7 @@ proc/CallMaterialName(ID)
 		playsound(src.loc, 'sound/effects/sparks4.ogg', 75, 1)
 		req_access = list()
 		emagged = 1
-		to_chat(user, "<span class='notice'>You disable the security protocols</span>")
+		user << "<span class='notice'>You disable the security protocols</span>"
 
 /obj/machinery/computer/rdconsole/Topic(href, href_list)
 	if(..())
@@ -246,17 +244,6 @@ proc/CallMaterialName(ID)
 	else if(href_list["copy_design"]) //Copy design data from the research holder to the design disk.
 		for(var/datum/design/D in files.known_designs)
 			if(href_list["copy_design_ID"] == D.id)
-				var/autolathe_friendly = 1
-				for(var/x in D.materials)
-					if( !(x in list(MAT_METAL, MAT_GLASS)))
-						autolathe_friendly = 0
-						D.category -= "Imported"
-				if(D.locked)
-					autolathe_friendly = 0
-					D.category -= "Imported"
-				if(D.build_type & (AUTOLATHE|PROTOLATHE|CRAFTLATHE)) // Specifically excludes circuit imprinter and mechfab
-					D.build_type = autolathe_friendly ? (D.build_type | AUTOLATHE) : D.build_type
-					D.category |= "Imported"
 				d_disk.blueprint = D
 				break
 		screen = 1.4
@@ -264,7 +251,7 @@ proc/CallMaterialName(ID)
 	else if(href_list["eject_item"]) //Eject the item inside the destructive analyzer.
 		if(linked_destroy)
 			if(linked_destroy.busy)
-				to_chat(usr, "<span class='danger'> The destructive analyzer is busy at the moment.</span>")
+				usr << "<span class='danger'> The destructive analyzer is busy at the moment.</span>"
 
 			else if(linked_destroy.loaded_item)
 				linked_destroy.loaded_item.loc = linked_destroy.loc
@@ -289,7 +276,7 @@ proc/CallMaterialName(ID)
 	else if(href_list["deconstruct"]) //Deconstruct the item in the destructive analyzer and update the research holder.
 		if(linked_destroy)
 			if(linked_destroy.busy)
-				to_chat(usr, "<span class='danger'>The destructive analyzer is busy at the moment.</span>")
+				usr << "<span class='danger'>The destructive analyzer is busy at the moment.</span>"
 			else
 				var/choice = input("Proceeding will destroy loaded item.") in list("Proceed", "Cancel")
 				if(choice == "Cancel" || !linked_destroy) return
@@ -302,7 +289,7 @@ proc/CallMaterialName(ID)
 						linked_destroy.busy = 0
 						if(!linked_destroy.hacked)
 							if(!linked_destroy.loaded_item)
-								to_chat(usr, "<span class='danger'>The destructive analyzer appears to be empty.</span>")
+								usr <<"<span class='danger'>The destructive analyzer appears to be empty.</span>"
 								screen = 1.0
 								return
 							if((linked_destroy.loaded_item.reliability >= 99 - (linked_destroy.decon_mod * 3)) || linked_destroy.loaded_item.crit_fail)
@@ -341,7 +328,7 @@ proc/CallMaterialName(ID)
 	else if(href_list["sync"]) //Sync the research holder with all the R&D consoles in the game that aren't sync protected.
 		screen = 0.0
 		if(!sync)
-			to_chat(usr, "<span class='danger'>You must connect to the network first!</span>")
+			usr << "<span class='danger'>You must connect to the network first!</span>"
 		else
 			griefProtection() //Putting this here because I dont trust the sync process
 			spawn(30)
@@ -548,8 +535,6 @@ proc/CallMaterialName(ID)
 				MAT = MAT_DIAMOND
 			if("clown")
 				MAT = MAT_BANANIUM
-			if("mime")
-				MAT = "Tranquillite"
 		linked_lathe.materials.retrieve_sheets(desired_num_sheets, MAT)
 
 	else if(href_list["imprinter_ejectsheet"] && linked_imprinter) //Causes the protolathe to eject a sheet of material
@@ -638,7 +623,7 @@ proc/CallMaterialName(ID)
 	if(..())
 		return 1
 	if(!allowed(user) && !isobserver(user))
-		to_chat(user, "<span class='warning'>Access denied.</span>")
+		user << "<span class='warning'>Access denied.</span>"
 		return 1
 	interact(user)
 
@@ -1025,15 +1010,6 @@ proc/CallMaterialName(ID)
 				dat += "<A href='?src=\ref[src];lathe_ejectsheet=clown;lathe_ejectsheet_amt=custom'>C</A> "
 			if(bananium_amount >= MINERAL_MATERIAL_AMOUNT*5) dat += "<A href='?src=\ref[src];lathe_ejectsheet=clown;lathe_ejectsheet_amt=5'>5x</A> "
 			if(bananium_amount >= MINERAL_MATERIAL_AMOUNT) dat += "<A href='?src=\ref[src];lathe_ejectsheet=clown;lathe_ejectsheet_amt=50'>All</A>"
-			dat += "</div>"
-			//Tranquillite
-			var/tranquillite_amount = linked_lathe.materials.amount(MAT_TRANQUILLITE)
-			dat += "* [tranquillite_amount] of Tranquillite, [round(tranquillite_amount / MINERAL_MATERIAL_AMOUNT,0.1)] sheets: "
-			if(tranquillite_amount >= MINERAL_MATERIAL_AMOUNT)
-				dat += "<A href='?src=\ref[src];lathe_ejectsheet=mime;lathe_ejectsheet_amt=1'>Eject</A> "
-				dat += "<A href='?src=\ref[src];lathe_ejectsheet=mime;lathe_ejectsheet_amt=custom'>C</A> "
-			if(tranquillite_amount >= MINERAL_MATERIAL_AMOUNT*5) dat += "<A href='?src=\ref[src];lathe_ejectsheet=mime;lathe_ejectsheet_amt=5'>5x</A> "
-			if(tranquillite_amount >= MINERAL_MATERIAL_AMOUNT) dat += "<A href='?src=\ref[src];lathe_ejectsheet=mime;lathe_ejectsheet_amt=50'>All</A>"
 			dat += "</div>"
 
 		if(3.3)

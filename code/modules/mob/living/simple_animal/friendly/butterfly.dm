@@ -17,8 +17,8 @@
 	density = 0
 	pass_flags = PASSTABLE | PASSGRILLE | PASSMOB
 	ventcrawler = 2
-	butcher_results = list(/obj/item/weapon/reagent_containers/food/snacks/meat = 0)
-	gold_core_spawnable = CHEM_MOB_SPAWN_FRIENDLY
+	meat_type = /obj/item/weapon/reagent_containers/food/snacks/meat
+	meat_amount = 0
 
 /mob/living/simple_animal/butterfly/New()
 	..()

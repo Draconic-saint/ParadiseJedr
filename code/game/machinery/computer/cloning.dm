@@ -87,7 +87,7 @@
 			user.drop_item()
 			W.loc = src
 			src.diskette = W
-			to_chat(user, "You insert [W].")
+			user << "You insert [W]."
 			nanomanager.update_uis(src)
 			return
 	else if(istype(W, /obj/item/device/multitool))
@@ -98,7 +98,7 @@
 				pods += P
 				P.connected = src
 				P.name = "[initial(P.name)] #[pods.len]"
-				to_chat(user, "<span class='notice'>You connect [P] to [src].</span>")
+				user << "<span class='notice'>You connect [P] to [src].</span>"
 	else
 		..()
 	return
@@ -326,8 +326,7 @@
 					var/mob/selected = find_dead_player("[C.ckey]")
 					if(!selected)
 						return
-						selected << 'sound/machines/chime.ogg' //probably not the best sound but I think it's reasonable
-
+					selected << 'sound/machines/chime.ogg'	//probably not the best sound but I think it's reasonable
 					var/answer = alert(selected,"Do you want to return to life?","Cloning","Yes","No")
 					if(answer != "No" && pod.growclone(C))
 						temp = "Initiating cloning cycle..."
@@ -365,15 +364,15 @@
 		scantemp = "<span class=\"bad\">Error: Unable to locate valid genetic data.</span>"
 		nanomanager.update_uis(src)
 		return
-	if(subject.get_int_organ(/obj/item/organ/internal/brain))
-		var/obj/item/organ/internal/brain/Brn = subject.get_int_organ(/obj/item/organ/internal/brain)
+	if("brain" in subject.internal_organs_by_name)
+		var/obj/item/organ/brain/Brn = subject.internal_organs_by_name["brain"]
 		if(istype(Brn))
 			var/datum/species/S = all_species[Brn.dna.species] // stepladder code wooooo
 			if(S.flags & NO_SCAN)
 				scantemp = "<span class=\"bad\">Error: Subject's brain is incompatible.</span>"
 				nanomanager.update_uis(src)
 				return
-	if(!subject.get_int_organ(/obj/item/organ/internal/brain))
+	if (subject.brain_op_stage == 4.0)
 		scantemp = "<span class=\"bad\">Error: No signs of intelligence detected.</span>"
 		nanomanager.update_uis(src)
 		return
@@ -389,7 +388,7 @@
 		scantemp = "<span class=\"bad\">Error: Mental interface failure.</span>"
 		nanomanager.update_uis(src)
 		return
-	if (scan_brain && !subject.get_int_organ(/obj/item/organ/internal/brain))
+	if (scan_brain && !("brain" in subject.internal_organs_by_name))
 		scantemp = "<span class=\"bad\">Error: No brain found.</span>"
 		nanomanager.update_uis(src)
 		return
@@ -404,7 +403,7 @@
 	R.ckey = subject.ckey
 	var/extra_info = ""
 	if(scan_brain)
-		var/obj/item/organ/B = subject.get_int_organ(/obj/item/organ/internal/brain)
+		var/obj/item/organ/B = subject.internal_organs_by_name["brain"]
 		B.dna.check_integrity()
 		R.dna=B.dna.Clone()
 		var/datum/species/S = all_species[R.dna.species]

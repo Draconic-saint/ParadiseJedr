@@ -6,6 +6,8 @@
 
 	maxHealth = 30
 	health = 30
+	storedPlasma = 50
+	max_plasma = 50
 	density = 0
 
 	var/amount_grown = 0
@@ -23,8 +25,6 @@
 	regenerate_icons()
 	add_language("Xenomorph")
 	add_language("Hivemind")
-	internal_organs += new /obj/item/organ/internal/xenos/plasmavessel/larva
-
 	..()
 
 //This is fine, works the same as a human
@@ -38,7 +38,7 @@
 			var/mob/tmob = AM
 			if(istype(tmob, /mob/living/carbon/human) && (FAT in tmob.mutations))
 				if(prob(70))
-					to_chat(src, "\red <B>You fail to push [tmob]'s fat ass out of the way.</B>")
+					src << "\red <B>You fail to push [tmob]'s fat ass out of the way.</B>"
 					now_pushing = 0
 					return
 				if(!(tmob.status_flags & CANPUSH))
@@ -64,9 +64,8 @@
 	..()
 	stat(null, "Progress: [amount_grown]/[max_grown]")
 
-
-/mob/living/carbon/alien/larva/adjustPlasma(amount)
-	if(stat != DEAD && amount > 0)
+/mob/living/carbon/alien/larva/adjustToxLoss(amount)
+	if(stat != DEAD)
 		amount_grown = min(amount_grown + 1, max_grown)
 	..(amount)
 
@@ -124,7 +123,7 @@
 
 /mob/living/carbon/alien/larva/attack_slime(mob/living/carbon/slime/M as mob)
 	if (!ticker)
-		to_chat(M, "You cannot attack people before the game has started.")
+		M << "You cannot attack people before the game has started."
 		return
 
 	if(M.Victim)
@@ -149,11 +148,11 @@
 
 /mob/living/carbon/alien/larva/attack_hand(mob/living/carbon/human/M as mob)
 	if (!ticker)
-		to_chat(M, "You cannot attack people before the game has started.")
+		M << "You cannot attack people before the game has started."
 		return
 
 	if (istype(loc, /turf) && istype(loc.loc, /area/start))
-		to_chat(M, "No attacking people at spawn, you jackass.")
+		M << "No attacking people at spawn, you jackass."
 		return
 
 	..()
@@ -195,11 +194,11 @@
 
 /mob/living/carbon/alien/larva/attack_alien(mob/living/carbon/alien/humanoid/M as mob)
 	if (!ticker)
-		to_chat(M, "You cannot attack people before the game has started.")
+		M << "You cannot attack people before the game has started."
 		return
 
 	if (istype(loc, /turf) && istype(loc.loc, /area/start))
-		to_chat(M, "No attacking people at spawn, you jackass.")
+		M << "No attacking people at spawn, you jackass."
 		return
 
 	..()
@@ -224,7 +223,7 @@
 				adjustBruteLoss(damage)
 				updatehealth()
 			else
-				to_chat(M, "<span class='warning'>[name] is too injured for that.</span>")
+				M << "<span class='warning'>[name] is too injured for that.</span>"
 	return
 
 /mob/living/carbon/alien/larva/restrained()
@@ -237,6 +236,15 @@
 
 
 /mob/living/carbon/alien/larva/show_inv(mob/user as mob)
+
+	user.set_machine(src)
+	var/dat = {"
+	<B><HR><FONT size=3>[name]</FONT></B>
+	<BR><HR><BR>
+	<BR><A href='?src=\ref[user];mach_close=mob[name]'>Close</A>
+	<BR>"}
+	user << browse(dat, text("window=mob[name];size=340x480"))
+	onclose(user, "mob[name]")
 	return
 
 /* Commented out because it's duplicated in life.dm

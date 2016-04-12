@@ -27,16 +27,16 @@
 
 /obj/item/device/core_sampler/examine(mob/user)
 	if(..(user, 2))
-		to_chat(user, "\blue Used to extract geological core samples - this one is [sampled_turf ? "full" : "empty"], and has [num_stored_bags] bag[num_stored_bags != 1 ? "s" : ""] remaining.")
+		user << "\blue Used to extract geological core samples - this one is [sampled_turf ? "full" : "empty"], and has [num_stored_bags] bag[num_stored_bags != 1 ? "s" : ""] remaining."
 
 /obj/item/device/core_sampler/attackby(obj/item/weapon/W as obj, mob/user as mob, params)
 	if(istype(W,/obj/item/weapon/evidencebag))
 		if(num_stored_bags < 10)
 			qdel(W)
 			num_stored_bags += 1
-			to_chat(user, "\blue You insert the [W] into the core sampler.")
+			user << "\blue You insert the [W] into the core sampler."
 		else
-			to_chat(user, "\red The core sampler can not fit any more bags!")
+			user << "\red The core sampler can not fit any more bags!"
 	else
 		return ..()
 
@@ -52,9 +52,9 @@
 
 	if(geo_data)
 		if(filled_bag)
-			to_chat(user, "\red The core sampler is full!")
+			user << "\red The core sampler is full!"
 		else if(num_stored_bags < 1)
-			to_chat(user, "\red The core sampler is out of sample bags!")
+			user << "\red The core sampler is out of sample bags!"
 		else
 			//create a new sample bag which we'll fill with rock samples
 			filled_bag = new /obj/item/weapon/evidencebag(src)
@@ -75,13 +75,13 @@
 			filled_bag.underlays += I
 			filled_bag.w_class = 1
 
-			to_chat(user, "\blue You take a core sample of the [item_to_sample].")
+			user << "\blue You take a core sample of the [item_to_sample]."
 	else
-		to_chat(user, "\red You are unable to take a sample of [item_to_sample].")
+		user << "\red You are unable to take a sample of [item_to_sample]."
 
 /obj/item/device/core_sampler/attack_self()
 	if(filled_bag)
-		to_chat(usr, "\blue You eject the full sample bag.")
+		usr << "\blue You eject the full sample bag."
 		var/success = 0
 		if(istype(src.loc, /mob))
 			var/mob/M = src.loc
@@ -91,4 +91,4 @@
 		filled_bag = null
 		icon_state = "sampler0"
 	else
-		to_chat(usr, "\red The core sampler is empty.")
+		usr << "\red The core sampler is empty."

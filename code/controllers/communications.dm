@@ -202,7 +202,6 @@ var/const/RADIO_CLEANBOT = "10"
 var/const/RADIO_FLOORBOT = "11"
 var/const/RADIO_MEDBOT = "12"
 var/const/RADIO_MAGNETS = "radio_magnet"
-var/const/RADIO_LOGIC = "radio_logic"
 
 var/global/datum/controller/radio/radio_controller
 

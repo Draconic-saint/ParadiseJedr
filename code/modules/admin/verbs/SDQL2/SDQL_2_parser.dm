@@ -25,19 +25,18 @@
 //
 //	assignments			:	assignment, [',' assignments]
 //	assignment			:	<variable name> '=' expression
-//	variable			:	<variable name> | <variable name> '.' variable | '[' <hex number> ']' | '[' <hex number> ']' '.' variable
+//	variable			:	<variable name> | <variable name> '.' variable
 //
 //	bool_expression		:	expression comparitor expression  [bool_operator bool_expression]
 //	expression			:	( unary_expression | '(' expression ')' | value ) [binary_operator expression]
 //	unary_expression	:	unary_operator ( unary_expression | value | '(' expression ')' )
 //	comparitor			:	'=' | '==' | '!=' | '<>' | '<' | '<=' | '>' | '>='
-//	value				:	variable | string | array | number | 'null'
+//	value				:	variable | string | number | 'null'
 //	unary_operator		:	'!' | '-' | '~'
 //	binary_operator		:	comparitor | '+' | '-' | '/' | '*' | '&' | '|' | '^'
 //	bool_operator		:	'AND' | '&&' | 'OR' | '||'
 //
 //	string				:	''' <some text> ''' | '"' <some text > '"'
-//	array				:	'{' [arguments] '}'
 //	number				:	<some digits>
 //
 //////////
@@ -60,7 +59,7 @@
 
 /datum/SDQL_parser/proc/parse_error(error_message)
 	error = 1
-	to_chat(usr, "<span class='danger'>SQDL2 Parsing Error: [error_message]</span>")
+	usr << "<span class='danger'>SQDL2 Parsing Error: [error_message]</span>"
 	return query.len + 1
 
 /datum/SDQL_parser/proc/parse()
@@ -207,10 +206,12 @@
 //call_query:	'CALL' call_function ['ON' select_list [('FROM' | 'IN') from_list] ['WHERE' bool_expression]]
 	call_query(i, list/node)
 		var/list/func = list()
-		i = variable(i + 1, func)
+		var/list/arguments = list()
+		i = call_function(i + 1, func, arguments)
 
 		node += "call"
 		node["call"] = func
+		node["args"] = arguments
 
 		if(tokenl(i) != "on")
 			return i
@@ -315,17 +316,15 @@
 
 
 //assignment:	<variable name> '=' expression
-	assignment(var/i, var/list/node, var/list/assignment_list = list())
-		assignment_list += token(i)
+	assignment(i, list/node)
 
-		if(token(i + 1) == ".")
-			i = assignment(i + 2, node, assignment_list)
+		node += token(i)
 
-		else if(token(i + 1) == "=")
-			var/exp_list = list()
-			node[assignment_list] = exp_list
+		if(token(i + 1) == "=")
+			var/varname = token(i)
+			node[varname] = list()
 
-			i = expression(i + 2, exp_list)
+			i = expression(i + 2, node[varname])
 
 		else
 			parse_error("Assignment expected, but no = found")
@@ -338,32 +337,9 @@
 		var/list/L = list(token(i))
 		node[++node.len] = L
 
-		if(token(i) == "\[")
-			L += token(i + 1)
-			i += 2
-
-			if(token(i) != "\]")
-				parse_error("Missing \] at end of reference.")
-
 		if(token(i + 1) == ".")
 			L += "."
 			i = variable(i + 2, L)
-
-		else if(token(i + 1) == "(") // OH BOY PROC
-			var/list/arguments = list()
-			i = call_function(i, null, arguments)
-			L += ":"
-			L[++L.len] = arguments
-
-		else if(token(i + 1) == "\[")	// list index
-			var/list/expression = list()
-			i = expression(i + 2, expression)
-			if (token(i) != "]")
-				parse_error("Missing ] at the end of list access.")
-
-			L += "\["
-			L[++L.len] = expression
-			i++
 
 		else
 			i++
@@ -418,54 +394,19 @@
 
 		return i + 1
 
- //array:	'{' expression, expression, ... '}'
-	array(var/i, var/list/node)
-		// Arrays get turned into this: list("{", list(exp_1a = exp_1b, ...), ...), "{" is to mark the next node as an array.
-		if(copytext(token(i), 1, 2) != "{")
-			parse_error("Expected an array but found '[token(i)]'")
-			return i + 1
-
-		node += token(i) // Add the "{"
-		var/list/expression_list = list()
-
-		if(token(i + 1) != "}")
-			var/list/temp_expression_list = list()
-
-			do
-				i = expression(i + 1, temp_expression_list)
-
-				if(token(i) == ",")
-					expression_list[++expression_list.len] = temp_expression_list
-					temp_expression_list = list()
-			while(token(i) && token(i) != "}")
-
-			expression_list[++expression_list.len] = temp_expression_list
-		else
-			i++
-
-		node[++node.len] = expression_list
-		return i + 1
 
 //call_function:	<function name> ['(' [arguments] ')']
 	call_function(i, list/node, list/arguments)
-		var/list/cur_argument = list()
 		if(length(tokenl(i)))
-			var/procname = ""
-			if(tokenl(i) == "global" && token(i + 1) == ".") // Global proc.
-				i += 2
-				procname = "global."
-			node += procname + token(i++)
+			node += token(i++)
 			if(token(i) != "(")
 				parse_error("Expected ( but found '[token(i)]'")
 			else if(token(i + 1) != ")")
 				do
-					i = expression(i + 1, cur_argument)
+					i = expression(i + 1, arguments)
 					if(token(i) == ",")
-						arguments += list(cur_argument)
-						cur_argument = list()
 						continue
 				while(token(i) && token(i) != ")")
-				arguments += list(cur_argument)
 			else
 				i++
 		else
@@ -575,19 +516,12 @@
 			node += "null"
 			i++
 
-		else if(lowertext(copytext(token(i), 1, 3)) == "0x" && isnum(hex2num(copytext(token(i), 3))))
-			node += hex2num(copytext(token(i), 3))
-			i++
-
 		else if(isnum(text2num(token(i))))
 			node += text2num(token(i))
 			i++
 
 		else if(copytext(token(i), 1, 2) in list("'", "\""))
 			i = string(i, node)
-
-		else if(copytext(token(i), 1, 2) == "{") // Start a list.
-			i = array(i, node)
 
 		else
 			i = variable(i, node)

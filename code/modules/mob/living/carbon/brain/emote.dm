@@ -14,15 +14,15 @@
 	switch(act)
 
 		if ("alarm")
-			to_chat(src, "You sound an alarm.")
+			src << "You sound an alarm."
 			message = "<B>\The [src]</B> sounds an alarm."
 			m_type = 2
 		if ("alert")
-			to_chat(src, "You let out a distressed noise.")
+			src << "You let out a distressed noise."
 			message = "<B>\The [src]</B> lets out a distressed noise."
 			m_type = 2
 		if ("notice")
-			to_chat(src, "You play a loud tone.")
+			src << "You play a loud tone."
 			message = "<B>\The [src]</B> plays a loud tone."
 			m_type = 2
 		if ("flash")
@@ -32,19 +32,19 @@
 			message = "<B>\The [src]</B> blinks."
 			m_type = 1
 		if ("whistle")
-			to_chat(src, "You whistle.")
+			src << "You whistle."
 			message = "<B>\The [src]</B> whistles."
 			m_type = 2
 		if ("beep")
-			to_chat(src, "You beep.")
+			src << "You beep."
 			message = "<B>\The [src]</B> beeps."
 			m_type = 2
 		if ("boop")
-			to_chat(src, "You boop.")
+			src << "You boop."
 			message = "<B>\The [src]</B> boops."
 			m_type = 2
 		if ("help")
-			to_chat(src, "alarm, alert, notice, flash,blink, whistle, beep, boop")
+			src << "alarm, alert, notice, flash,blink, whistle, beep, boop"
 
 	if(message && !stat)
 		..(act, m_type, message)

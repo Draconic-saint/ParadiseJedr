@@ -31,7 +31,7 @@
 
 	for(var/client/C in admins)
 		if(check_rights(R_DEBUG, 0, C.mob) && (C.prefs.toggles & CHAT_DEBUGLOGS))
-			to_chat(C, "DEBUG: [text]")
+			C << "DEBUG: [text]"
 
 
 /proc/log_game(text)
@@ -90,5 +90,5 @@
  * Standardized method for tracking startup times.
  */
 /proc/log_startup_progress(var/message)
-	to_chat(world, "<span class='danger'>[message]</span>")
+	world << "<span class='danger'>[message]</span>"
 	log_to_dd(message)

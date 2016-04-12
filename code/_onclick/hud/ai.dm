@@ -15,9 +15,10 @@
 	icon_state = "camera"
 
 /obj/screen/ai/camera_list/Click()
-	var/mob/living/silicon/ai/AI = usr
-	var/camera = input(AI, "Choose which camera you want to view", "Cameras") as null|anything in AI.get_camera_list()
-	AI.ai_camera_list(camera)
+	if(isAI(usr))
+		var/mob/living/silicon/ai/AI = usr
+		var/camera = input(AI) in AI.get_camera_list()
+		AI.ai_camera_list(camera)
 
 /obj/screen/ai/camera_track
 	name = "Track With Camera"

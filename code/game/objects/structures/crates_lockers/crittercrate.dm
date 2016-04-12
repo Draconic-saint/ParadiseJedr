@@ -35,7 +35,7 @@
 	src.add_fingerprint(user)
 
 	if(src.loc == user.loc)
-		to_chat(user, "<span class='notice'>It won't budge!</span>")
+		user << "<span class='notice'>It won't budge!</span>"
 		toggle()
 	else
 		toggle()

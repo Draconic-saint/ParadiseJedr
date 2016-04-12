@@ -17,7 +17,14 @@
 	pass_flags = PASSTABLE
 	ventcrawler = 2
 
-	atmos_requirements = list("min_oxy" = 0, "max_oxy" = 0, "min_tox" = 0, "max_tox" = 0, "min_co2" = 0, "max_co2" = 0, "min_n2" = 0, "max_n2" = 0)
+	min_oxy = 0
+	max_oxy = 0
+	min_tox = 0
+	max_tox = 0
+	min_co2 = 0
+	max_co2 = 0
+	min_n2 = 0
+	max_n2 = 0
 
 	minbodytemp = 0
 	maxHealth = 150
@@ -31,7 +38,7 @@
 	wander = 0
 	attacktext = "glomps"
 	attack_sound = 'sound/effects/blobattack.ogg'
-	butcher_results = list(/obj/item/weapon/reagent_containers/food/snacks/meat/slab = 2)
+	meat_type = /obj/item/weapon/reagent_containers/food/snacks/meat/slab
 
 	var/morphed = 0
 	var/atom/movable/form = null
@@ -52,7 +59,7 @@
 		else
 			..()
 		if(get_dist(user,src)<=3)
-			to_chat(user, "<span class='warning'>It doesn't look quite right...</span>")
+			user << "<span class='warning'>It doesn't look quite right...</span>"
 	else
 		..()
 	return
@@ -81,7 +88,7 @@
 		if(istype(A) && allowed(A))
 			assume(A)
 	else
-		to_chat(src, "<span class='warning'>Your chameleon skin is still repairing itself!</span>")
+		src << "<span class='warning'>Your chameleon skin is still repairing itself!</span>"
 		..()
 
 /mob/living/simple_animal/hostile/morph/proc/assume(atom/movable/target)

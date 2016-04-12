@@ -36,9 +36,10 @@
 				command_announcement.Announce("Massive bluespace translocation detected.", "Anomaly Alert")
 
 				var/list/flashers = list()
-				for(var/mob/living/carbon/C in viewers(TO, null))
-					if(C.flash_eyes())
-						flashers += C
+				for(var/mob/living/carbon/human/M in viewers(TO, null))
+					if(M:eyecheck() <= 0)
+						flick("e_flash", M.flash) // flash dose faggots
+						flashers += M
 
 				var/y_distance = TO.y - FROM.y
 				var/x_distance = TO.x - FROM.x
@@ -65,3 +66,4 @@
 								M.client.screen -= blueeffect
 								qdel(blueeffect)
 			qdel(newAnomaly)
+			

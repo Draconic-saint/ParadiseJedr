@@ -29,11 +29,11 @@
 		return
 
 	if(contents.len <= 0)
-		to_chat(user, "There are no [src.icon_type]s left in the box.")
+		user << "There are no [src.icon_type]s left in the box."
 	else if(contents.len == 1)
-		to_chat(user, "There is one [src.icon_type] left in the box.")
+		user << "There is one [src.icon_type] left in the box."
 	else
-		to_chat(user, "There are [src.contents.len] [src.icon_type]s in the box.")
+		user << "There are [src.contents.len] [src.icon_type]s in the box."
 
 
 
@@ -142,10 +142,10 @@
 	if(istype(W,/obj/item/toy/crayon))
 		switch(W:colourName)
 			if("mime")
-				to_chat(usr, "This crayon is too sad to be contained in this box.")
+				usr << "This crayon is too sad to be contained in this box."
 				return
 			if("rainbow")
-				to_chat(usr, "This crayon is too powerful to be contained in this box.")
+				usr << "This crayon is too powerful to be contained in this box."
 				return
 	..()
 
@@ -217,12 +217,12 @@
 				var/obj/item/clothing/mask/cigarette/C = I
 				lace_cigarette(C)
 				user.equip_to_slot_if_possible(C, slot_wear_mask)
-				to_chat(user, "<span class='notice'>You take \a [C.name] out of the pack.</span>")
+				user << "<span class='notice'>You take \a [C.name] out of the pack.</span>"
 				update_icon()
 				got_cig = 1
 				break
 		if(!got_cig)
-			to_chat(user, "<span class='warning'>There are no smokables in the pack!</span>")
+			user << "<span class='warning'>There are no smokables in the pack!</span>"
 	else
 		..()
 
@@ -231,13 +231,13 @@
 		var/obj/item/weapon/match/M = W
 		if(M.lit == 1)
 			if(!stop_messages)
-				to_chat(usr, "<span class='notice'>Putting a lit [W] in [src] probably isn't a good idea.</span>")
+				usr << "<span class='notice'>Putting a lit [W] in [src] probably isn't a good idea.</span>"
 			return 0
 	if(istype(W, /obj/item/weapon/lighter))
 		var/obj/item/weapon/lighter/L = W
 		if(L.lit == 1)
 			if(!stop_messages)
-				to_chat(usr, "<span class='notice'>Putting [W] in [src] while lit probably isn't a good idea.</span>")
+				usr << "<span class='notice'>Putting [W] in [src] while lit probably isn't a good idea.</span>"
 			return 0
 	//if we get this far, handle the insertion checks as normal
 	.=..()

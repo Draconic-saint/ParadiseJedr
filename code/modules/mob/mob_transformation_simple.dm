@@ -5,7 +5,7 @@
 /mob/proc/change_mob_type(var/new_type = null, var/turf/location = null, var/new_name = null as text, var/delete_old_mob = 0 as num, var/forcekey = 0)
 
 	if(istype(src,/mob/new_player))
-		to_chat(usr, "\red cannot convert players who have not entered yet.")
+		usr << "\red cannot convert players who have not entered yet."
 		return
 
 	if(!new_type)
@@ -15,11 +15,11 @@
 		new_type = text2path(new_type)
 
 	if( !ispath(new_type) )
-		to_chat(usr, "Invalid type path (new_type = [new_type]) in change_mob_type(). Contact a coder.")
+		usr << "Invalid type path (new_type = [new_type]) in change_mob_type(). Contact a coder."
 		return
 
 	if( new_type == /mob/new_player )
-		to_chat(usr, "\red cannot convert into a new_player mob type.")
+		usr << "\red cannot convert into a new_player mob type."
 		return
 
 	var/mob/M
@@ -29,7 +29,7 @@
 		M = new new_type( src.loc )
 
 	if(!M || !ismob(M))
-		to_chat(usr, "Type path is not a mob (new_type = [new_type]) in change_mob_type(). Contact a coder.")
+		usr << "Type path is not a mob (new_type = [new_type]) in change_mob_type(). Contact a coder."
 		qdel(M)
 		return
 

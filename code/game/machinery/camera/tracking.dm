@@ -1,36 +1,30 @@
+/mob/living/silicon/ai/var/max_locations = 10
+/mob/living/silicon/ai/var/stored_locations[0]
+
 /mob/living/silicon/ai/proc/InvalidTurf(turf/T as turf)
 	if(!T)
 		return 1
 	if((T.z in config.admin_levels))
 		return 1
-	if(T.z > MAX_Z)
+	if(T.z > 6)
 		return 1
 	return 0
 
-
-/mob/living/silicon/ai/var/max_locations = 10
-/mob/living/silicon/ai/var/stored_locations[0]
-
 /mob/living/silicon/ai/proc/get_camera_list()
-
-	track.cameras.Cut()
 
 	if(src.stat == 2)
 		return
 
-	var/list/L = list()
-	for (var/obj/machinery/camera/C in cameranet.cameras)
-		L.Add(C)
-
-	camera_sort(L)
+	cameranet.process_sort()
 
 	var/list/T = list()
-
-	for (var/obj/machinery/camera/C in L)
-		var/list/tempnetwork = C.network & src.network
+	T["Cancel"] = "Cancel"
+	for (var/obj/machinery/camera/C in cameranet.cameras)
+		var/list/tempnetwork = C.network&src.network
 		if (tempnetwork.len)
 			T[text("[][]", C.c_tag, (C.can_use() ? null : " (Deactivated)"))] = C
 
+	track = new()
 	track.cameras = T
 	return T
 
@@ -40,7 +34,7 @@
 	set name = "Show Camera List"
 
 	if(src.stat == 2)
-		to_chat(src, "You can't list the cameras because you are dead!")
+		src << "You can't list the cameras because you are dead!"
 		return
 
 	if (!camera || camera == "Cancel")
@@ -58,24 +52,24 @@
 
 	loc = sanitize(copytext(loc, 1, MAX_MESSAGE_LEN))
 	if(!loc)
-		to_chat(src, "\red Must supply a location name")
+		src << "\red Must supply a location name"
 		return
 
 	if(stored_locations.len >= max_locations)
-		to_chat(src, "\red Cannot store additional locations. Remove one first")
+		src << "\red Cannot store additional locations. Remove one first"
 		return
 
 	if(loc in stored_locations)
-		to_chat(src, "\red There is already a stored location by this name")
+		src << "\red There is already a stored location by this name"
 		return
 
-	var/L = get_turf(eyeobj)
+	var/L = src.eyeobj.getLoc()
 	if (InvalidTurf(get_turf(L)))
-		to_chat(src, "\red Unable to store this location")
+		src << "\red Unable to store this location"
 		return
 
 	stored_locations[loc] = L
-	to_chat(src, "Location '[loc]' stored")
+	src << "Location '[loc]' stored"
 
 /mob/living/silicon/ai/proc/sorted_stored_locations()
 	return sortList(stored_locations)
@@ -86,7 +80,7 @@
 	set desc = "Returns to the selected camera location"
 
 	if (!(loc in stored_locations))
-		to_chat(src, "\red Location [loc] not found")
+		src << "\red Location [loc] not found"
 		return
 
 	var/L = stored_locations[loc]
@@ -98,11 +92,11 @@
 	set desc = "Deletes the selected camera location"
 
 	if (!(loc in stored_locations))
-		to_chat(src, "\red Location [loc] not found")
+		src << "\red Location [loc] not found"
 		return
 
 	stored_locations.Remove(loc)
-	to_chat(src, "Location [loc] removed")
+	src << "Location [loc] removed"
 
 // Used to allow the AI is write in mob names/camera name from the CMD line.
 /datum/trackable
@@ -114,37 +108,53 @@
 
 /mob/living/silicon/ai/proc/trackable_mobs()
 
-	track.names.Cut()
-	track.namecounts.Cut()
-	track.humans.Cut()
-	track.others.Cut()
-
 	if(usr.stat == 2)
 		return list()
 
+	var/datum/trackable/TB = new()
 	for(var/mob/living/M in mob_list)
-		if(!M.can_track(usr))
+		// Easy checks first.
+		// Don't detect mobs on Centcom. Since the wizard den is on Centcomm, we only need this.
+		if(InvalidTurf(get_turf(M)))
+			continue
+		if(M == usr)
+			continue
+		if(M.invisibility)//cloaked
+			continue
+		if(M.digitalcamo)
 			continue
 
 		// Human check
 		var/human = 0
 		if(istype(M, /mob/living/carbon/human))
 			human = 1
+			var/mob/living/carbon/human/H = M
+			//Cameras can't track people wearing an untrackable card
+			var/obj/item/weapon/card/id/id = H.wear_id
+			if(istype(id) && id.is_untrackable())
+				continue
+			if(istype(H.head, /obj/item/clothing/head))
+				var/obj/item/clothing/head/hat = H.head
+				if(hat.blockTracking)
+					continue
+		 // Now, are they trackable? (This is last because it's the most intensive check)
+		if(!trackable(M))
+			continue
 
 		var/name = M.name
-		if (name in track.names)
-			track.namecounts[name]++
-			name = text("[] ([])", name, track.namecounts[name])
+		if (name in TB.names)
+			TB.namecounts[name]++
+			name = text("[] ([])", name, TB.namecounts[name])
 		else
-			track.names.Add(name)
-			track.namecounts[name] = 1
+			TB.names.Add(name)
+			TB.namecounts[name] = 1
 		if(human)
-			track.humans[name] = M
+			TB.humans[name] = M
 		else
-			track.others[name] = M
+			TB.others[name] = M
 
-	var/list/targets = sortList(track.humans) + sortList(track.others)
-
+	var/list/targets = sortList(TB.humans) + sortList(TB.others)
+	src.track = TB
 	return targets
 
 /mob/living/silicon/ai/proc/ai_camera_track(target_name in trackable_mobs())
@@ -152,89 +162,80 @@
 	set name = "Track With Camera"
 	set desc = "Select who you would like to track."
 
-	if(src.stat == DEAD)
-		to_chat(src, "You can't track with camera because you are dead!")
+	if(src.stat == 2)
+		src << "You can't track with camera because you are dead!"
 		return
 	if(!target_name)
-		return
+		src.cameraFollow = null
 
 	var/mob/target = (isnull(track.humans[target_name]) ? track.others[target_name] : track.humans[target_name])
-
+	src.track = null
 	ai_actual_track(target)
 
 /mob/living/silicon/ai/proc/ai_cancel_tracking(var/forced = 0)
 	if(!cameraFollow)
 		return
 
-	to_chat(src, "Follow camera mode [forced ? "terminated" : "ended"].")
+	src << "Follow camera mode [forced ? "terminated" : "ended"]."
+	cameraFollow.tracking_cancelled()
 	cameraFollow = null
 
-/mob/living/silicon/ai/proc/ai_actual_track(mob/living/target)
-	if(!istype(target))
-		return
+/mob/living/silicon/ai/proc/ai_actual_track(atom/movable/target as mob|obj)
+	if(!istype(target))	return
 	var/mob/living/silicon/ai/U = usr
 
 	U.cameraFollow = target
-	U.tracking = 1
+	U << "Now tracking [target.name] on camera."
+	target.tracking_initiated()
 
-	to_chat(U, "<span class='notice'>Attempting to track [target.get_visible_name()]...</span>")
-	sleep(min(30, get_dist(target, U.eyeobj) / 4))
-	spawn(15) //give the AI a grace period to stop moving.
-		U.tracking = 0
-
-	if(!target || !target.can_track(usr))
-		to_chat(U, "<span class='warning'>Target is not near any active cameras.</span>")
-		U.cameraFollow = null
-		return
-
-	to_chat(U, "<span class='notice'>Now tracking [target.get_visible_name()] on camera.</span>")
-
-	var/cameraticks = 0
-	spawn(0)
-		while(U.cameraFollow == target)
-			if(U.cameraFollow == null)
+	spawn (0)
+		while (U.cameraFollow == target)
+			if (U.cameraFollow == null)
 				return
 
-			if(!target.can_track(usr))
-				U.tracking = 1
-				if(!cameraticks)
-					to_chat(U, "<span class='warning'>Target is not near any active cameras. Attempting to reacquire...</span>")
-				cameraticks++
-				if(cameraticks > 9)
-					U.cameraFollow = null
-					to_chat(U, "<span class='warning'>Unable to reacquire, cancelling track...</span>")
-					U.tracking = 0
-					return
-				else
-					sleep(10)
-					continue
-
-			else
-				cameraticks = 0
-				U.tracking = 0
+			if (!trackable(target))
+				U << "<span class='warning'>Target is not on or near any active cameras on the station.</span>"
+				sleep(100)
+				continue
 
 			if(U.eyeobj)
-				U.eyeobj.setLoc(get_turf(target))
-
+				U.eyeobj.setLoc(get_turf(target), 0)
 			else
 				view_core()
-				U.cameraFollow = null
 				return
-
 			sleep(10)
 
-/proc/near_camera(mob/living/M)
-	if (!isturf(M.loc))
-		return 0
+/proc/near_camera(var/mob/living/M)
 	if(isrobot(M))
 		var/mob/living/silicon/robot/R = M
 		if(!(R.camera && R.camera.can_use()) && !cameranet.checkCameraVis(M))
 			return 0
-	else if(!cameranet.checkCameraVis(M))
+	else if(!isturf(M.loc) || !cameranet.checkCameraVis(M))
 		return 0
 	return 1
 
-/obj/machinery/camera/attack_ai(mob/living/silicon/ai/user)
+/proc/trackable(atom/movable/M)
+	var/turf/T = get_turf(M)
+	if (istype(M, /mob/living/carbon/human))
+		var/mob/living/carbon/human/H = M
+		var/obj/item/weapon/card/id/id = H.wear_id
+		if(istype(id) && id.is_untrackable())
+			return 0
+		if(H.digitalcamo)
+			return 0
+		if(istype(H.head, /obj/item/clothing/head))
+			var/obj/item/clothing/head/hat = H.head
+			if (hat.blockTracking)
+				return 0
+	if(istype(M.loc,/obj/effect/dummy))
+		return 0
+
+	if((T && (T.z in config.contact_levels)) && ((hassensorlevel(M, SUIT_SENSOR_TRACKING) || M in aibots)))
+		return 1
+
+	return near_camera(M)
+
+/obj/machinery/camera/attack_ai(var/mob/living/silicon/ai/user as mob)
 	if (!istype(user))
 		return
 	if (!src.can_use())
@@ -242,21 +243,19 @@
 	user.eyeobj.setLoc(get_turf(src))
 
 
-/mob/living/silicon/ai/attack_ai(mob/user)
+/mob/living/silicon/ai/attack_ai(var/mob/user as mob)
 	ai_camera_list()
 
-/proc/camera_sort(list/L)
-	var/obj/machinery/camera/a
-	var/obj/machinery/camera/b
+/atom/movable/proc/tracking_initiated()
 
-	for (var/i = L.len, i > 0, i--)
-		for (var/j = 1 to i - 1)
-			a = L[j]
-			b = L[j + 1]
-			if (a.c_tag_order != b.c_tag_order)
-				if (a.c_tag_order > b.c_tag_order)
-					L.Swap(j, j + 1)
-			else
-				if (sorttext(a.c_tag, b.c_tag) < 0)
-					L.Swap(j, j + 1)
-	return L
+/mob/living/silicon/robot/tracking_initiated()
+	tracking_entities++
+	if(tracking_entities == 1 && has_zeroth_law())
+		src << "<span class='warning'>Internal camera is currently being accessed.</span>"
+
+/atom/movable/proc/tracking_cancelled()
+
+/mob/living/silicon/robot/tracking_initiated()
+	tracking_entities--
+	if(!tracking_entities && has_zeroth_law())
+		src << "<span class='notice'>Internal camera is no longer being accessed.</span>"

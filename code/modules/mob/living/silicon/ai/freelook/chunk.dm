@@ -21,24 +21,26 @@
 
 // Add an AI eye to the chunk, then update if changed.
 
-/datum/camerachunk/proc/add(mob/camera/aiEye/eye)
-	var/client/client = eye.GetViewerClient()
-	if(client)
-		client.images += obscured
-	eye.visibleCameraChunks += src
+/datum/camerachunk/proc/add(mob/aiEye/ai)
+	if(!ai.ai)
+		return
+	ai.visibleCameraChunks += src
+	if(ai.ai.client)
+		ai.ai.client.images += obscured
 	visible++
-	seenby += eye
+	seenby += ai
 	if(changed && !updating)
 		update()
 
 // Remove an AI eye from the chunk, then update if changed.
 
-/datum/camerachunk/proc/remove(mob/camera/aiEye/eye)
-	var/client/client = eye.GetViewerClient()
-	if(client)
-		client.images -= obscured
-	eye.visibleCameraChunks -= src
-	seenby -= eye
+/datum/camerachunk/proc/remove(mob/aiEye/ai)
+	if(!ai.ai)
+		return
+	ai.visibleCameraChunks -= src
+	if(ai.ai.client)
+		ai.ai.client.images -= obscured
+	seenby -= ai
 	if(visible > 0)
 		visible--
 
@@ -52,7 +54,7 @@
 // Updates the chunk, makes sure that it doesn't update too much. If the chunk isn't being watched it will
 // instead be flagged to update the next time an AI Eye moves near it.
 
-/datum/camerachunk/proc/hasChanged(update_now = 0)
+/datum/camerachunk/proc/hasChanged(var/update_now = 0)
 	if(visible || update_now)
 		if(!updating)
 			updating = 1
@@ -66,7 +68,7 @@
 
 /datum/camerachunk/proc/update()
 
-	set background = BACKGROUND_ENABLED
+	set background = 1
 
 	var/list/newVisibleTurfs = list()
 
@@ -79,14 +81,11 @@
 		if(!c.can_use())
 			continue
 
-		var/turf/point = locate(src.x + (CHUNK_SIZE / 2), src.y + (CHUNK_SIZE / 2), src.z)
-		if(get_dist(point, c) > CHUNK_SIZE + (CHUNK_SIZE / 2))
+		var/turf/point = locate(src.x + 8, src.y + 8, src.z)
+		if(get_dist(point, c) > 24)
 			continue
 
 		for(var/turf/t in c.can_see())
-			// Possible optimization: if(turfs[t]) here, rather than &= turfs afterwards.
-			// List associations use a tree or hashmap of some sort (alongside the list itself)
-			//  so are surprisingly fast. (significantly faster than var/thingy/x in list, in testing)
 			newVisibleTurfs[t] = t
 
 	// Removes turf that isn't in turfs.
@@ -103,12 +102,11 @@
 		if(t.obscured)
 			obscured -= t.obscured
 			for(var/eye in seenby)
-				var/mob/camera/aiEye/m = eye
-				if(!m)
+				var/mob/aiEye/m = eye
+				if(!m || !m.ai)
 					continue
-				var/client/client = m.GetViewerClient()
-				if(client)
-					client.images -= t.obscured
+				if(m.ai.client)
+					m.ai.client.images -= t.obscured
 
 	for(var/turf in visRemoved)
 		var/turf/t = turf
@@ -118,32 +116,32 @@
 
 			obscured += t.obscured
 			for(var/eye in seenby)
-				var/mob/camera/aiEye/m = eye
-				if(!m)
+				var/mob/aiEye/m = eye
+				if(!m || !m.ai)
 					seenby -= m
 					continue
-				var/client/client = m.GetViewerClient()
-				if(client)
-					client.images += t.obscured
+				if(m.ai.client)
+					m.ai.client.images += t.obscured
 
 // Create a new camera chunk, since the chunks are made as they are needed.
 
 /datum/camerachunk/New(loc, x, y, z)
 
 	// 0xf = 15
-	x &= ~(CHUNK_SIZE - 1)
-	y &= ~(CHUNK_SIZE - 1)
+	x &= ~0xf
+	y &= ~0xf
 
 	src.x = x
 	src.y = y
 	src.z = z
 
-	for(var/obj/machinery/camera/c in urange(CHUNK_SIZE, locate(x + (CHUNK_SIZE / 2), y + (CHUNK_SIZE / 2), z)))
+	for(var/obj/machinery/camera/c in range(16, locate(x + 8, y + 8, z)))
 		if(c.can_use())
 			cameras += c
 
-	for(var/turf/t in block(locate(x, y, z), locate(min(x + CHUNK_SIZE - 1, world.maxx), min(y + CHUNK_SIZE - 1, world.maxy), z)))
-		turfs[t] = t
+	for(var/turf/t in range(10, locate(x + 8, y + 8, z)))
+		if(t.x >= x && t.y >= y && t.x < x + 16 && t.y < y + 16)
+			turfs[t] = t
 
 	for(var/camera in cameras)
 		var/obj/machinery/camera/c = camera
@@ -154,9 +152,6 @@
 			continue
 
 		for(var/turf/t in c.can_see())
-			// Possible optimization: if(turfs[t]) here, rather than &= turfs afterwards.
-			// List associations use a tree or hashmap of some sort (alongside the list itself)
-			//  so are surprisingly fast. (significantly faster than var/thingy/x in list, in testing)
 			visibleTurfs[t] = t
 
 	// Removes turf that isn't in turfs.

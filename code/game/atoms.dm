@@ -67,12 +67,6 @@
 	return 0
 
 /atom/Destroy()
-	if(alternate_appearances)
-		for(var/aakey in alternate_appearances)
-			var/datum/alternate_appearance/AA = alternate_appearances[aakey]
-			qdel(AA)
-		alternate_appearances = null
-
 	if(reagents)
 		qdel(reagents)
 		reagents = null
@@ -187,20 +181,20 @@
 		else
 			f_name += "oil-stained [name][infix]."
 
-	to_chat(user, "\icon[src] That's [f_name] [suffix]")
-	to_chat(user, desc)
+	user << "\icon[src] That's [f_name] [suffix]"
+	user << desc
 
 	if(reagents && is_open_container()) //is_open_container() isn't really the right proc for this, but w/e
-		to_chat(user, "It contains:")
+		user << "It contains:"
 		if(reagents.reagent_list.len)
 			if(user.can_see_reagents()) //Show each individual reagent
 				for(var/datum/reagent/R in reagents.reagent_list)
-					to_chat(user, "[R.volume] units of [R.name]")
+					user << "[R.volume] units of [R.name]"
 			else //Otherwise, just show the total volume
 				if(reagents && reagents.reagent_list.len)
-					to_chat(user, "[reagents.total_volume] units of various reagents.")
+					user << "[reagents.total_volume] units of various reagents."
 		else
-			to_chat(user, "Nothing.")
+			user << "Nothing."
 
 	return distance == -1 || (get_dist(src, user) <= distance) || isobserver(user) //observers do not have a range limit
 
@@ -360,31 +354,15 @@
 
 	blood_color = "#A10808"
 	if(istype(M))
-		if(M.species.flags & NO_BLOOD)
-			return 0
+		if (!istype(M.dna, /datum/dna))
+			M.dna = new /datum/dna(null)
+			M.dna.real_name = M.real_name
 		M.check_dna()
-		blood_color = M.species.blood_color
-
+		if (M.species)
+			blood_color = M.species.blood_color
 	. = 1
 	return 1
 
-/atom/proc/add_blood_list(mob/living/carbon/M)
-	// Returns 0 if we have that blood already
-	if(!istype(blood_DNA, /list))	//if our list of DNA doesn't exist yet (or isn't a list) initialise it.
-		blood_DNA = list()
-	//if this blood isn't already in the list, add it
-	if(blood_DNA[M.dna.unique_enzymes])
-		return 0 //already bloodied with this blood. Cannot add more.
-	var/blood_type = "X*"
-	if(ishuman(M))
-		var/mob/living/carbon/human/H = M
-		blood_type = H.b_type
-	blood_DNA[M.dna.unique_enzymes] = blood_type
-	return 1
-
-// Only adds blood on the floor -- Skie
-/atom/proc/add_blood_floor(mob/living/carbon/M)
-	return //why the fuck this is at an atom level but only works on simulated turfs I don't know
 
 /atom/proc/clean_blood()
 	src.germ_level = 0
@@ -400,6 +378,10 @@
 		if(toxvomit)
 			this.icon_state = "vomittox_[pick(1,4)]"
 
+/atom/proc/add_poop_floor(mob/living/carbon/M as mob)
+	if( istype(src, /turf/simulated) )
+		new /obj/effect/decal/cleanable/poop(src)
+
 
 /atom/proc/get_global_map_pos()
 	if(!islist(global_map) || isemptylist(global_map)) return
@@ -411,7 +393,7 @@
 		cur_y = y_arr.Find(src.z)
 		if(cur_y)
 			break
-//	to_chat(world, "X = [cur_x]; Y = [cur_y]")
+//	world << "X = [cur_x]; Y = [cur_y]"
 	if(cur_x && cur_y)
 		return list("x"=cur_x,"y"=cur_y)
 	else

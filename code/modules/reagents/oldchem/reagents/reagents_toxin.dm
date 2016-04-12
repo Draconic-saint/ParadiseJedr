@@ -64,10 +64,10 @@
 
 /datum/reagent/slimejelly/on_mob_life(var/mob/living/M as mob)
 	if(prob(10))
-		to_chat(M, "\red Your insides are burning!")
+		M << "\red Your insides are burning!"
 		M.adjustToxLoss(rand(20,60)*REM)
 	else if(prob(40))
-		M.adjustBruteLoss(-5*REM)
+		M.heal_organ_damage(5*REM,0)
 	..()
 	return
 
@@ -83,10 +83,10 @@
 	if(ishuman(M))
 		var/mob/living/carbon/human/human = M
 		if(human.species.name != "Shadow")
-			to_chat(M, "\red Your flesh rapidly mutates!")
-			to_chat(M, "<b>You are now a Shadow Person, a mutant race of darkness-dwelling humanoids.</b>")
-			to_chat(M, "\red Your body reacts violently to light. \green However, it naturally heals in darkness.")
-			to_chat(M, "Aside from your new traits, you are mentally unchanged and retain your prior obligations.")
+			M << "\red Your flesh rapidly mutates!"
+			M << "<b>You are now a Shadow Person, a mutant race of darkness-dwelling humanoids.</b>"
+			M << "\red Your body reacts violently to light. \green However, it naturally heals in darkness."
+			M << "Aside from your new traits, you are mentally unchanged and retain your prior obligations."
 			human.set_species("Shadow")
 	..()
 	return
@@ -98,9 +98,33 @@
 	reagent_state = LIQUID
 	color = "#13BC5E" // rgb: 19, 188, 94
 
-/datum/reagent/aslimetoxin/reaction_mob(mob/M, method=TOUCH, reac_volume)
-	if(method != TOUCH)
-		M.ForceContractDisease(new /datum/disease/transformation/slime(0))
+/datum/reagent/aslimetoxin/on_mob_life(var/mob/living/M as mob)
+	if(!M) M = holder.my_atom
+	if(istype(M, /mob/living/carbon) && M.stat != DEAD)
+		M << "\red Your flesh rapidly mutates!"
+		if(M.notransform)	return
+		M.notransform = 1
+		M.canmove = 0
+		M.icon = null
+		M.overlays.Cut()
+		M.invisibility = 101
+		for(var/obj/item/W in M)
+			if(istype(W, /obj/item/weapon/implant))	//TODO: Carn. give implants a dropped() or something
+				qdel(W)
+				continue
+			W.layer = initial(W.layer)
+			W.loc = M.loc
+			W.dropped(M)
+		var/mob/living/carbon/slime/new_mob = new /mob/living/carbon/slime(M.loc)
+		new_mob.a_intent = I_HARM
+		new_mob.universal_speak = 1
+		if(M.mind)
+			M.mind.transfer_to(new_mob)
+		else
+			new_mob.key = M.key
+		qdel(M)
+	..()
+	return
 
 
 /datum/reagent/mercury
@@ -164,8 +188,20 @@
 /datum/reagent/radium/on_mob_life(var/mob/living/M as mob)
 	if(!M) M = holder.my_atom
 	if(M.radiation < 80)
-		M.apply_effect(4, IRRADIATE, negate_armor = 1)
+		M.apply_effect(4,IRRADIATE,0)
+	// radium may increase your chances to cure a disease
+	if(istype(M,/mob/living/carbon)) // make sure to only use it on carbon mobs
+		var/mob/living/carbon/C = M
+		if(C.virus2.len)
+			for (var/ID in C.virus2)
+				var/datum/disease2/disease/V = C.virus2[ID]
+				if(prob(5))
+					if(prob(50))
+						M.apply_effect(50,IRRADIATE,0) // curing it that way may kill you instead
+						M.adjustToxLoss(100)
+					C.antibodies |= V.antigen
 	..()
+	return
 
 /datum/reagent/radium/reaction_turf(var/turf/T, var/volume)
 	src = null
@@ -188,7 +224,10 @@
 	if(!M.dna) return //No robots, AIs, aliens, Ians or other mobs should be affected by this.
 	src = null
 	if((method==TOUCH && prob(33)) || method==INGEST)
-		randmutb(M)
+		if(prob(98))
+			randmutb(M)
+		else
+			randmutg(M)
 		domutcheck(M, null)
 		M.UpdateAppearance()
 	return
@@ -196,7 +235,7 @@
 /datum/reagent/mutagen/on_mob_life(var/mob/living/M as mob)
 	if(!M.dna) return //No robots, AIs, aliens, Ians or other mobs should be affected by this.
 	if(!M) M = holder.my_atom
-	M.apply_effect(2*REM, IRRADIATE, negate_armor = 1)
+	M.apply_effect(2*REM,IRRADIATE,0)
 	if(prob(4))
 		randmutb(M)
 	..()
@@ -212,7 +251,7 @@
 
 /datum/reagent/uranium/on_mob_life(var/mob/living/M as mob)
 	if(!M) M = holder.my_atom
-	M.apply_effect(2, IRRADIATE, negate_armor = 1)
+	M.apply_effect(2,IRRADIATE,0)
 	..()
 	return
 
@@ -264,11 +303,11 @@
 			if(volume > 25)
 
 				if(H.wear_mask)
-					to_chat(H, "\red Your mask protects you from the acid!")
+					H << "\red Your mask protects you from the acid!"
 					return
 
 				if(H.head)
-					to_chat(H, "\red Your helmet protects you from the acid!")
+					H << "\red Your helmet protects you from the acid!"
 					return
 
 				if(!M.unacidable)
@@ -288,7 +327,7 @@
 			var/mob/living/carbon/human/H = M
 
 			if(volume < 10)
-				to_chat(M, "<span class='danger'>The greenish acidic substance stings you, but isn't concentrated enough to harm you!</span>")
+				M << "<span class = 'danger'>The greenish acidic substance stings you, but isn't concentrated enough to harm you!</span>"
 
 			if(volume >=10 && volume <=25)
 				if(!H.unacidable)
@@ -313,7 +352,7 @@
 			var/obj/effect/decal/cleanable/molten_item/I = new/obj/effect/decal/cleanable/molten_item(O.loc)
 			I.desc = "Looks like this was \an [O] some time ago."
 			for(var/mob/M in viewers(5, O))
-				to_chat(M, "\red \the [O] melts.")
+				M << "\red \the [O] melts."
 			qdel(O)
 
 
@@ -396,6 +435,60 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+/datum/reagent/nanomachines
+	name = "Nanomachines"
+	id = "nanomachines"
+	description = "Microscopic construction robots."
+	reagent_state = LIQUID
+	color = "#535E66" // rgb: 83, 94, 102
+
+/datum/reagent/nanomachines/reaction_mob(var/mob/M, var/method=TOUCH, var/volume)
+	src = null
+	if( (prob(10) && method==TOUCH) || method==INGEST)
+		M.contract_disease(new /datum/disease/robotic_transformation(0),1)
+
+/datum/reagent/xenomicrobes
+	name = "Xenomicrobes"
+	id = "xenomicrobes"
+	description = "Microbes with an entirely alien cellular structure."
+	reagent_state = LIQUID
+	color = "#535E66" // rgb: 83, 94, 102
+
+/datum/reagent/xenomicrobes/reaction_mob(var/mob/M, var/method=TOUCH, var/volume)
+	src = null
+	if( (prob(10) && method==TOUCH) || method==INGEST)
+		M.contract_disease(new /datum/disease/xeno_transformation(0),1)
+*/
+
+/datum/reagent/spore
+	name = "Blob Spores"
+	id = "spore"
+	description = "Spores of some blob creature thingy."
+	reagent_state = LIQUID
+	color = "#CE760A" // rgb: 206, 118, 10
+	var/client/blob_client = null
+	var/blob_point_rate = 3
+
+/datum/reagent/spore/on_mob_life(var/mob/living/M)
+	if(!M) M = holder.my_atom
+	if (holder.has_reagent("atrazine",45))
+		holder.del_reagent("spore")
+	if (prob(1))
+		M << "\red Your mouth tastes funny."
+	if (prob(1) && prob(25))
+		if(iscarbon(M))
+			var/mob/living/carbon/C = M
+			if(directory[ckey(C.key)])
+				blob_client = directory[ckey(C.key)]
+				C.gib()
+				if(blob_client)
+					var/obj/effect/blob/core/core = new(get_turf(C), 200, blob_client, blob_point_rate)
+					if(core.overmind && core.overmind.mind)
+						core.overmind.mind.name = C.name
+
+	return
+
 /datum/reagent/condensedcapsaicin
 	name = "Condensed Capsaicin"
 	id = "condensedcapsaicin"
@@ -431,10 +524,10 @@
 				if ( !safe_thing )
 					safe_thing = victim.glasses
 			if ( eyes_covered && mouth_covered )
-				to_chat(victim, "\red Your [safe_thing] protects you from the pepperspray!")
+				victim << "\red Your [safe_thing] protects you from the pepperspray!"
 				return
 			else if ( mouth_covered )	// Reduced effects if partially protected
-				to_chat(victim, "\red Your [safe_thing] protect you from most of the pepperspray!")
+				victim << "\red Your [safe_thing] protect you from most of the pepperspray!"
 				if(prob(5))
 					victim.emote("scream")
 				victim.eye_blurry = max(M.eye_blurry, 3)
@@ -445,14 +538,14 @@
 				victim.drop_item()
 				return
 			else if ( eyes_covered ) // Eye cover is better than mouth cover
-				to_chat(victim, "\red Your [safe_thing] protects your eyes from the pepperspray!")
+				victim << "\red Your [safe_thing] protects your eyes from the pepperspray!"
 				victim.eye_blurry = max(M.eye_blurry, 3)
 				victim.damageoverlaytemp = 30
 				return
 			else // Oh dear :D
 				if(prob(5))
 					victim.emote("scream")
-				to_chat(victim, "\red You're sprayed directly in the eyes with pepperspray!")
+				victim << "\red You're sprayed directly in the eyes with pepperspray!"
 				victim.eye_blurry = max(M.eye_blurry, 5)
 				victim.eye_blind = max(M.eye_blind, 2)
 				victim.confused = max(M.confused, 6)

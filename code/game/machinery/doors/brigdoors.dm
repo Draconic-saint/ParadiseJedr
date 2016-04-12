@@ -42,21 +42,17 @@
 	pixel_y = ((src.dir & 3)? (src.dir ==1 ? 24 : -32) : (0))
 
 	spawn(20)
-		for(var/obj/machinery/door/window/brigdoor/M in airlocks)
-			if (M.id == id)
+		for(var/obj/machinery/door/window/brigdoor/M in machines)
+			if (M.id == src.id)
 				targets += M
 
 		for(var/obj/machinery/flasher/F in machines)
-			if(F.id == id)
+			if(F.id == src.id)
 				targets += F
 
 		for(var/obj/structure/closet/secure_closet/brig/C in world)
-			if(C.id == id)
+			if(C.id == src.id)
 				targets += C
-		
-		for(var/obj/machinery/treadmill_monitor/T in machines)
-			if(T.id == id)
-				targets += T
 
 		if(targets.len==0)
 			stat |= BROKEN
@@ -69,19 +65,30 @@
 // if it's less than 0, open door, reset timer
 // update the door_timer window and the icon
 /obj/machinery/door_timer/process()
+
 	if(stat & (NOPOWER|BROKEN))	return
 	if(timing)
-		if(timeleft() <= 0)
-			Radio.autosay("Timer has expired. Releasing prisoner.", name, "Security", list(z))
+
+		// poorly done midnight rollover
+		// (no seriously there's gotta be a better way to do this)
+		var/timeleft = timeleft()
+		if(timeleft > 1e5)
+			src.releasetime = 0
+
+
+		if(world.timeofday > src.releasetime)
+			Radio.autosay("Timer has expired. Releasing prisoner.", src.name, "Security", list(src.z))
 			timer_end() // open doors, reset timer, clear status screen
 			timing = 0
-			. = PROCESS_KILL
 
 		src.updateUsrDialog()
 		src.update_icon()
+
 	else
 		timer_end()
-		return PROCESS_KILL
+
+	return
+
 
 // has the door power situation changed, if so update icon.
 /obj/machinery/door_timer/power_change()
@@ -99,8 +106,6 @@
 
 	// Set releasetime
 	releasetime = world.timeofday + timetoset
-	if(!(src in machines))
-		addAtProcessing()
 
 	for(var/obj/machinery/door/window/brigdoor/door in targets)
 		if(door.density)	continue
@@ -112,11 +117,6 @@
 		if(C.opened && !C.close())	continue
 		C.locked = 1
 		C.icon_state = C.icon_locked
-		
-	for(var/obj/machinery/treadmill_monitor/T in targets)
-		T.total_joules = 0
-		T.on = 1
-
 	return 1
 
 
@@ -138,22 +138,14 @@
 		C.locked = 0
 		C.icon_state = C.icon_closed
 
-	for(var/obj/machinery/treadmill_monitor/T in targets)
-		if(!T.stat)
-			T.redeem()
-		T.on = 0
-
 	return 1
 
 
 // Check for releasetime timeleft
 /obj/machinery/door_timer/proc/timeleft()
-	var/time = releasetime - world.timeofday
-	if(time > MIDNIGHT_ROLLOVER / 2)
-		time -= MIDNIGHT_ROLLOVER
-	if(time < 0)
-		return 0
-	return time / 10
+	. = (releasetime - world.timeofday)/10
+	if(. < 0)
+		. = 0
 
 // Set timetoset
 /obj/machinery/door_timer/proc/timeset(var/seconds)

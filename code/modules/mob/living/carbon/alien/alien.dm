@@ -10,6 +10,8 @@
 	gender = NEUTER
 	dna = null
 
+	var/storedPlasma = 250
+	var/max_plasma = 500
 
 	alien_talk_understand = 1
 
@@ -22,6 +24,7 @@
 
 	status_flags = CANPARALYSE|CANPUSH
 	var/heal_rate = 5
+	var/plasma_rate = 5
 
 	var/large = 0
 	var/heat_protection = 0.5
@@ -31,10 +34,7 @@
 /mob/living/carbon/alien/New()
 	verbs += /mob/living/carbon/verb/mob_sleep
 	verbs += /mob/living/verb/lay_down
-	internal_organs += new /obj/item/organ/internal/brain/xeno
-	internal_organs += new /obj/item/organ/internal/xenos/hivenode
-	for(var/obj/item/organ/internal/I in internal_organs)
-		I.insert(src)
+	internal_organs += new /obj/item/organ/brain/xeno
 	..()
 
 /mob/living/carbon/alien/get_default_language()
@@ -57,6 +57,8 @@
 
 
 /mob/living/carbon/alien/adjustToxLoss(amount)
+	storedPlasma = min(max(storedPlasma + amount,0),max_plasma) //upper limit of max_plasma, lower limit of 0
+	updatePlasmaDisplay()
 	return
 
 /mob/living/carbon/alien/adjustFireLoss(amount) // Weak to Fire
@@ -66,8 +68,10 @@
 		..(amount)
 	return
 
+/mob/living/carbon/alien/proc/getPlasma()
+	return storedPlasma
 
-/mob/living/carbon/alien/check_eye_prot()
+/mob/living/carbon/alien/eyecheck()
 	return 2
 
 /mob/living/carbon/alien/updatehealth()
@@ -79,12 +83,21 @@
 
 /mob/living/carbon/alien/handle_environment(var/datum/gas_mixture/environment)
 
+	//If there are alien weeds on the ground then heal if needed or give some toxins
+	if(locate(/obj/structure/alien/weeds) in loc)
+		if(health >= maxHealth - getCloneLoss())
+			adjustToxLoss(plasma_rate)
+		else
+			adjustBruteLoss(-heal_rate)
+			adjustFireLoss(-heal_rate)
+			adjustOxyLoss(-heal_rate)
+
 	if(!environment)
 		return
 
 	var/loc_temp = get_temperature(environment)
 
-//	to_chat(world, "Loc temp: [loc_temp] - Body temp: [bodytemperature] - Fireloss: [getFireLoss()] - Fire protection: [heat_protection] - Location: [loc] - src: [src]")
+	//world << "Loc temp: [loc_temp] - Body temp: [bodytemperature] - Fireloss: [getFireLoss()] - Fire protection: [heat_protection] - Location: [loc] - src: [src]"
 
 	// Aliens are now weak to fire.
 
@@ -165,6 +178,8 @@
 
 	..()
 
+	if (client.statpanel == "Status")
+		stat(null, "Plasma Stored: [getPlasma()]/[max_plasma]")
 
 	show_stat_emergency_shuttle_eta()
 
@@ -196,7 +211,7 @@
 		usr.hud_used.nightvisionicon.icon_state = "nightvision0"
 
 
-/mob/living/carbon/alien/assess_threat(var/mob/living/simple_animal/bot/secbot/judgebot, var/lasercolor)
+/mob/living/carbon/alien/assess_threat(var/obj/machinery/bot/secbot/judgebot, var/lasercolor)
 	if(judgebot.emagged == 2)
 		return 10 //Everyone is a criminal!
 	var/threatcount = 0
@@ -238,10 +253,9 @@ Des: Gives the client of the alien an image on each infected mob.
 	if (client)
 		for (var/mob/living/C in mob_list)
 			if(C.status_flags & XENO_HOST)
-				var/obj/item/organ/internal/body_egg/alien_embryo/A = C.get_int_organ(/obj/item/organ/internal/body_egg/alien_embryo)
-				if(A)
-					var/I = image('icons/mob/alien.dmi', loc = C, icon_state = "infected[A.stage]")
-					client.images += I
+				var/obj/item/alien_embryo/A = locate() in C
+				var/I = image('icons/mob/alien.dmi', loc = C, icon_state = "infected[A.stage]")
+				client.images += I
 	return
 
 
@@ -261,7 +275,7 @@ Des: Removes all infected images from the alien.
 
 /mob/living/carbon/alien/proc/updatePlasmaDisplay()
 	if(hud_used) //clientless aliens
-		hud_used.alien_plasma_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='magenta'>[getPlasma()]</font></div>"
+		hud_used.alien_plasma_display.maptext = "<div align='center' valign='middle' style='position:relative; top:0px; left:6px'> <font color='magenta'>[storedPlasma]</font></div>"
 
 /mob/living/carbon/alien/larva/updatePlasmaDisplay()
 	return
