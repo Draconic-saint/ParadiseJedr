@@ -187,8 +187,8 @@
 		. = ..()
 		if (.)
 			var/obj/item/weapon/paper/paper = locate() in container
-			if (!paper.info)
-				return 0
+			if (!paper || !paper.info)
+				return -1
 		return .
 
 /datum/recipe/oven/pizzamargherita
@@ -357,7 +357,7 @@
 		/obj/item/weapon/reagent_containers/food/snacks/dough,
 		/obj/item/weapon/reagent_containers/food/snacks/dough,
 		/obj/item/weapon/reagent_containers/food/snacks/dough,
-		/obj/item/organ/brain
+		/obj/item/organ/internal/brain
 	)
 	result = /obj/item/weapon/reagent_containers/food/snacks/sliceable/braincake
 

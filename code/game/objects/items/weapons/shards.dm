@@ -16,8 +16,8 @@
 	hitsound = 'sound/weapons/bladeslice.ogg'
 
 /obj/item/weapon/shard/suicide_act(mob/user)
-		viewers(user) << pick("\red <b>[user] is slitting \his wrists with \the [src]! It looks like \he's trying to commit suicide.</b>", \
-							"\red <b>[user] is slitting \his throat with \the [src]! It looks like \he's trying to commit suicide.</b>")
+		to_chat(viewers(user), pick("\red <b>[user] is slitting \his wrists with \the [src]! It looks like \he's trying to commit suicide.</b>",
+									"\red <b>[user] is slitting \his throat with \the [src]! It looks like \he's trying to commit suicide.</b>"))
 		return (BRUTELOSS)
 
 /obj/item/weapon/shard/New()
@@ -46,7 +46,7 @@
 				if(G.amount >= G.max_amount)
 					continue
 				G.attackby(NG, user)
-			user << "<span class='notice'>You add the newly-formed glass to the stack. It now contains [NG.amount] sheet\s.</span>"
+			to_chat(user, "<span class='notice'>You add the newly-formed glass to the stack. It now contains [NG.amount] sheet\s.</span>")
 			qdel(src)
 	..()
 
@@ -55,7 +55,7 @@
 		var/mob/living/M = AM
 		if (M.incorporeal_move || M.flying)//you are incorporal or flying..no shard stepping!
 			return
-		M << "\red <B>You step on \the [src]!</B>"
+		to_chat(M, "\red <B>You step on \the [src]!</B>")
 		playsound(src.loc, 'sound/effects/glass_step.ogg', 50, 1) // not sure how to handle metal shards with sounds
 		if(ishuman(M))
 			var/mob/living/carbon/human/H = M
@@ -95,49 +95,3 @@
 			src.pixel_y = rand(-5, 5)
 		else
 	return
-
-
-// plasma shards, moved here from old xenoarch code
-
-/obj/item/weapon/shard/plasma
-	name = "plasma shard"
-	desc = "A shard of plasma glass. Considerably tougher then normal glass shards. Apparently not tough enough to be a window."
-	force = 8.0
-	throwforce = 15.0
-	icon_state = "plasmalarge"
-	sharp = 1
-	edge = 1
-
-/obj/item/weapon/shard/plasma/New()
-
-	src.icon_state = pick("plasmalarge", "plasmamedium", "plasmasmall")
-	switch(src.icon_state)
-		if("plasmasmall")
-			src.pixel_x = rand(-12, 12)
-			src.pixel_y = rand(-12, 12)
-		if("plasmamedium")
-			src.pixel_x = rand(-8, 8)
-			src.pixel_y = rand(-8, 8)
-		if("plasmalarge")
-			src.pixel_x = rand(-5, 5)
-			src.pixel_y = rand(-5, 5)
-		else
-	return
-
-/obj/item/weapon/shard/plasma/attackby(obj/item/weapon/W as obj, mob/user as mob, params)
-	..()
-	if ( istype(W, /obj/item/weapon/weldingtool))
-		var/obj/item/weapon/weldingtool/WT = W
-		if(WT.remove_fuel(0, user))
-			var/obj/item/stack/sheet/plasmaglass/NG = new (user.loc)
-			for (var/obj/item/stack/sheet/plasmaglass/G in user.loc)
-				if(G==NG)
-					continue
-				if(G.amount>=G.max_amount)
-					continue
-				G.attackby(NG, user, params)
-				usr << "You add the newly-formed plasma glass to the stack. It now contains [NG.amount] sheets."
-			//SN src = null
-			qdel(src)
-			return
-	return ..()
