@@ -27,19 +27,19 @@
 
 	if(istype(A, /obj/structure/reagent_dispensers) && get_dist(src,A) <= 1) //this block copypasted from reagent_containers/glass, for lack of a better solution
 		if(!A.reagents.total_volume && A.reagents)
-			to_chat(user, "<span class='notice'>\The [A] is empty.</span>")
+			user << "<span class='notice'>\The [A] is empty.</span>"
 			return
 
 		if(reagents.total_volume >= reagents.maximum_volume)
-			to_chat(user, "<span class='notice'>\The [src] is full.</span>")
+			user << "<span class='notice'>\The [src] is full.</span>"
 			return
 
 		var/trans = A.reagents.trans_to(src, A:amount_per_transfer_from_this)
-		to_chat(user, "<span class='notice'>You fill \the [src] with [trans] units of the contents of \the [A].</span>")
+		user << "<span class='notice'>You fill \the [src] with [trans] units of the contents of \the [A].</span>"
 		return
 
 	if(reagents.total_volume < amount_per_transfer_from_this)
-		to_chat(user, "<span class='notice'>\The [src] is empty!</span>")
+		user << "<span class='notice'>\The [src] is empty!</span>"
 		return
 
 	spray(A)
@@ -79,11 +79,11 @@
 
 	amount_per_transfer_from_this = (amount_per_transfer_from_this == 10 ? 5 : 10)
 	spray_currentrange = (spray_currentrange == 1 ? spray_maxrange : 1)
-	to_chat(user, "<span class='notice'>You [amount_per_transfer_from_this == 10 ? "remove" : "fix"] the nozzle. You'll now use [amount_per_transfer_from_this] units per spray.</span>")
+	user << "<span class='notice'>You [amount_per_transfer_from_this == 10 ? "remove" : "fix"] the nozzle. You'll now use [amount_per_transfer_from_this] units per spray.</span>"
 
 /obj/item/weapon/reagent_containers/spray/examine(mob/user)
 	if(..(user, 0) && user==src.loc)
-		to_chat(user, "[round(src.reagents.total_volume)] units left.")
+		user << "[round(src.reagents.total_volume)] units left."
 
 /obj/item/weapon/reagent_containers/spray/verb/empty()
 
@@ -95,7 +95,7 @@
 	if (alert(usr, "Are you sure you want to empty that?", "Empty Bottle:", "Yes", "No") != "Yes")
 		return
 	if(isturf(usr.loc) && src.loc == usr)
-		to_chat(usr, "<span class='notice'>You empty \the [src] onto the floor.</span>")
+		usr << "<span class='notice'>You empty \the [src] onto the floor.</span>"
 		reagents.reaction(usr.loc)
 		src.reagents.clear_reagents()
 
@@ -207,7 +207,7 @@
 /obj/item/weapon/reagent_containers/spray/chemsprayer/attack_self(var/mob/user)
 
 	amount_per_transfer_from_this = (amount_per_transfer_from_this == 10 ? 5 : 10)
-	to_chat(user, "<span class='notice'>You adjust the output switch. You'll now use [amount_per_transfer_from_this] units per spray.</span>")
+	user << "<span class='notice'>You adjust the output switch. You'll now use [amount_per_transfer_from_this] units per spray.</span>"
 
 
 // Plant-B-Gone

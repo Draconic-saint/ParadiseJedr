@@ -199,7 +199,7 @@
 	if(istype(I,/obj/item/weapon/wrench)) // code borrowed from pipe dispenser
 		if (unwrenched==0)
 			playsound(src.loc, 'sound/items/Ratchet.ogg', 50, 1)
-			to_chat(user, "\blue You begin to unfasten \the [src] from the floor...")
+			user << "\blue You begin to unfasten \the [src] from the floor..."
 			if (do_after(user, 40, target = src))
 				user.visible_message( \
 					"[user] unfastens \the [src].", \
@@ -212,7 +212,7 @@
 					usr << browse(null, "window=pipedispenser")
 		else /* unwrenched */
 			playsound(src.loc, 'sound/items/Ratchet.ogg', 50, 1)
-			to_chat(user, "\blue You begin to fasten \the [src] to the floor...")
+			user << "\blue You begin to fasten \the [src] to the floor..."
 			if (do_after(user, 20, target = src))
 				user.visible_message( \
 					"[user] fastens \the [src].", \
@@ -230,16 +230,16 @@
 			open = 0
 			if(!unwrenched && !circuit_removed)
 				src.stat &= ~MAINT
-			to_chat(user, "You close \the [src]'s maintenance panel.")
+			user << "You close \the [src]'s maintenance panel."
 		else
 			open = 1
 			src.stat |= MAINT
-			to_chat(user, "You open \the [src]'s maintenance panel.")
+			user << "You open \the [src]'s maintenance panel."
 	if(istype(I,/obj/item/weapon/crowbar))
 		if(open)
-			to_chat(user, "\blue You begin to pry out the [src]'s circuits.")
+			user << "\blue You begin to pry out the [src]'s circuits."
 			if(do_after(user,40, target = src))
-				to_chat(user, "\blue You remove the circuitboard.")
+				user << "\blue You remove the circuitboard."
 				circuit_removed = 1
 				use_power = 0
 				on = 0
@@ -260,10 +260,10 @@
 
 	if(istype(I,/obj/item/weapon/circuitboard/programmable))
 		if(!open)
-			to_chat(user, "You have to open the machine first!")
+			user << "You have to open the machine first!"
 			return
 		if(!circuit_removed)
-			to_chat(user, "There is already a circuitboard present!")
+			user << "There is already a circuitboard present!"
 			return
 		circuit_removed = 0
 		I.loc = src
@@ -272,7 +272,7 @@
 /obj/machinery/programmable/emag_act(user as mob)
 	if(emagged)
 		return
-	to_chat(user, "You swipe the unloader with your card.  After a moment's grinding, it beeps in a sinister fashion.")
+	user << "You swipe the unloader with your card.  After a moment's grinding, it beeps in a sinister fashion."
 	playsound(src.loc, 'sound/machines/twobeep.ogg', 50, 0)
 	emagged = 1
 	overrides += emag_overrides
@@ -299,7 +299,7 @@
 			if(M.client)
 				M.client.eye = M.client.mob
 				M.client.perspective = MOB_PERSPECTIVE
-				to_chat(M, "\blue The machine turns off, and you fall out.")
+				M << "\blue The machine turns off, and you fall out."
 
 		return
 
@@ -498,7 +498,7 @@
 		if(H.gloves && istype(H.gloves, /obj/item/clothing/gloves/boxing))
 			var/newsleep = 0
 			if(H.loc != input)
-				to_chat(H, "The boxing machine refuses to acknowledge you unless you face it head on!")
+				H << "The boxing machine refuses to acknowledge you unless you face it head on!"
 				return
 			var/damage = 0
 			if(H.a_intent != I_HARM)
@@ -585,22 +585,22 @@
 		if(istype(I,/obj/item/device/multitool))
 			hacking = (hacking?0:1)
 			if(hacking)
-				to_chat(user, "You unlock the data port on the board.  You can now use a PDA to alter its data.")
+				user << "You unlock the data port on the board.  You can now use a PDA to alter its data."
 			else
-				to_chat(user, "You relock the data port.")
+				user << "You relock the data port."
 		if(istype(I,/obj/item/device/pda))
 			if(!hacking)
-				to_chat(user, "It looks like you can't access the board's data port.  You'll have to open it with a multitool.")
+				user << "It looks like you can't access the board's data port.  You'll have to open it with a multitool."
 			else
 				user.set_machine(src)
 				interact(user)
 		if(istype(I,/obj/item/weapon/card/emag) && !emagged)
 			if(!hacking)
-				to_chat(user, "There seems to be a data port on the card, but it's locked.  A multitool could open it.")
+				user << "There seems to be a data port on the card, but it's locked.  A multitool could open it."
 			else
 				emagged = 1
 				overrides += emag_overrides
-				to_chat(user, "You swipe the card in the card's data port.  The lights flicker, then flash once.")
+				user << "You swipe the card in the card's data port.  The lights flicker, then flash once."
 
 	proc/format(var/datum/cargoprofile/P,var/level)
 		// PROFILE=0 OVERRIDE=1 MAIN=2

@@ -15,9 +15,6 @@
 	attack_verb = list("hit", "bludgeoned", "whacked")
 	hitsound = 'sound/weapons/grenadelaunch.ogg'
 
-/obj/item/stack/rods/cyborg
-	materials = list()
-
 /obj/item/stack/rods/New(var/loc, var/amount=null)
 	..()
 
@@ -35,7 +32,7 @@
 		var/obj/item/weapon/weldingtool/WT = W
 
 		if(get_amount() < 2)
-			to_chat(user, "<span class='warning'>You need at least two rods to do this.</span>")
+			user << "<span class='warning'>You need at least two rods to do this.</span>"
 			return
 
 		if(WT.remove_fuel(0,user))
@@ -44,11 +41,11 @@
 			if(new_item.get_amount() <= 0)
 				// stack was moved into another one on the pile
 				new_item = locate() in user.loc
-
+				
 			user.visible_message("<span class='warning'>[user.name] shaped [src] into metal with the weldingtool.</span>", \
 						 "<span class='notice'>You shaped [src] into metal with the weldingtool.</span>", \
 						 "<span class='warning'>You hear welding.</span>")
-
+			
 			var/replace = user.get_inactive_hand() == src
 			use(2)
 			if (get_amount() <= 0 && replace)
@@ -76,15 +73,15 @@
 				return 1
 	else
 		if(amount < 2)
-			to_chat(user, "\blue You need at least two rods to do this.")
+			user << "\blue You need at least two rods to do this."
 			return
-		to_chat(usr, "\blue Assembling grille...")
+		usr << "\blue Assembling grille..."
 
 		if (!do_after(usr, 10, target = src))
 			return
 
 		var /obj/structure/grille/F = new /obj/structure/grille/ ( usr.loc )
-		to_chat(usr, "\blue You assemble a grille")
+		usr << "\blue You assemble a grille"
 		F.add_fingerprint(usr)
 		use(2)
 	return

@@ -11,9 +11,9 @@
 /obj/effect/proc_holder/changeling/epinephrine/sting_action(var/mob/living/user)
 
 	if(user.lying)
-		to_chat(user, "<span class='notice'>We arise.</span>")
+		user << "<span class='notice'>We arise.</span>"
 	else
-		to_chat(user, "<span class='notice'>Adrenaline rushes through us.</span>")
+		user << "<span class='notice'>Adrenaline rushes through us.</span>"
 	user.stat = 0
 	user.SetParalysis(0)
 	user.SetStunned(0)

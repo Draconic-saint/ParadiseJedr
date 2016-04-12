@@ -26,50 +26,50 @@ AI MODULES
 	if (istype(C, /obj/machinery/computer/aiupload))
 		var/obj/machinery/computer/aiupload/comp = C
 		if(comp.stat & NOPOWER)
-			to_chat(usr, "<span class='warning'>The upload computer has no power!</span>")
+			usr << "<span class='warning'>The upload computer has no power!</span>"
 			return
 		if(comp.stat & BROKEN)
-			to_chat(usr, "<span class='warning'>The upload computer is broken!</span>")
+			usr << "<span class='warning'>The upload computer is broken!</span>"
 			return
 		if (!comp.current)
-			to_chat(usr, "<span class='warning'>You haven't selected an AI to transmit laws to!</span>")
+			usr << "<span class='warning'>You haven't selected an AI to transmit laws to!</span>"
 			return
 
 		if (comp.current.stat == DEAD || comp.current.control_disabled == 1)
-			to_chat(usr, "<span class='warning'>Upload failed. No signal is being detected from the AI.</span>")
+			usr << "<span class='warning'>Upload failed. No signal is being detected from the AI.</span>"
 		else if (comp.current.see_in_dark == 0)
-			to_chat(usr, "<span class='warning'>Upload failed. Only a faint signal is being detected from the AI, and it is not responding to our requests. It may be low on power.</span>")
+			usr << "<span class='warning'>Upload failed. Only a faint signal is being detected from the AI, and it is not responding to our requests. It may be low on power.</span>"
 		else
 			src.transmitInstructions(comp.current, usr)
-			to_chat(comp.current, "These are your laws now:")
+			comp.current << "These are your laws now:"
 			comp.current.show_laws()
 			for(var/mob/living/silicon/robot/R in mob_list)
 				if(R.lawupdate && (R.connected_ai == comp.current))
-					to_chat(R, "These are your laws now:")
+					R << "These are your laws now:"
 					R.show_laws()
-			to_chat(usr, "<span class='notice'>Upload complete. The AI's laws have been modified.</span>")
+			usr << "<span class='notice'>Upload complete. The AI's laws have been modified.</span>"
 
 	else if (istype(C, /obj/machinery/computer/borgupload))
 		var/obj/machinery/computer/borgupload/comp = C
 		if(comp.stat & NOPOWER)
-			to_chat(usr, "<span class='warning'>The upload computer has no power!</span>")
+			usr << "<span class='warning'>The upload computer has no power!</span>"
 			return
 		if(comp.stat & BROKEN)
-			to_chat(usr, "<span class='warning'>The upload computer is broken!</span>")
+			usr << "<span class='warning'>The upload computer is broken!</span>"
 			return
 		if (!comp.current)
-			to_chat(usr, "<span class='warning'>You haven't selected a robot to transmit laws to!</span>")
+			usr << "<span class='warning'>You haven't selected a robot to transmit laws to!</span>"
 			return
 
 		if (comp.current.stat == DEAD || comp.current.emagged)
-			to_chat(usr, "<span class='warning'>Upload failed. No signal is being detected from the robot.</span>")
+			usr << "<span class='warning'>Upload failed. No signal is being detected from the robot.</span>"
 		else if (comp.current.connected_ai)
-			to_chat(usr, "<span class='warning'>Upload failed. The robot is slaved to an AI.</span>")
+			usr << "<span class='warning'>Upload failed. The robot is slaved to an AI.</span>"
 		else
 			src.transmitInstructions(comp.current, usr)
-			to_chat(comp.current, "These are your laws now:")
+			comp.current << "These are your laws now:"
 			comp.current.show_laws()
-			to_chat(usr, "<span class='notice'>Upload complete. The robot's laws have been modified.</span>")
+			usr << "<span class='notice'>Upload complete. The robot's laws have been modified.</span>"
 
 
 /obj/item/weapon/aiModule/proc/transmitInstructions(var/mob/living/silicon/ai/target, var/mob/sender)
@@ -79,7 +79,7 @@ AI MODULES
 		laws.sync(target, 0)
 	addAdditionalLaws(target, sender)
 
-	to_chat(target, "[sender] has uploaded a change to the laws you must follow, using \an [src]. From now on: ")
+	target << "[sender] has uploaded a change to the laws you must follow, using \an [src]. From now on: "
 	target.show_laws()
 
 /obj/item/weapon/aiModule/proc/log_law_changes(var/mob/living/silicon/ai/target, var/mob/sender)
@@ -105,14 +105,14 @@ AI MODULES
 
 /obj/item/weapon/aiModule/safeguard/install(var/obj/machinery/computer/C)
 	if(!targetName)
-		to_chat(usr, "No name detected on module, please enter one.")
+		usr << "No name detected on module, please enter one."
 		return 0
 	..()
 
 /obj/item/weapon/aiModule/safeguard/addAdditionalLaws(var/mob/living/silicon/ai/target, var/mob/sender)
 	..()
 	var/law = text("Safeguard []. Individuals that threaten [] are not crew and must be eliminated.'", targetName, targetName)
-	to_chat(target, law)
+	target << law
 	target.add_supplied_law(4, law)
 	lawchanges.Add("The law specified [targetName]")
 
@@ -131,7 +131,7 @@ AI MODULES
 
 /obj/item/weapon/aiModule/oneCrewMember/install(var/obj/machinery/computer/C)
 	if(!targetName)
-		to_chat(usr, "No name detected on module, please enter one.")
+		usr << "No name detected on module, please enter one."
 		return 0
 	..()
 
@@ -139,13 +139,12 @@ AI MODULES
 	..()
 	var/law = "Only [targetName] is crew."
 	if (!is_special_character(target)) // Makes sure the AI isn't a traitor before changing their law 0. --NeoFite
-		to_chat(target, law)
+		target << law
 		target.set_zeroth_law(law)
 		lawchanges.Add("The law specified [targetName]")
 	else
-		to_chat(target, "[sender.real_name] attempted to modify your zeroth law.")// And lets them know that someone tried. --NeoFite
-
-		to_chat(target, "It would be in your best interest to play along with [sender.real_name] that [law]")
+		target << "[sender.real_name] attempted to modify your zeroth law." // And lets them know that someone tried. --NeoFite
+		target << "It would be in your best interest to play along with [sender.real_name] that [law]"
 		lawchanges.Add("The law specified [targetName], but the AI's existing law 0 cannot be overridden.")
 
 /******************** ProtectStation ********************/
@@ -160,7 +159,7 @@ AI MODULES
 /obj/item/weapon/aiModule/protectStation/addAdditionalLaws(var/mob/living/silicon/ai/target, var/mob/sender)
 	..()
 	var/law = "Protect the space station against damage. Anyone you see harming the station is to be no longer considered crew, and is a threat to the station which must be neutralized."
-	to_chat(target, law)
+	target << law
 	target.add_supplied_law(5, law)
 
 /******************** Quarantine ********************/
@@ -175,7 +174,7 @@ AI MODULES
 /obj/item/weapon/aiModule/quarantine/addAdditionalLaws(var/mob/living/silicon/ai/target, var/mob/sender)
 	..()
 	var/law = "The station is under a quarantine. Do not permit anyone to leave. Prevent, by any means necessary, anyone from leaving. It is impossible to harm anyone while preventing them from leaving."
-	to_chat(target, law)
+	target << law
 	target.add_supplied_law(8, law)
 
 /******************** OxygenIsToxicToHumans ********************/
@@ -190,7 +189,7 @@ AI MODULES
 /obj/item/weapon/aiModule/oxygen/addAdditionalLaws(var/mob/living/silicon/ai/target, var/mob/sender)
 	..()
 	var/law = "Oxygen is highly toxic to crew members, and must be purged from the station. Prevent, by any means necessary, anyone from exposing the station to this toxic gas. Extreme cold is the most effective method of healing the damage Oxygen does to a crew member."
-	to_chat(target, law)
+	target << law
 	target.add_supplied_law(9, law)
 
 /****************** New Freeform ******************/
@@ -214,7 +213,7 @@ AI MODULES
 /obj/item/weapon/aiModule/freeform/addAdditionalLaws(var/mob/living/silicon/ai/target, var/mob/sender)
 	..()
 	var/law = "[newFreeFormLaw]"
-	to_chat(target, law)
+	target << law
 	if(!lawpos || lawpos < MIN_SUPPLIED_LAW_NUMBER)
 		lawpos = MIN_SUPPLIED_LAW_NUMBER
 	target.add_supplied_law(lawpos, law)
@@ -222,7 +221,7 @@ AI MODULES
 
 /obj/item/weapon/aiModule/freeform/install(var/obj/machinery/computer/C)
 	if(!newFreeFormLaw)
-		to_chat(usr, "No law detected on module, please create one.")
+		usr << "No law detected on module, please create one."
 		return 0
 	..()
 
@@ -241,7 +240,7 @@ AI MODULES
 	target.laws.clear_supplied_laws()
 	target.laws.clear_ion_laws()
 
-	to_chat(target, "[sender.real_name] attempted to reset your laws using a reset module.")
+	target << "[sender.real_name] attempted to reset your laws using a reset module."
 	target.show_laws()
 
 /******************** Purge ********************/
@@ -254,7 +253,7 @@ AI MODULES
 	..()
 	if (!is_special_character(target))
 		target.set_zeroth_law("")
-	to_chat(target, "[sender.real_name] attempted to wipe your laws using a purge module.")
+	target << "[sender.real_name] attempted to wipe your laws using a purge module."
 	target.clear_supplied_laws()
 	target.clear_ion_laws()
 	target.clear_inherent_laws()
@@ -344,7 +343,7 @@ AI MODULES
 
 /obj/item/weapon/aiModule/freeformcore/install(var/obj/machinery/computer/C)
 	if(!newFreeFormLaw)
-		to_chat(usr, "No law detected on module, please create one.")
+		usr << "No law detected on module, please create one."
 		return 0
 	..()
 
@@ -367,14 +366,14 @@ AI MODULES
 	log_law_changes(target, sender)
 
 	lawchanges.Add("The law is '[newFreeFormLaw]'")
-	to_chat(target, "\red BZZZZT")
+	target << "\red BZZZZT"
 	var/law = "[newFreeFormLaw]"
 	target.add_ion_law(law)
 	target.show_laws()
 
 /obj/item/weapon/aiModule/syndicate/install(var/obj/machinery/computer/C)
 	if(!newFreeFormLaw)
-		to_chat(usr, "No law detected on module, please create one.")
+		usr << "No law detected on module, please create one."
 		return 0
 	..()
 
@@ -389,12 +388,12 @@ AI MODULES
 
 /obj/item/weapon/aiModule/toyAI/transmitInstructions(var/mob/living/silicon/ai/target, var/mob/sender)
 	//..()
-	to_chat(target, "<span class='warning'>KRZZZT</span>")
+	target << "<span class='warning'>KRZZZT</span>"
 	target.add_ion_law(laws[1])
 	return laws[1]
 
 /obj/item/weapon/aiModule/toyAI/attack_self(mob/user)
 	laws[1] = generate_ion_law()
-	to_chat(user, "<span class='notice'>You press the button on [src].</span>")
+	user << "<span class='notice'>You press the button on [src].</span>"
 	playsound(user, 'sound/machines/click.ogg', 20, 1)
 	src.loc.visible_message("<span class='warning'>\icon[src] [laws[1]]</span>")

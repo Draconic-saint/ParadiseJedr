@@ -8,7 +8,7 @@
 	turns_per_move = 1
 	maxHealth = 10
 	health = 10
-	butcher_results = list(/obj/item/weapon/reagent_containers/food/snacks/hugemushroomslice = 1)
+	meat_type = /obj/item/weapon/reagent_containers/food/snacks/hugemushroomslice
 	response_help  = "pets"
 	response_disarm = "gently pushes aside"
 	response_harm   = "whacks"
@@ -36,9 +36,9 @@
 /mob/living/simple_animal/hostile/mushroom/examine(mob/user)
 	..(user)
 	if(health >= maxHealth)
-		to_chat(user, "<span class='info'>It looks healthy.</span>")
+		user << "<span class='info'>It looks healthy.</span>"
 	else
-		to_chat(user, "<span class='info'>It looks like it's been roughed up.</span>")
+		user << "<span class='info'>It looks like it's been roughed up.</span>"
 
 /mob/living/simple_animal/hostile/mushroom/Life()
 	..()
@@ -130,7 +130,7 @@
 			Recover()
 			qdel(I)
 		else
-			to_chat(user, "<span class='notice'>[src] won't eat it!</span>")
+			user << "<span class='notice'>[src] won't eat it!</span>"
 		return
 	if(I.force)
 		Bruise()

@@ -16,7 +16,8 @@ var/global/totaltribbles = 0   //global variable so it updates for all tribbles,
 	turns_per_move = 5
 	maxHealth = 10
 	health = 10
-	butcher_results = list(/obj/item/stack/sheet/fur = 1)
+	meat_type = /obj/item/stack/sheet/fur
+	meat_amount = 1
 	response_help  = "pets"
 	response_disarm = "gently pushes aside"
 	response_harm   = "whacks"
@@ -53,9 +54,9 @@ var/global/totaltribbles = 0   //global variable so it updates for all tribbles,
 
 /mob/living/simple_animal/tribble/attackby(var/obj/item/weapon/O as obj, var/mob/user as mob, params)
 	if(istype(O, /obj/item/weapon/scalpel))
-		to_chat(user, "<span class='notice'>You try to neuter the tribble, but it's moving too much and you fail!</span>")
+		user << "<span class='notice'>You try to neuter the tribble, but it's moving too much and you fail!</span>"
 	else if(istype(O, /obj/item/weapon/cautery))
-		to_chat(user, "<span class='notice'>You try to un-neuter the tribble, but it's moving too much and you fail!</span>")
+		user << "<span class='notice'>You try to un-neuter the tribble, but it's moving too much and you fail!</span>"
 	..()
 
 
@@ -96,7 +97,7 @@ var/global/totaltribbles = 0   //global variable so it updates for all tribbles,
 
 /obj/item/toy/tribble/attack_self(mob/user as mob) //hug that tribble (and play a sound if we add one)
 	..()
-	to_chat(user, "<span class='notice'>You nuzzle the tribble and it trills softly.</span>")
+	user << "<span class='notice'>You nuzzle the tribble and it trills softly.</span>"
 
 /obj/item/toy/tribble/dropped(mob/user as mob) //now you can't item form them to get rid of them all so easily
 	..()
@@ -107,17 +108,17 @@ var/global/totaltribbles = 0   //global variable so it updates for all tribbles,
 		T.icon_dead = "[src.icon_state]_dead"
 		T.gestation = src.gestation
 
-	to_chat(user, "<span class='notice'>The tribble gets up and wanders around.</span>")
+	user << "<span class='notice'>The tribble gets up and wanders around.</span>"
 	qdel(src)
 
 /obj/item/toy/tribble/attackby(var/obj/item/weapon/O as obj, var/mob/user as mob) //neutering and un-neutering
 	..()
 	if(istype(O, /obj/item/weapon/scalpel) && src.gestation != null)
 		gestation = null
-		to_chat(user, "<span class='notice'>You neuter the tribble so that it can no longer re-produce.</span>")
+		user << "<span class='notice'>You neuter the tribble so that it can no longer re-produce.</span>"
 	else if (istype(O, /obj/item/weapon/cautery) && src.gestation == null)
 		gestation = 0
-		to_chat(user, "<span class='notice'>You fuse some recently cut tubes together, it should be able to reproduce again.</span>")
+		user << "<span class='notice'>You fuse some recently cut tubes together, it should be able to reproduce again.</span>"
 
 
 
@@ -195,10 +196,10 @@ var/global/totaltribbles = 0   //global variable so it updates for all tribbles,
 	if (src.destroyed)
 		return
 	else
-		to_chat(usr, text("\blue You kick the lab cage."))
+		usr << text("\blue You kick the lab cage.")
 		for(var/mob/O in oviewers())
 			if ((O.client && !( O.blinded )))
-				to_chat(O, text("\red [] kicks the lab cage.", usr))
+				O << text("\red [] kicks the lab cage.", usr)
 		src.health -= 2
 		healthcheck()
 		return

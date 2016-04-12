@@ -37,7 +37,7 @@
 				if(!isnull(V.id_tag) && V.frequency == parent.frequency)
 					valves|=V.id_tag
 			if(valves.len==0)
-				to_chat(usr, "<span class='warning'>Unable to find any digital valves on this frequency.</span>")
+				usr << "<span class='warning'>Unable to find any digital valves on this frequency.</span>"
 				return
 			valve = input("Select a valve:", "Sensor Data", valve) as null|anything in valves
 			parent.updateUsrDialog()

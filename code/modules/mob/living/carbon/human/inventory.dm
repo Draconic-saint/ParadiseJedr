@@ -7,14 +7,13 @@
 		var/obj/item/I = H.get_active_hand()
 		var/obj/item/weapon/storage/S = H.get_inactive_hand()
 		if(!I)
-			to_chat(H, "<span class='notice'>You are not holding anything to equip.</span>")
+			H << "<span class='notice'>You are not holding anything to equip.</span>"
 			return
 
 		if(istype(I, /obj/item/clothing/head/helmet/space/rig)) // If the item to be equipped is a rigid suit helmet
 			var/obj/item/clothing/head/helmet/space/rig/C = I
 			if(C.rig_restrict_helmet)
-				to_chat(src, "\red You must fasten the helmet to a hardsuit first. (Target the head and use on a hardsuit)")// Stop eva helms equipping.
-
+				src << "\red You must fasten the helmet to a hardsuit first. (Target the head and use on a hardsuit)" // Stop eva helms equipping.
 				return 0
 
 		if(H.equip_to_appropriate_slot(I))
@@ -35,7 +34,7 @@
 				if(istype(S, /obj/item/weapon/storage) && S.can_be_inserted(I,1))
 					S.handle_item_insertion(I)
 				else
-					to_chat(H, "\red You are unable to equip that.")
+					H << "\red You are unable to equip that."
 
 
 /mob/living/carbon/human/proc/equip_in_one_of_slots(obj/item/W, list/slots, del_on_fail = 1)
@@ -112,7 +111,7 @@
 	if(!. || !I)
 		return
 
-	var/obj/item/organ/internal/O = I //Organs shouldn't be removed unless you call droplimb.
+	var/obj/item/organ/O = I //Organs shouldn't be removed unless you call droplimb.
 	if(istype(O) && O.owner == src)
 		return
 
@@ -302,7 +301,7 @@
 			var/obj/item/clothing/under/uniform = src.w_uniform
 			uniform.attackby(W,src)
 		else
-			to_chat(src, "<span class='warning'>You are trying to equip this item to an unsupported inventory slot. Report this to a coder!</span>")
+			src << "<span class='warning'>You are trying to equip this item to an unsupported inventory slot. Report this to a coder!</span>"
 			return
 
 /mob/living/carbon/human/put_in_hands(obj/item/W)
@@ -416,7 +415,7 @@
 			//testing("[M] TOO FAT TO WEAR [src]!")
 			if(!(I.flags & ONESIZEFITSALL))
 				if(!disable_warning)
-					to_chat(src, "<span class='alert'>You're too fat to wear the [I].</span>")
+					src << "<span class='alert'>You're too fat to wear the [I].</span>"
 				return 0
 
 	switch(slot)
@@ -463,7 +462,7 @@
 				return 0
 			if(!w_uniform)
 				if(!disable_warning)
-					to_chat(src, "<span class='alert'>You need a jumpsuit before you can attach this [name].</span>")
+					src << "<span class='alert'>You need a jumpsuit before you can attach this [name].</span>"
 				return 0
 			if(!(I.slot_flags & SLOT_BELT))
 				return
@@ -507,7 +506,7 @@
 				return 0
 			if(!w_uniform)
 				if(!disable_warning)
-					to_chat(src, "<span class='alert'>You need a jumpsuit before you can attach this [name].</span>")
+					src << "<span class='alert'>You need a jumpsuit before you can attach this [name].</span>"
 				return 0
 			if(!(I.slot_flags & SLOT_ID))
 				return 0
@@ -517,7 +516,7 @@
 				return 0
 			if(!w_uniform)
 				if(!disable_warning)
-					to_chat(src, "<span class='alert'>You need a jumpsuit before you can attach this [name].</span>")
+					src << "<span class='alert'>You need a jumpsuit before you can attach this [name].</span>"
 				return 0
 			if(!(I.slot_flags & SLOT_PDA))
 				return 0
@@ -529,7 +528,7 @@
 				return 0
 			if(!w_uniform)
 				if(!disable_warning)
-					to_chat(src, "<span class='alert'>You need a jumpsuit before you can attach this [name].</span>")
+					src << "<span class='alert'>You need a jumpsuit before you can attach this [name].</span>"
 				return 0
 			if(I.slot_flags & SLOT_DENYPOCKET)
 				return
@@ -542,7 +541,7 @@
 				return 0
 			if(!w_uniform)
 				if(!disable_warning)
-					to_chat(src, "<span class='alert'>You need a jumpsuit before you can attach this [name].</span>")
+					src << "<span class='alert'>You need a jumpsuit before you can attach this [name].</span>"
 				return 0
 			if(I.slot_flags & SLOT_DENYPOCKET)
 				return 0
@@ -556,15 +555,15 @@
 				return 0
 			if(!wear_suit)
 				if(!disable_warning)
-					to_chat(src, "<span class='alert'>You need a suit before you can attach this [name].</span>")
+					src << "<span class='alert'>You need a suit before you can attach this [name].</span>"
 				return 0
 			if(!wear_suit.allowed)
 				if(!disable_warning)
-					to_chat(src, "You somehow have a suit with no defined allowed items for suit storage, stop that.")
+					src << "You somehow have a suit with no defined allowed items for suit storage, stop that."
 				return 0
 			if(I.w_class > 4)
 				if(!disable_warning)
-					to_chat(src, "The [name] is too big to attach.")
+					src << "The [name] is too big to attach."
 				return 0
 			if(istype(I, /obj/item/device/pda) || istype(I, /obj/item/weapon/pen) || is_type_in_list(I, wear_suit.allowed))
 				return 1
@@ -590,12 +589,12 @@
 		if(slot_tie)
 			if(!w_uniform)
 				if(!disable_warning)
-					to_chat(src, "<span class='warning'>You need a jumpsuit before you can attach this [name].</span>")
+					src << "<span class='warning'>You need a jumpsuit before you can attach this [name].</span>"
 				return 0
 			var/obj/item/clothing/under/uniform = w_uniform
 			if(uniform.accessories.len && !uniform.can_attach_accessory(src))
 				if(!disable_warning)
-					to_chat(src, "<span class='warning'>You already have an accessory of this type attached to your [uniform].</span>")
+					src << "<span class='warning'>You already have an accessory of this type attached to your [uniform].</span>"
 				return 0
 			if(!(I.slot_flags & SLOT_TIE))
 				return 0

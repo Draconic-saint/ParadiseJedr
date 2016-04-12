@@ -18,7 +18,7 @@
 /obj/item/device/mmi/posibrain/attack_self(mob/user as mob)
 	if(brainmob && !brainmob.key && searching == 0)
 		//Start the process of searching for a new user.
-		to_chat(user, "\blue You carefully locate the manual activation switch and start the positronic brain's boot process.")
+		user << "\blue You carefully locate the manual activation switch and start the positronic brain's boot process."
 		icon_state = "posibrain-searching"
 		ghost_volunteers.Cut()
 		src.searching = 1
@@ -32,21 +32,21 @@
 	else
 		if(silenced)
 			silenced = 0
-			to_chat(user, "<span class='notice'>You toggle the speaker to 'on', on the [src].</span>")
+			user << "<span class='notice'>You toggle the speaker to 'on', on the [src].</span>"
 			desc = "A cube of shining metal, four inches to a side and covered in shallow grooves. The speaker switch is set to 'on'."
 			if(brainmob && brainmob.key)
-				to_chat(brainmob, "<span class='warning'>Your internal speaker has been toggled to 'on'.</span>")
+				brainmob << "<span class='warning'>Your internal speaker has been toggled to 'on'.</span>"
 		else
 			silenced = 1
-			to_chat(user, "<span class='notice'>You toggle the speaker to 'off', on the [src].</span>")
+			user << "<span class='notice'>You toggle the speaker to 'off', on the [src].</span>"
 			desc = "A cube of shining metal, four inches to a side and covered in shallow grooves. The speaker switch is set to 'off'."
 			if(brainmob && brainmob.key)
-				to_chat(brainmob, "<span class='warning'>Your internal speaker has been toggled to 'off'.</span>")
+				brainmob << "<span class='warning'>Your internal speaker has been toggled to 'off'.</span>"
 
 /obj/item/device/mmi/posibrain/proc/request_player()
 	for(var/mob/dead/observer/O in player_list)
 		if(check_observer(O))
-			to_chat(O, "<span class='boldnotice'>\A [src] has been activated. (<a href='?src=\ref[O];jump=\ref[src]'>Teleport</a> | <a href='?src=\ref[src];signup=\ref[O]'>Sign Up</a>)</span>")
+			O << "<span class='boldnotice'>\A [src] has been activated. (<a href='?src=\ref[O];jump=\ref[src]'>Teleport</a> | <a href='?src=\ref[src];signup=\ref[O]'>Sign Up</a>)</span>"
 //			if(ROLE_POSIBRAIN in O.client.prefs.be_special) The Guardian implementation looks cleaner
 //				question(O.client)
 
@@ -86,7 +86,7 @@
 		brainmob.mind.assigned_role = "Positronic Brain"
 	if(H.mind)
 		H.mind.transfer_to(brainmob)
-	to_chat(brainmob, "<span class='notice'>You feel slightly disoriented. That's normal when you're just a metal cube.</span>")
+	brainmob << "<span class='notice'>You feel slightly disoriented. That's normal when you're just a metal cube.</span>"
 	icon_state = "posibrain-occupied"
 	return
 
@@ -95,9 +95,10 @@
 	src.brainmob.key = candidate.key
 	src.name = "positronic brain ([src.brainmob.name])"
 
-	to_chat(src.brainmob, "<b>You are a positronic brain, brought into existence on [station_name()].</b>")
-	to_chat(src.brainmob, "<b>As a synthetic intelligence, you answer to all crewmembers, as well as the AI.</b>")
-	to_chat(src.brainmob, "<b>Remember, the purpose of your existence is to serve the crew and the station. Above all else, do no harm.</b>")
+	src.brainmob << "<b>You are a positronic brain, brought into existence on [station_name()].</b>"
+	src.brainmob << "<b>As a synthetic intelligence, you answer to all crewmembers, as well as the AI.</b>"
+	src.brainmob << "<b>Remember, the purpose of your existence is to serve the crew and the station. Above all else, do no harm.</b>"
+	src.brainmob << "<b>Use say :b to speak to other artificial intelligences.</b>"
 	src.brainmob.mind.assigned_role = "Positronic Brain"
 
 	var/turf/T = get_turf_or_move(src.loc)
@@ -123,25 +124,25 @@
 
 /obj/item/device/mmi/posibrain/proc/volunteer(var/mob/dead/observer/O)
 	if(!searching)
-		to_chat(O, "Not looking for a ghost, yet.")
+		O << "Not looking for a ghost, yet."
 		return
 	if(!istype(O))
-		to_chat(O, "\red Error.")
+		O << "\red Error."
 		return
 	if(O in ghost_volunteers)
-		to_chat(O, "\blue Removed from registration list.")
+		O << "\blue Removed from registration list."
 		ghost_volunteers.Remove(O)
 		return
 	if(!check_observer(O))
-		to_chat(O, "\red You cannot be \a [src].")
+		O << "\red You cannot be \a [src]."
 		return
 	if(O.has_enabled_antagHUD == 1 && config.antag_hud_restricted)
-		to_chat(O, "\red Upon using the antagHUD you forfeited the ability to join the round.")
+		O << "\red Upon using the antagHUD you forfeited the ability to join the round."
 		return
 	if(jobban_isbanned(O, "Cyborg") || jobban_isbanned(O,"nonhumandept"))
-		to_chat(O, "\red You are job banned from this role.")
+		O << "\red You are job banned from this role."
 		return
-	to_chat(O., "\blue You've been added to the list of ghosts that may become this [src].  Click again to unvolunteer.")
+	O.<< "\blue You've been added to the list of ghosts that may become this [src].  Click again to unvolunteer."
 	ghost_volunteers.Add(O)
 
 
@@ -161,7 +162,7 @@
 	else
 		msg += "<span class='deadsay'>It appears to be completely inactive.</span>\n"
 	msg += "<span class='info'>*---------*</span>"
-	to_chat(user, msg)
+	user << msg
 
 /obj/item/device/mmi/posibrain/emp_act(severity)
 	if(!src.brainmob)

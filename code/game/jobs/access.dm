@@ -108,20 +108,23 @@
 
 //returns 1 if this mob has sufficient access to use this object
 /obj/proc/allowed(mob/M)
-	//check if we don't require any access at all
-	if(check_access())
+	//check if it doesn't require any access at all
+	if(src.check_access(null))
 		return 1
-
-	var/acc = M.get_access() //see mob.dm
-
-	if(acc == IGNORE_ACCESS)
-		return 1 //Mob ignores access
-
-	else
-		return check_access_list(acc)
-
+	if(istype(M, /mob/living/silicon))
+		//AI can do whatever he wants
+		return 1
+	else if(istype(M, /mob/living/carbon/human))
+		var/mob/living/carbon/human/H = M
+		//if they are holding or wearing a card that has access, that works
+		if(src.check_access(H.get_active_hand()) || src.check_access(H.wear_id))
+			return 1
+	else if(istype(M, /mob/living/carbon/alien/humanoid))
+		var/mob/living/carbon/george = M
+		//they can only hold things :(
+		if(src.check_access(george.get_active_hand()))
+			return 1
 	return 0
-
 
 /obj/item/proc/GetAccess()
 	return list()
@@ -129,41 +132,50 @@
 /obj/item/proc/GetID()
 	return null
 
-/obj/proc/generate_req_lists()
+/obj/proc/check_access(obj/item/I)
 	//These generations have been moved out of /obj/New() because they were slowing down the creation of objects that never even used the access system.
-	if(!req_access)
-		req_access = list()
-		if(req_access_txt)
-			var/list/req_access_str = splittext(req_access_txt, ";")
+	if(!src.req_access)
+		src.req_access = list()
+		if(src.req_access_txt)
+			var/list/req_access_str = text2list(req_access_txt,";")
 			for(var/x in req_access_str)
 				var/n = text2num(x)
 				if(n)
 					req_access += n
 
-	if(!req_one_access)
-		req_one_access = list()
-		if(req_one_access_txt)
-			var/list/req_one_access_str = splittext(req_one_access_txt,";")
+	if(!src.req_one_access)
+		src.req_one_access = list()
+		if(src.req_one_access_txt)
+			var/list/req_one_access_str = text2list(req_one_access_txt,";")
 			for(var/x in req_one_access_str)
 				var/n = text2num(x)
 				if(n)
 					req_one_access += n
 
-/obj/proc/check_access(obj/item/I)
-	var/list/L
-	if(I)
-		L = I.GetAccess()
-	else
-		L = list()
-	return check_access_list(L)
+	if(!istype(src.req_access, /list)) //something's very wrong
+		return 1
+
+	var/list/L = src.req_access
+	if(!L.len && (!src.req_one_access || !src.req_one_access.len)) //no requirements
+		return 1
+	if(!I)
+		return 0
+	for(var/req in src.req_access)
+		if(!(req in I.GetAccess())) //doesn't have this access
+			return 0
+	if(src.req_one_access && src.req_one_access.len)
+		for(var/req in src.req_one_access)
+			if(req in I.GetAccess()) //has an access from the single access list
+				return 1
+		return 0
+	return 1
+
 
 /obj/proc/check_access_list(var/list/L)
-	generate_req_lists()
-
-	if(!L)
-		return 0
-	if(!istype(L, /list))
-		return 0
+	if(!req_access)		req_access = list()
+	if(!req_one_access)	req_one_access = list()
+	if(!L)	return 0
+	if(!istype(L, /list))	return 0
 	return has_access(req_access, req_one_access, L)
 
 /proc/has_access(var/list/req_access, var/list/req_one_access, var/list/accesses)

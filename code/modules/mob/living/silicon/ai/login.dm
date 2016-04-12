@@ -5,9 +5,21 @@
 		blood.override = 1
 		client.images += blood
 	regenerate_icons()
+	flash = new /obj/screen()
+	flash.icon_state = "blank"
+	flash.name = "flash"
+	flash.screen_loc = "WEST,SOUTH to EAST,NORTH"
+	flash.layer = 17
+	blind = new /obj/screen()
+	blind.icon_state = "black"
+	blind.name = " "
+	blind.screen_loc = "1,1 to 15,15"
+	blind.layer = 0
+	client.screen.Add( blind, flash )
 
 	if(stat != DEAD)
 		for(var/obj/machinery/ai_status_display/O in machines) //change status
 			O.mode = 1
 			O.emotion = "Neutral"
-	view_core()
+	src.view_core()
+	return

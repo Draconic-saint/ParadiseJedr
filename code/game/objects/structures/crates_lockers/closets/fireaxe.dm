@@ -23,11 +23,11 @@
 
 		if (isrobot(user) || src.locked)
 			if(istype(O, /obj/item/device/multitool))
-				to_chat(user, "\red Resetting circuitry...")
+				user << "\red Resetting circuitry..."
 				playsound(user, 'sound/machines/lockreset.ogg', 50, 1)
 				if(do_after(user, 20, target = src))
 					src.locked = 0
-					to_chat(user, "<span class = 'caution'> You disable the locking modules.</span>")
+					user << "<span class = 'caution'> You disable the locking modules.</span>"
 					update_icon()
 				return
 			else if(istype(O, /obj/item/weapon))
@@ -43,7 +43,7 @@
 					user.do_attack_animation(src)
 					playsound(user, 'sound/effects/Glasshit.ogg', 100, 1) //We don't want this playing every time
 				if(W.force < 15)
-					to_chat(user, "\blue The cabinet's protective glass glances off the hit.")
+					user << "\blue The cabinet's protective glass glances off the hit."
 				else
 					src.hitstaken++
 					if(src.hitstaken == 4)
@@ -56,12 +56,12 @@
 		if (istype(O, /obj/item/weapon/twohanded/fireaxe) && src.localopened)
 			if(!fireaxe)
 				if(O:wielded)
-					to_chat(user, "\red Unwield the axe first.")
+					user << "\red Unwield the axe first."
 					return
 				fireaxe = O
 				user.drop_item(O)
 				src.contents += O
-				to_chat(user, "\blue You place the fire axe back in the [src.name].")
+				user << "\blue You place the fire axe back in the [src.name]."
 				update_icon()
 			else
 				if(src.smashed)
@@ -84,14 +84,14 @@
 					spawn(10) update_icon()
 					return
 				else
-					to_chat(user, "\red Resetting circuitry...")
+					user << "\red Resetting circuitry..."
 					sleep(50)
 					src.locked = 1
-					to_chat(user, "\blue You re-enable the locking modules.")
+					user << "\blue You re-enable the locking modules."
 					playsound(user, 'sound/machines/lockenable.ogg', 50, 1)
 					if(do_after(user,20, target = src))
 						src.locked = 1
-						to_chat(user, "<span class = 'caution'> You re-enable the locking modules.</span>")
+						user << "<span class = 'caution'> You re-enable the locking modules.</span>"
 					return
 			else
 				localopened = !localopened
@@ -112,13 +112,13 @@
 			hasaxe = 1
 
 		if(src.locked)
-			to_chat(user, "\red The cabinet won't budge!")
+			user <<"\red The cabinet won't budge!"
 			return
 		if(localopened)
 			if(fireaxe)
 				user.put_in_hands(fireaxe)
 				fireaxe = null
-				to_chat(user, "\blue You take the fire axe from the [name].")
+				user << "\blue You take the fire axe from the [name]."
 				src.add_fingerprint(user)
 				update_icon()
 			else
@@ -145,7 +145,7 @@
 	attack_tk(mob/user as mob)
 		if(localopened && fireaxe)
 			fireaxe.forceMove(loc)
-			to_chat(user, "\blue You telekinetically remove the fire axe.")
+			user << "\blue You telekinetically remove the fire axe."
 			fireaxe = null
 			update_icon()
 			return
@@ -157,9 +157,9 @@
 
 		if (isrobot(usr) || src.locked || src.smashed)
 			if(src.locked)
-				to_chat(usr, "\red The cabinet won't budge!")
+				usr << "\red The cabinet won't budge!"
 			else if(src.smashed)
-				to_chat(usr, "\blue The protective glass is broken!")
+				usr << "\blue The protective glass is broken!"
 			return
 
 		localopened = !localopened
@@ -176,23 +176,23 @@
 			if(fireaxe)
 				usr.put_in_hands(fireaxe)
 				fireaxe = null
-				to_chat(usr, "\blue You take the Fire axe from the [name].")
+				usr << "\blue You take the Fire axe from the [name]."
 			else
-				to_chat(usr, "\blue The [src.name] is empty.")
+				usr << "\blue The [src.name] is empty."
 		else
-			to_chat(usr, "\blue The [src.name] is closed.")
+			usr << "\blue The [src.name] is closed."
 		update_icon()
 
 	attack_ai(mob/user as mob)
 		if(src.smashed)
-			to_chat(user, "\red The security of the cabinet is compromised.")
+			user << "\red The security of the cabinet is compromised."
 			return
 		else
 			locked = !locked
 			if(locked)
-				to_chat(user, "\red Cabinet locked.")
+				user << "\red Cabinet locked."
 			else
-				to_chat(user, "\blue Cabinet unlocked.")
+				user << "\blue Cabinet unlocked."
 			return
 
 	update_icon() //Template: fireaxe[has fireaxe][is opened][hits taken][is smashed]. If you want the opening or closing animations, add "opening" or "closing" right after the numbers

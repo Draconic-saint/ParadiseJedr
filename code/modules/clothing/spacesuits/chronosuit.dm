@@ -30,6 +30,7 @@
 	var/activating = 0
 	var/activated = 0
 	var/cooldowntime = 50 //deciseconds
+	var/cooldown = 0
 	var/teleporting = 0
 
 
@@ -61,7 +62,7 @@
 	switch(severity)
 		if(1)
 			if(user && ishuman(user) && (user.wear_suit == src))
-				to_chat(user, "<span class='userdanger'>Elecrtromagnetic pulse detected, shutting down systems to preserve integrity...</span>")
+				user << "<span class='userdanger'>Elecrtromagnetic pulse detected, shutting down systems to preserve integrity...</span>"
 			deactivate()
 
 /obj/item/clothing/suit/space/chronos/proc/chronowalk(var/mob/living/carbon/human/user)
@@ -131,24 +132,24 @@
 		var/mob/living/carbon/human/user = src.loc
 		if(user && ishuman(user))
 			if(user.wear_suit == src)
-				to_chat(user, "\nChronosuitMK4 login: root")
-				to_chat(user, "Password:\n")
-				to_chat(user, "root@ChronosuitMK4# chronowalk4 --start\n")
+				user << "\nChronosuitMK4 login: root"
+				user << "Password:\n"
+				user << "root@ChronosuitMK4# chronowalk4 --start\n"
 				if(user.head && istype(user.head, /obj/item/clothing/head/helmet/space/chronos))
-					to_chat(user, "\[ <span style='color: #00ff00;'>ok</span> \] Mounting /dev/helmet")
+					user << "\[ <span style='color: #00ff00;'>ok</span> \] Mounting /dev/helmet"
 					helmet = user.head
 					helmet.flags |= NODROP
 					helmet.suit = src
 					src.flags |= NODROP
-					to_chat(user, "\[ <span style='color: #00ff00;'>ok</span> \] Starting brainwave scanner")
-					to_chat(user, "\[ <span style='color: #00ff00;'>ok</span> \] Starting ui display driver")
-					to_chat(user, "\[ <span style='color: #00ff00;'>ok</span> \] Initializing chronowalk4-view")
+					user << "\[ <span style='color: #00ff00;'>ok</span> \] Starting brainwave scanner"
+					user << "\[ <span style='color: #00ff00;'>ok</span> \] Starting ui display driver"
+					user << "\[ <span style='color: #00ff00;'>ok</span> \] Initializing chronowalk4-view"
 					new_camera(user)
 					processing_objects.Add(src)
 					activated = 1
 				else
-					to_chat(user, "\[ <span style='color: #ff0000;'>fail</span> \] Mounting /dev/helmet")
-					to_chat(user, "<span style='color: #ff0000;'><b>FATAL: </b>Unable to locate /dev/helmet. <b>Aborting...</b>")
+					user << "\[ <span style='color: #ff0000;'>fail</span> \] Mounting /dev/helmet"
+					user << "<span style='color: #ff0000;'><b>FATAL: </b>Unable to locate /dev/helmet. <b>Aborting...</b>"
 		cooldown = world.time + cooldowntime
 		activating = 0
 		return 0
@@ -159,19 +160,18 @@
 		var/mob/living/carbon/human/user = src.loc
 		if(user && ishuman(user))
 			if(user.wear_suit == src)
-				to_chat(user, "\nroot@ChronosuitMK4# chronowalk4 --stop\n")
+				user << "\nroot@ChronosuitMK4# chronowalk4 --stop\n"
 				if(camera)
-					to_chat(user, "\[ <span style='color: #ff5500;'>ok</span> \] Sending TERM signal to chronowalk4-view")//yes I know they aren't a different color when shutting down, but they were too similar at a glance
-
+					user << "\[ <span style='color: #ff5500;'>ok</span> \] Sending TERM signal to chronowalk4-view" //yes I know they aren't a different color when shutting down, but they were too similar at a glance
 					qdel(camera)
 				if(helmet)
-					to_chat(user, "\[ <span style='color: #ff5500;'>ok</span> \] Stopping ui display driver")
-					to_chat(user, "\[ <span style='color: #ff5500;'>ok</span> \] Stopping brainwave scanner")
-					to_chat(user, "\[ <span style='color: #ff5500;'>ok</span> \] Unmounting /dev/helmet")
+					user << "\[ <span style='color: #ff5500;'>ok</span> \] Stopping ui display driver"
+					user << "\[ <span style='color: #ff5500;'>ok</span> \] Stopping brainwave scanner"
+					user << "\[ <span style='color: #ff5500;'>ok</span> \] Unmounting /dev/helmet"
 					helmet.flags &= ~NODROP
 					helmet.suit = null
 					helmet = null
-				to_chat(user, "logout")
+				user << "logout"
 		src.flags &= ~NODROP
 		cooldown = world.time + cooldowntime * 1.5
 		activated = 0

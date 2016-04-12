@@ -40,6 +40,7 @@
 	armor = list(melee = 40, bullet = 30, laser = 30,energy = 15, bomb = 35, bio = 100, rad = 50)
 	heat_protection = HEAD
 	max_heat_protection_temperature = SPACE_SUIT_MAX_TEMP_PROTECT
+	var/up = 0 //So Unathi helmets play nicely with the weldervision check.
 	species_restricted = list("Unathi")
 
 /obj/item/clothing/head/helmet/space/unathi/helmet_cheap
@@ -205,22 +206,22 @@
 		flags &= ~NOSLIP
 		magpulse = 0
 		flags |= NODROP
-		to_chat(user, "You relax your deathgrip on the flooring.")
+		user << "You relax your deathgrip on the flooring."
 	else
 		//make sure these can only be used when equipped.
 		if(!ishuman(user))
 			return
 		var/mob/living/carbon/human/H = user
 		if (H.shoes != src)
-			to_chat(user, "You will have to put on the [src] before you can do that.")
+			user << "You will have to put on the [src] before you can do that."
 			return
 
 
 		flags |= NOSLIP
 		magpulse = 1
 		flags &= ~NODROP	//kinda hard to take off magclaws when you are gripping them tightly.
-		to_chat(user, "You dig your claws deeply into the flooring, bracing yourself.")
-		to_chat(user, "It would be hard to take off the [src] without relaxing your grip first.")
+		user << "You dig your claws deeply into the flooring, bracing yourself."
+		user << "It would be hard to take off the [src] without relaxing your grip first."
 
 //In case they somehow come off while enabled.
 /obj/item/clothing/shoes/magboots/vox/dropped(mob/user as mob)
@@ -234,8 +235,7 @@
 /obj/item/clothing/shoes/magboots/vox/examine(mob/user)
 	..(user)
 	if (magpulse)
-		to_chat(user, "It would be hard to take these off without relaxing your grip first.")//theoretically this message should only be seen by the wearer when the claws are equipped.
-
+		user << "It would be hard to take these off without relaxing your grip first." //theoretically this message should only be seen by the wearer when the claws are equipped.
 
 /obj/item/clothing/suit/space/eva/vox
 	name = "Vox EVA Suit"

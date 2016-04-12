@@ -55,24 +55,24 @@
 /obj/item/weapon/melee/baton/examine(mob/user)
 	..(user)
 	if(bcell)
-		to_chat(user, "<span class='notice'>The baton is [round(bcell.percent())]% charged.</span>")
+		user <<"<span class='notice'>The baton is [round(bcell.percent())]% charged.</span>"
 	if(!bcell)
-		to_chat(user, "<span class='warning'>The baton does not have a power source installed.</span>")
+		user <<"<span class='warning'>The baton does not have a power source installed.</span>"
 
 /obj/item/weapon/melee/baton/attackby(obj/item/weapon/W, mob/user, params)
 	if(istype(W, /obj/item/weapon/stock_parts/cell))
 		var/obj/item/weapon/stock_parts/cell/C = W
 		if(bcell)
-			to_chat(user, "<span class='notice'>[src] already has a cell.</span>")
+			user << "<span class='notice'>[src] already has a cell.</span>"
 		else
 			if(C.maxcharge < hitcost)
-				to_chat(user, "<span class='notice'>[src] requires a higher capacity cell.</span>")
+				user << "<span class='notice'>[src] requires a higher capacity cell.</span>"
 				return
 			if(!user.unEquip(W))
 				return
 			W.loc = src
 			bcell = W
-			to_chat(user, "<span class='notice'>You install a cell in [src].</span>")
+			user << "<span class='notice'>You install a cell in [src].</span>"
 			update_icon()
 
 	else if(istype(W, /obj/item/weapon/screwdriver))
@@ -80,7 +80,7 @@
 			bcell.updateicon()
 			bcell.loc = get_turf(src.loc)
 			bcell = null
-			to_chat(user, "<span class='notice'>You remove the cell from the [src].</span>")
+			user << "<span class='notice'>You remove the cell from the [src].</span>"
 			status = 0
 			update_icon()
 			return
@@ -90,14 +90,14 @@
 /obj/item/weapon/melee/baton/attack_self(mob/user)
 	if(bcell && bcell.charge > hitcost)
 		status = !status
-		to_chat(user, "<span class='notice'>[src] is now [status ? "on" : "off"].</span>")
+		user << "<span class='notice'>[src] is now [status ? "on" : "off"].</span>"
 		playsound(loc, "sparks", 75, 1, -1)
 	else
 		status = 0
 		if(!bcell)
-			to_chat(user, "<span class='warning'>[src] does not have a power source!</span>")
+			user << "<span class='warning'>[src] does not have a power source!</span>"
 		else
-			to_chat(user, "<span class='warning'>[src] is out of charge.</span>")
+			user << "<span class='warning'>[src] is out of charge.</span>"
 	update_icon()
 	add_fingerprint(user)
 

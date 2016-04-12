@@ -60,7 +60,7 @@ var/global/datum/controller/process/timer/timer_master
 	event.thingToCall = thingToCall
 	event.procToCall = procToCall
 	event.timeToRun = world.time + wait
-	event.hash = jointext(args, null)
+	event.hash = list2text(args)
 	if(args.len > 4)
 		event.argList = args.Copy(5)
 

@@ -81,7 +81,7 @@ if(vlc.attachEvent) {
 
 
 #ifdef DEBUG_MEDIAPLAYER
-to_chat(#define MP_DEBUG(x) owner, x)
+#define MP_DEBUG(x) owner << x
 #warning Please comment out #define DEBUG_MEDIAPLAYER before committing.
 #else
 #define MP_DEBUG(x)
@@ -137,7 +137,7 @@ to_chat(#define MP_DEBUG(x) owner, x)
 		if(M && M.playing)
 			targetURL = M.media_url
 			targetStartTime = M.media_start_time
-//			to_chat(owner, "Found audio source: [M.media_url] @ [(world.time - start_time) / 10]s.")
+			//owner << "Found audio source: [M.media_url] @ [(world.time - start_time) / 10]s."
 		//else
 		//	testing("M is not playing or null.")
 
@@ -155,7 +155,7 @@ to_chat(#define MP_DEBUG(x) owner, x)
 	set desc = "Set jukebox volume"
 
 	if(!media || !istype(media))
-		to_chat(usr, "You have no media datum to change, if you're not in the lobby tell an admin.")
+		usr << "You have no media datum to change, if you're not in the lobby tell an admin."
 		return
 	var/value = input("Choose your Jukebox volume.", "Jukebox volume", media.get_volume())
 	value = round(max(0, min(100, value)))

@@ -120,11 +120,11 @@ By design, d1 is the smallest direction and d2 is the highest
 	if(istype(W, /obj/item/weapon/wirecutters))
 ///// Z-Level Stuff
 		/* if(src.d1 == 12 || src.d2 == 12)
-			to_chat(user, "<span class='warning'>You must cut this cable from above.</span>")
+			user << "<span class='warning'>You must cut this cable from above.</span>"
 			return */
 ///// Z-Level Stuff
 		/* if(breaker_box)
-			to_chat(user, "\red This cable is connected to nearby breaker box. Use breaker box to interact with it.")
+			user << "\red This cable is connected to nearby breaker box. Use breaker box to interact with it."
 			return */
 
 		if (shock(user, 50))
@@ -157,17 +157,17 @@ By design, d1 is the smallest direction and d2 is the highest
 	else if(istype(W, /obj/item/stack/cable_coil))
 		var/obj/item/stack/cable_coil/coil = W
 		if (coil.get_amount() < 1)
-			to_chat(user, "Not enough cable")
+			user << "Not enough cable"
 			return
 		coil.cable_join(src, user)
 
 	else if(istype(W, /obj/item/device/multitool))
 
 		if(powernet && (powernet.avail > 0))		// is it powered?
-			to_chat(user, "<span class='warning'>[powernet.avail]W in power network.</span>")
+			user << "<span class='warning'>[powernet.avail]W in power network.</span>"
 
 		else
-			to_chat(user, "<span class='warning'>The cable is not powered.</span>")
+			user << "<span class='warning'>The cable is not powered.</span>"
 
 		shock(user, 5, 0.2)
 
@@ -470,7 +470,7 @@ obj/structure/cable/proc/cableColor(var/colorC)
 	w_class = 2.0
 	throw_speed = 2
 	throw_range = 5
-	materials = list(MAT_METAL=10, MAT_GLASS=5)
+	materials = list(MAT_METAL=50, MAT_GLASS=20)
 	flags = CONDUCT
 	slot_flags = SLOT_BELT
 	item_state = "coil"
@@ -514,10 +514,10 @@ obj/structure/cable/proc/cableColor(var/colorC)
 				S.heal_damage(0,15,0,1)
 				user.visible_message("<span class='alert'>\The [user] repairs some burn damage on \the [M]'s [S.name] with \the [src].</span>")
 			else if(S.open != 2)
-				to_chat(user, "<span class='danger'>The damage is far too severe to patch over externally.</span>")
+				user << "<span class='danger'>The damage is far too severe to patch over externally.</span>"
 			return 1
 		else if(S.open != 2)
-			to_chat(user, "<span class='notice'>Nothing to fix!</span>")
+			user << "<span class='notice'>Nothing to fix!</span>"
 	else
 		return ..()
 
@@ -546,11 +546,11 @@ obj/structure/cable/proc/cableColor(var/colorC)
 		return
 
 	if(get_amount() == 1)
-		to_chat(user, "A short piece of power cable.")
+		user << "A short piece of power cable."
 	else if(get_amount() == 2)
-		to_chat(user, "A piece of power cable.")
+		user << "A piece of power cable."
 	else
-		to_chat(user, "A coil of power cable. There are [get_amount()] lengths of cable in the coil.")
+		user << "A coil of power cable. There are [get_amount()] lengths of cable in the coil."
 
 
 /obj/item/stack/cable_coil/verb/make_restraint()
@@ -561,14 +561,14 @@ obj/structure/cable/proc/cableColor(var/colorC)
 	if(ishuman(M) && !M.restrained() && !M.stat && !M.paralysis && ! M.stunned)
 		if(!istype(usr.loc,/turf)) return
 		if(src.amount <= 14)
-			to_chat(usr, "<span class='warning'>You need at least 15 lengths to make restraints!</span>")
+			usr << "<span class='warning'>You need at least 15 lengths to make restraints!</span>"
 			return
 		var/obj/item/weapon/restraints/handcuffs/cable/B = new /obj/item/weapon/restraints/handcuffs/cable(usr.loc)
 		B.color = color
-		to_chat(usr, "<span class='notice'>You wind some cable together to make some restraints.</span>")
+		usr << "<span class='notice'>You wind some cable together to make some restraints.</span>"
 		src.use(15)
 	else
-		to_chat(usr, "<span class='warning'>You cannot do that.</span>")
+		usr << "<span class='warning'>You cannot do that.</span>"
 	..()
 
 // Items usable on a cable coil :
@@ -579,24 +579,24 @@ obj/structure/cable/proc/cableColor(var/colorC)
 	if( istype(W, /obj/item/weapon/wirecutters) && src.amount > 1)
 		src.amount--
 		new/obj/item/stack/cable_coil(user.loc, 1,color)
-		to_chat(user, "You cut a piece off the cable coil.")
+		user << "You cut a piece off the cable coil."
 		src.update_icon()
 		return
 	else if(istype(W, /obj/item/stack/cable_coil))
 		var/obj/item/stack/cable_coil/C = W
 		if(C.amount >= MAXCOIL)
-			to_chat(user, "The coil is too long, you cannot add any more cable to it.")
+			user << "The coil is too long, you cannot add any more cable to it."
 			return
 
 		if( (C.amount + src.amount <= MAXCOIL) )
-			to_chat(user, "You join the cable coils together.")
+			user << "You join the cable coils together."
 			C.give(src.amount) // give it cable
 			src.use(src.amount) // make sure this one cleans up right
 			return
 
 		else
 			var/amt = MAXCOIL - C.amount
-			to_chat(user, "You transfer [amt] length\s of cable from one coil to the other.")
+			user << "You transfer [amt] length\s of cable from one coil to the other."
 			C.give(amt)
 			src.use(amt)
 			return
@@ -646,15 +646,15 @@ obj/structure/cable/proc/cableColor(var/colorC)
 		return
 
 	if(!T.can_have_cabling())
-		to_chat(user, "<span class='warning'>You can only lay cables on catwalks and plating!</span>")
+		user << "<span class='warning'>You can only lay cables on catwalks and plating!</span>"
 		return
 
 	if(get_amount() < 1) // Out of cable
-		to_chat(user, "<span class='warning'>There is no cable left!</span>")
+		user << "<span class='warning'>There is no cable left!</span>"
 		return
 
 	if(get_dist(T,user) > 1) // Too far
-		to_chat(user, "<span class='warning'>You can't lay cable at a place that far away!</span>")
+		user << "<span class='warning'>You can't lay cable at a place that far away!</span>"
 		return
 
 	else
@@ -667,7 +667,7 @@ obj/structure/cable/proc/cableColor(var/colorC)
 
 		for(var/obj/structure/cable/LC in T)
 			if(LC.d2 == dirn && LC.d1 == 0)
-				to_chat(user, "<span class='warning'>There's already a cable at that position!</span>")
+				user << "<span class='warning'>There's already a cable at that position!</span>"
 				return
 
 		var/obj/structure/cable/C = get_new_cable(T)
@@ -709,7 +709,7 @@ obj/structure/cable/proc/cableColor(var/colorC)
 		return
 
 	if(get_dist(C, user) > 1)		// make sure it's close enough
-		to_chat(user, "You can't lay cable at a place that far away.")
+		user << "You can't lay cable at a place that far away."
 		return
 
 
@@ -722,7 +722,7 @@ obj/structure/cable/proc/cableColor(var/colorC)
 	// one end of the clicked cable is pointing towards us
 	if(C.d1 == dirn || C.d2 == dirn)
 		if(U.intact)						// can't place a cable if the floor is complete
-			to_chat(user, "You can't lay cable there unless the floor tiles are removed.")
+			user << "You can't lay cable there unless the floor tiles are removed."
 			return
 		else
 			// cable is pointing at us, we're standing on an open tile
@@ -732,7 +732,7 @@ obj/structure/cable/proc/cableColor(var/colorC)
 
 			for(var/obj/structure/cable/LC in U)		// check to make sure there's not a cable there already
 				if(LC.d1 == fdirn || LC.d2 == fdirn)
-					to_chat(user, "There's already a cable at that position.")
+					user << "There's already a cable at that position."
 					return
 
 			var/obj/structure/cable/NC = new(U)
@@ -778,7 +778,7 @@ obj/structure/cable/proc/cableColor(var/colorC)
 			if(LC == C)			// skip the cable we're interacting with
 				continue
 			if((LC.d1 == nd1 && LC.d2 == nd2) || (LC.d1 == nd2 && LC.d2 == nd1) )	// make sure no cable matches either direction
-				to_chat(user, "There's already a cable at that position.")
+				user << "There's already a cable at that position."
 				return
 
 

@@ -96,7 +96,7 @@
 
 /datum/data/pda/app/power/update_ui(mob/user as mob, list/data)
 	update = PDA_APP_UPDATE_SLOW
-
+	
 	if (powmonitor && !isnull(powmonitor.powernet))
 		data["records"] = list(
 			"powerconnected" = 1,
@@ -127,15 +127,14 @@
 /datum/data/pda/app/crew_records/update_ui(mob/user as mob, list/data)
 	var/list/records[0]
 
-	if(general_records && (general_records in data_core.general))
+	if(general_records && general_records in data_core.general)
 		data["records"] = records
 		records["general"] = general_records.fields
 		return records
 	else
 		for(var/A in sortRecord(data_core.general))
 			var/datum/data/record/R = A
-			if(R)
-				records += list(list(Name = R.fields["name"], "ref" = "\ref[R]"))
+			records += list(list(Name = R.fields["name"], "ref" = "\ref[R]"))
 		data["recordsList"] = records
 		return null
 
@@ -143,7 +142,7 @@
 	switch(href_list["choice"])
 		if("Records")
 			var/datum/data/record/R = locate(href_list["target"])
-			if (R && (R in data_core.general))
+			if (R in data_core.general)
 				load_records(R)
 		if("Back")
 			general_records = null
@@ -166,7 +165,7 @@
 	if(!records)
 		return
 
-	if(medical_records && (medical_records in data_core.medical))
+	if(medical_records && medical_records in data_core.medical)
 		records["medical"] = medical_records.fields
 
 	return records
@@ -175,7 +174,7 @@
 	..(R)
 	for(var/A in data_core.medical)
 		var/datum/data/record/E = A
-		if (E && (E.fields["name"] == R.fields["name"] || E.fields["id"] == R.fields["id"]))
+		if ((E.fields["name"] == R.fields["name"] || E.fields["id"] == R.fields["id"]))
 			medical_records = E
 			break
 
@@ -192,7 +191,7 @@
 	if(!records)
 		return
 
-	if(security_records && (security_records in data_core.security))
+	if(security_records && security_records in data_core.security)
 		records["security"] = security_records.fields
 
 	return records
@@ -201,7 +200,7 @@
 	..(R)
 	for(var/A in data_core.security)
 		var/datum/data/record/E = A
-		if (E && (E.fields["name"] == R.fields["name"] || E.fields["id"] == R.fields["id"]))
+		if ((E.fields["name"] == R.fields["name"] || E.fields["id"] == R.fields["id"]))
 			security_records = E
 			break
 
@@ -226,7 +225,7 @@
 			beepskyData["botstatus"] = list("loca" = null, "mode" = -1)
 		var/botsCount=0
 		if(SC.botlist && SC.botlist.len)
-			for(var/mob/living/simple_animal/bot/B in SC.botlist)
+			for(var/obj/machinery/bot/B in SC.botlist)
 				botsCount++
 				if(B.loc)
 					botsData[++botsData.len] = list("Name" = sanitize(B.name), "Location" = sanitize(B.loc.loc.name), "ref" = "\ref[B]")
@@ -276,7 +275,7 @@
 
 
 		var/mulebotsCount=0
-		for(var/mob/living/simple_animal/bot/B in QC.botlist)
+		for(var/obj/machinery/bot/B in QC.botlist)
 			mulebotsCount++
 			if(B.loc)
 				mulebotsData[++mulebotsData.len] = list("Name" = sanitize(B.name), "Location" = sanitize(B.loc.loc.name), "ref" = "\ref[B]")
@@ -392,7 +391,7 @@
 		BucketData[++BucketData.len] = list("x" = 0, "y" = 0, dir=null, status = null)
 
 	var/CbotData[0]
-	for(var/mob/living/simple_animal/bot/cleanbot/B in simple_animal_list)
+	for(var/obj/machinery/bot/cleanbot/B in aibots)
 		var/turf/bl = get_turf(B)
 		if(bl)
 			if(bl.z != cl.z)

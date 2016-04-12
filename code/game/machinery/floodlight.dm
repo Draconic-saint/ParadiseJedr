@@ -47,13 +47,13 @@
 		cell.updateicon()
 
 		src.cell = null
-		to_chat(user, "You remove the power cell")
+		user << "You remove the power cell"
 		updateicon()
 		return
 
 	if(on)
 		on = 0
-		to_chat(user, "\blue You turn off the light")
+		user << "\blue You turn off the light"
 		set_light(0)
 	else
 		if(!cell)
@@ -61,7 +61,7 @@
 		if(cell.charge <= 0)
 			return
 		on = 1
-		to_chat(user, "\blue You turn on the light")
+		user << "\blue You turn on the light"
 		set_light(brightness_on)
 
 	updateicon()
@@ -87,29 +87,29 @@
 		if (!open)
 			if(unlocked)
 				unlocked = 0
-				to_chat(user, "You screw the battery panel in place.")
+				user << "You screw the battery panel in place."
 			else
 				unlocked = 1
-				to_chat(user, "You unscrew the battery panel.")
+				user << "You unscrew the battery panel."
 
 	if (istype(W, /obj/item/weapon/crowbar))
 		if(unlocked)
 			if(open)
 				open = 0
 				overlays = null
-				to_chat(user, "You crowbar the battery panel in place.")
+				user << "You crowbar the battery panel in place."
 			else
 				if(unlocked)
 					open = 1
-					to_chat(user, "You remove the battery panel.")
+					user << "You remove the battery panel."
 
 	if (istype(W, /obj/item/weapon/stock_parts/cell))
 		if(open)
 			if(cell)
-				to_chat(user, "There is a power cell already installed.")
+				user << "There is a power cell already installed."
 			else
 				user.drop_item()
 				W.loc = src
 				cell = W
-				to_chat(user, "You insert the power cell.")
+				user << "You insert the power cell."
 	updateicon()

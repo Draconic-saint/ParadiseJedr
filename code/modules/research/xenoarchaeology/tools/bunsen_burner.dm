@@ -12,29 +12,29 @@
 /obj/machinery/bunsen_burner/attackby(obj/item/weapon/W as obj, mob/user as mob, params)
 	if(istype(W, /obj/item/weapon/reagent_containers))
 		if(held_container)
-			to_chat(user, "\red You must remove the [held_container] first.")
+			user << "\red You must remove the [held_container] first."
 		else
 			user.drop_item(src)
 			held_container = W
 			held_container.loc = src
-			to_chat(user, "\blue You put the [held_container] onto the [src].")
+			user << "\blue You put the [held_container] onto the [src]."
 			var/image/I = image("icon"=W, "layer"=FLOAT_LAYER)
 			underlays += I
 			if(heating)
 				spawn(heat_time)
 					try_heating()
 	else
-		to_chat(user, "\red You can't put the [W] onto the [src].")
+		user << "\red You can't put the [W] onto the [src]."
 
 /obj/machinery/bunsen_burner/attack_hand(mob/user as mob)
 	if(held_container)
 		underlays = null
-		to_chat(user, "\blue You remove the [held_container] from the [src].")
+		user << "\blue You remove the [held_container] from the [src]."
 		held_container.loc = src.loc
 		held_container.attack_hand(user)
 		held_container = null
 	else
-		to_chat(user, "\red There is nothing on the [src].")
+		user << "\red There is nothing on the [src]."
 
 /obj/machinery/bunsen_burner/proc/try_heating()
 	src.visible_message("\blue \icon[src] [src] hisses.")

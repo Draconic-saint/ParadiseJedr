@@ -38,7 +38,6 @@
 	var/list/donors = list()
 	var/ready_evolve = 0
 	holder_type = /obj/item/weapon/holder/diona
-	can_collar = 1
 
 /mob/living/simple_animal/diona/New()
 	..()
@@ -53,8 +52,8 @@
 	//Let people pick the little buggers up.
 	if(M.a_intent == I_HELP)
 		if(M.species && M.species.name == "Diona")
-			to_chat(M, "You feel your being twine with that of [src] as it merges with your biomass.")
-			to_chat(src, "You feel your being twine with that of [M] as you merge with its biomass.")
+			M << "You feel your being twine with that of [src] as it merges with your biomass."
+			src << "You feel your being twine with that of [M] as you merge with its biomass."
 			src.verbs += /mob/living/simple_animal/diona/proc/split
 			src.verbs -= /mob/living/simple_animal/diona/proc/merge
 			src.forceMove(M)
@@ -87,10 +86,10 @@
 	if(!M || !src || !(src.Adjacent(M))) return
 
 	if(istype(M,/mob/living/carbon/human))
-		to_chat(M, "You feel your being twine with that of [src] as it merges with your biomass.")
+		M << "You feel your being twine with that of [src] as it merges with your biomass."
 		M.status_flags |= PASSEMOTES
 
-		to_chat(src, "You feel your being twine with that of [M] as you merge with its biomass.")
+		src << "You feel your being twine with that of [M] as you merge with its biomass."
 		src.loc = M
 		src.verbs += /mob/living/simple_animal/diona/proc/split
 		src.verbs -= /mob/living/simple_animal/diona/proc/merge
@@ -106,8 +105,8 @@
 		src.verbs -= /mob/living/simple_animal/diona/proc/split
 		return
 
-	to_chat(src.loc, "You feel a pang of loss as [src] splits away from your biomass.")
-	to_chat(src, "You wiggle out of the depths of [src.loc]'s biomass and plop to the ground.")
+	src.loc << "You feel a pang of loss as [src] splits away from your biomass."
+	src << "You wiggle out of the depths of [src.loc]'s biomass and plop to the ground."
 
 	var/mob/living/M = src.loc
 
@@ -163,11 +162,11 @@
 	set desc = "Grow to a more complex form."
 
 	if(donors.len < 5)
-		to_chat(src, "<span class='warning'>You need more blood in order to ascend to a new state of consciousness...</span>")
+		src << "<span class='warning'>You need more blood in order to ascend to a new state of consciousness...</span>"
 		return
 
 	if(nutrition < 500)
-		to_chat(src, "<span class='warning'>You need to binge on weeds in order to have the energy to grow...</span>")
+		src << "<span class='warning'>You need to binge on weeds in order to have the energy to grow...</span>"
 		return
 
 	src.split()
@@ -210,11 +209,11 @@
 	if(!M || !src) return
 
 	if(M.species.flags & NO_BLOOD)
-		to_chat(src, "<span class='warning'>That donor has no blood to take.</span>")
+		src << "<span class='warning'>That donor has no blood to take.</span>"
 		return
 
 	if(donors.Find(M.real_name))
-		to_chat(src, "<span class='warning'>That donor offers you nothing new.</span>")
+		src << "<span class='warning'>That donor offers you nothing new.</span>"
 		return
 
 	src.visible_message("<span class='danger'>[src] flicks out a feeler and neatly steals a sample of [M]'s blood.</span>","<span class='danger'>You flick out a feeler and neatly steal a sample of [M]'s blood.</span>")
@@ -232,12 +231,12 @@
 
 	if(donors.len == 5)
 		ready_evolve = 1
-		to_chat(src, "<span class='noticealien'>You feel ready to move on to your next stage of growth.</span>")
+		src << "<span class='noticealien'>You feel ready to move on to your next stage of growth.</span>"
 	else if(donors.len == 3)
 		universal_understand = 1
-		to_chat(src, "<span class='noticealien'>You feel your awareness expand, and realize you know how to understand the creatures around you.</span>")
+		src << "<span class='noticealien'>You feel your awareness expand, and realize you know how to understand the creatures around you.</span>"
 	else
-		to_chat(src, "<span class='noticealien'>The blood seeps into your small form, and you draw out the echoes of memories and personality from it, working them into your budding mind.</span>")
+		src << "<span class='noticealien'>The blood seeps into your small form, and you draw out the echoes of memories and personality from it, working them into your budding mind.</span>"
 
 
 /mob/living/simple_animal/diona/put_in_hands(obj/item/W)
@@ -246,7 +245,7 @@
 	W.dropped()
 
 /mob/living/simple_animal/diona/put_in_active_hand(obj/item/W)
-	to_chat(src, "<span class='warning'>You don't have any hands!</span>")
+	src << "<span class='warning'>You don't have any hands!</span>"
 	return
 
 /mob/living/simple_animal/diona/emote(var/act, var/m_type=1, var/message = null)

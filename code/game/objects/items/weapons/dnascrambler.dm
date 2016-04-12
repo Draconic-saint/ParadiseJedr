@@ -31,18 +31,13 @@
 				user.visible_message("\red <b>[user.name] injects [M.name] with [src].</b>")
 				src.injected(M, user)
 			else
-				to_chat(user, "\red You failed to inject [M.name].")
+				user << "\red You failed to inject [M.name]."
 
 	proc/injected(var/mob/living/carbon/target, var/mob/living/carbon/user)
-		scramble(1, target, 100)
 		target.generate_name()
-		if(istype(target, /mob/living/carbon/human))
-			var/mob/living/carbon/human/H = target
-			H.sync_organ_dna(assimilate = 1)
-			H.update_body(0)
-			H.reset_hair() // No more winding up with hairstyles you're not supposed to have, and blowing your cover
-			H.dna.ResetUIFrom(H)
-		target.update_icons()
+		target.real_name = target.name
+
+		scramble(1, target, 100)
 
 		log_attack("[key_name(user)] injected [key_name(target)] with the [name]")
 		log_game("[key_name_admin(user)] injected [key_name_admin(target)] with the [name]")

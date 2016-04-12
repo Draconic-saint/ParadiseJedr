@@ -243,11 +243,11 @@ Gunshots/explosions/opening doors/less rare audio (done)
 	sleep(10)
 	if(!xeno)	return
 	var/xeno_name = xeno.name
-	to_chat(target, "<span class='notice'>[xeno_name] begins climbing into the ventilation system...</span>")
+	target << "<span class='notice'>[xeno_name] begins climbing into the ventilation system...</span>"
 	sleep(10)
 	if(!xeno)	return
 	qdel(xeno)
-	to_chat(target, "<span class='notice'>[xeno_name] scrambles into the ventilation ducts!</span>")
+	target << "<span class='notice'>[xeno_name] scrambles into the ventilation ducts!</span>"
 	qdel(src)
 
 /obj/effect/hallucination/singularity_scare
@@ -295,29 +295,29 @@ Gunshots/explosions/opening doors/less rare audio (done)
 	switch(rand(1,5))
 		if(1) //Laser fight
 			for(var/i=0,i<hits,i++)
-				to_chat(target, sound('sound/weapons/Laser.ogg',0,1,0,25))
+				target << sound('sound/weapons/Laser.ogg',0,1,0,25)
 				sleep(rand(1,5))
-			to_chat(target, sound(get_sfx("bodyfall"),0,1,0,25))
+			target << sound(get_sfx("bodyfall"),0,1,0,25)
 		if(2) //Esword fight
-			to_chat(target, sound('sound/weapons/saberon.ogg',0,1,0,15))
+			target << sound('sound/weapons/saberon.ogg',0,1,0,15)
 			for(var/i=0,i<hits,i++)
-				to_chat(target, sound('sound/weapons/blade1.ogg',,0,1,0,25))
+				target << sound('sound/weapons/blade1.ogg',,0,1,0,25)
 				sleep(rand(1,5))
-			to_chat(target, sound(get_sfx("bodyfall"),0,1,0,25))
-			to_chat(target, sound('sound/weapons/saberoff.ogg',0,1,0,15))
+			target << sound(get_sfx("bodyfall"),0,1,0,25)
+			target << sound('sound/weapons/saberoff.ogg',0,1,0,15)
 		if(3) //Gun fight
 			for(var/i=0,i<hits,i++)
-				to_chat(target, sound(get_sfx("gunshot"),0,1,0,25))
+				target << sound(get_sfx("gunshot"),0,1,0,25)
 				sleep(rand(1,5))
-			to_chat(target, sound(get_sfx("bodyfall"),0,1,0,25))
+			target << sound(get_sfx("bodyfall"),0,1,0,25)
 		if(4) //Stunprod + cablecuff
-			to_chat(target, sound('sound/weapons/Egloves.ogg',0,1,40))
-			to_chat(target, sound(get_sfx("bodyfall"),0,1,0,25))
+			target << sound('sound/weapons/Egloves.ogg',0,1,40)
+			target << sound(get_sfx("bodyfall"),0,1,0,25)
 			sleep(30)
-			to_chat(target, sound('sound/weapons/cablecuff.ogg',0,1,0,15))
+			target << sound('sound/weapons/cablecuff.ogg',0,1,0,15)
 		if(5) // Tick Tock
 			for(var/i=0,i<hits,i++)
-				to_chat(target, sound('sound/items/timer.ogg',0,1,0,25))
+				target << sound('sound/items/timer.ogg',0,1,0,25)
 				sleep(15)
 	qdel(src)
 
@@ -325,33 +325,29 @@ Gunshots/explosions/opening doors/less rare audio (done)
 /obj/effect/hallucination/delusion
 	var/list/image/delusions = list()
 
-/obj/effect/hallucination/delusion/New(loc, mob/living/carbon/T, force_kind = null, duration = 300,skip_nearby = 1, custom_icon = null, custom_icon_file = null)
+/obj/effect/hallucination/delusion/New(loc,var/mob/living/carbon/T)
 	target = T
 	var/image/A = null
-	var/kind = force_kind ? force_kind : pick("clown", "corgi", "carp", "skeleton", "demon")
+	var/kind = rand(1,3)
 	for(var/mob/living/carbon/human/H in living_mob_list)
 		if(H == target)
 			continue
-		if(skip_nearby && (H in view(target)))
+		if(H in view(target))
 			continue
 		switch(kind)
-			if("clown")//Clown
+			if(1)//Clown
 				A = image('icons/mob/animal.dmi',H,"clown")
-			if("carp")//Carp
+			if(2)//Carp
 				A = image('icons/mob/animal.dmi',H,"carp")
-			if("corgi")//Corgi
+			if(3)//Corgi
 				A = image('icons/mob/pets.dmi',H,"corgi")
-			if("skeleton")//Skeletons
+			if(4)//Skeletons
 				A = image('icons/mob/human.dmi',H,"skeleton_s")
-			if("demon")//Demon
-				A = image('icons/mob/mob.dmi',H,"daemon")
-			if("custom")
-				A = image(custom_icon_file, H, custom_icon)
 		A.override = 1
 		if(target.client)
 			delusions |= A
 			target.client.images |= A
-	sleep(duration)
+	sleep(300)
 	for(var/image/I in delusions)
 		if(target.client)
 			target.client.images.Remove(I)
@@ -433,7 +429,7 @@ Gunshots/explosions/opening doors/less rare audio (done)
 		step_away(src,my_target,2)
 		if(prob(30))
 			for(var/mob/O in oviewers(world.view , my_target))
-				to_chat(O, "<span class='danger'>[my_target] stumbles around.</span>")
+				O << "<span class='danger'>[my_target] stumbles around.</span>"
 
 /obj/effect/fake_attacker/New(loc,var/mob/living/carbon/T)
 	..()
@@ -459,7 +455,7 @@ Gunshots/explosions/opening doors/less rare audio (done)
 	else if(src.dir == WEST)
 		qdel(src.currentimage)
 		src.currentimage = new /image(left,src)
-	to_chat(my_target, currentimage)
+	my_target << currentimage
 
 
 /obj/effect/fake_attacker/proc/attack_loop()
@@ -503,7 +499,7 @@ Gunshots/explosions/opening doors/less rare audio (done)
 	var/obj/effect/overlay/O = new/obj/effect/overlay(target.loc)
 	O.name = "blood"
 	var/image/I = image('icons/effects/blood.dmi',O,"floor[rand(1,7)]",O.dir,1)
-	to_chat(target, I)
+	target << I
 	spawn(300)
 		qdel(O)
 	return
@@ -565,13 +561,13 @@ var/list/non_fakeattack_weapons = list(/obj/item/weapon/gun/projectile, /obj/ite
 				person = H
 		people += H
 	if(person) //Basic talk
-		to_chat(target, target.hear_say(pick(speak_messages),language = pick(person.languages),speaker = person))
+		target << target.hear_say(pick(speak_messages),language = pick(person.languages),speaker = person)
 	else // Radio talk
 		var/list/humans = list()
 		for(var/mob/living/carbon/human/H in living_mob_list)
 			humans += H
 		person = pick(humans)
-		to_chat(target, target.hear_radio(pick(radio_messages),language = pick(person.languages),speaker = person, part_a = "<span class='[frequency_span_class(PUB_FREQ)]'><b>\[[get_frequency_name(PUB_FREQ)]\]</b> <span class='name'>", part_b = "</span> <span class='message'>"))
+		target << target.hear_radio(pick(radio_messages),language = pick(person.languages),speaker = person, part_a = "<span class='[frequency_span_class(PUB_FREQ)]'><b>\[[get_frequency_name(PUB_FREQ)]\]</b> <span class='name'>", part_b = "</span> <span class='message'>")
 	qdel(src)
 
 /obj/effect/hallucination/message
@@ -588,7 +584,7 @@ var/list/non_fakeattack_weapons = list(/obj/item/weapon/gun/projectile, /obj/ite
 		"<span class='warning'>You feel faint.</span>", \
 		"<span class='noticealien'>You hear a strange, alien voice in your head...</span>[pick("Hiss","Ssss")]", \
 		"<span class='notice'>You can see...everything!</span>")
-	to_chat(target, chosen)
+	target << chosen
 	qdel(src)
 
 /mob/living/carbon/proc/hallucinate(var/hal_type) // Todo -> proc / defines
@@ -615,34 +611,24 @@ var/list/non_fakeattack_weapons = list(/obj/item/weapon/gun/projectile, /obj/ite
 			new /obj/effect/hallucination/message(src.loc,src)
 		if("sounds")
 			//Strange audio
-//			to_chat(src, "Strange Audio")
+			//src << "Strange Audio"
 			switch(rand(1,18))
-				if(1)
-					src << 'sound/machines/airlock.ogg'
+				if(1) src << 'sound/machines/airlock.ogg'
 				if(2)
-					if(prob(50))
-						src << 'sound/effects/Explosion1.ogg'
-					else
-						src << 'sound/effects/Explosion2.ogg'
-				if(3)
-					src << 'sound/effects/explosionfar.ogg'
-				if(4)
-					src << 'sound/effects/Glassbr1.ogg'
-				if(5)
-					src << 'sound/effects/Glassbr2.ogg'
-				if(6)
-					src << 'sound/effects/Glassbr3.ogg'
-				if(7)
-					src << 'sound/machines/twobeep.ogg'
-				if(8)
-					src << 'sound/machines/windowdoor.ogg'
+					if(prob(50))src << 'sound/effects/Explosion1.ogg'
+					else src << 'sound/effects/Explosion2.ogg'
+				if(3) src << 'sound/effects/explosionfar.ogg'
+				if(4) src << 'sound/effects/Glassbr1.ogg'
+				if(5) src << 'sound/effects/Glassbr2.ogg'
+				if(6) src << 'sound/effects/Glassbr3.ogg'
+				if(7) src << 'sound/machines/twobeep.ogg'
+				if(8) src << 'sound/machines/windowdoor.ogg'
 				if(9)
 					//To make it more realistic, I added two gunshots (enough to kill)
 					src << 'sound/weapons/Gunshot.ogg'
 					spawn(rand(10,30))
 						src << 'sound/weapons/Gunshot.ogg'
-				if(10)
-					src << 'sound/weapons/smash.ogg'
+				if(10) src << 'sound/weapons/smash.ogg'
 				if(11)
 					//Same as above, but with tasers.
 					src << 'sound/weapons/Taser.ogg'
@@ -658,10 +644,10 @@ var/list/non_fakeattack_weapons = list(/obj/item/weapon/gun/projectile, /obj/ite
 						'sound/hallucinations/turn_around1.ogg', 'sound/hallucinations/turn_around2.ogg', 'sound/hallucinations/veryfar_noise.ogg', 'sound/hallucinations/wail.ogg')
 					src << pick(creepyasssounds)
 				if(13)
-					to_chat(src, "<span class='warning'>You feel a tiny prick!</span>")
+					src << "<span class='warning'>You feel a tiny prick!</span>"
 				if(14)
-					to_chat(src, "<h1 class='alert'>Priority Announcement</h1>")
-					to_chat(src, "<br><br><span class='alert'>The Emergency Shuttle has docked with the station. You have 3 minutes to board the Emergency Shuttle.</span><br><br>")
+					src << "<h1 class='alert'>Priority Announcement</h1>"
+					src << "<br><br><span class='alert'>The Emergency Shuttle has docked with the station. You have 3 minutes to board the Emergency Shuttle.</span><br><br>"
 					src << sound('sound/AI/shuttledock.ogg')
 				if(15)
 					src << 'sound/items/Welder.ogg'
@@ -673,13 +659,13 @@ var/list/non_fakeattack_weapons = list(/obj/item/weapon/gun/projectile, /obj/ite
 					src << 'sound/weapons/saberoff.ogg'
 		if("hudscrew")
 			//Screwy HUD
-//			to_chat(src, "Screwy HUD")
+			//src << "Screwy HUD"
 			hal_screwyhud = pick(1,2,3,3,4,4)
 			spawn(rand(100,250))
 				hal_screwyhud = 0
 		if("items")
 			//Strange items
-//			to_chat(src, "Traitor Items")
+			//src << "Traitor Items"
 			if(!halitem)
 				halitem = new
 				var/list/slots_free = list(ui_lhand,ui_rhand)
@@ -725,7 +711,7 @@ var/list/non_fakeattack_weapons = list(/obj/item/weapon/gun/projectile, /obj/ite
 						qdel(halitem)
 		if("dangerflash")
 			//Flashes of danger
-//			to_chat(src, "Danger Flash")
+			//src << "Danger Flash"
 			if(!halimage)
 				var/list/possible_points = list()
 				for(var/turf/simulated/floor/F in view(src,world.view))
@@ -735,13 +721,13 @@ var/list/non_fakeattack_weapons = list(/obj/item/weapon/gun/projectile, /obj/ite
 
 					switch(rand(1,3))
 						if(1)
-//							to_chat(src, "Space")
+							//src << "Space"
 							halimage = image('icons/turf/space.dmi',target,"[rand(1,25)]",TURF_LAYER)
 						if(2)
-//							to_chat(src, "Fire")
+							//src << "Fire"
 							halimage = image('icons/effects/fire.dmi',target,"1",TURF_LAYER)
 						if(3)
-//							to_chat(src, "C4")
+							//src << "C4"
 							halimage = image('icons/obj/assemblies.dmi',target,"plastic-explosive2",OBJ_LAYER+0.01)
 
 

@@ -153,23 +153,23 @@
 	var/endInput = input(usr,"End turf of Map (X;Y;Z)", "Map Gen Settings", "[world.maxx];[world.maxy];[mob ? mob.z : 1]") as text
 	//maxx maxy and current z so that if you fuck up, you only fuck up one entire z level instead of the entire universe
 	if(!startInput || !endInput)
-		to_chat(src, "Missing Input")
+		src << "Missing Input"
 		return
 
-	var/list/startCoords = splittext(startInput, ";")
-	var/list/endCoords = splittext(endInput, ";")
+	var/list/startCoords = text2list(startInput, ";")
+	var/list/endCoords = text2list(endInput, ";")
 	if(!startCoords || !endCoords)
-		to_chat(src, "Invalid Coords")
-		to_chat(src, "Start Input: [startInput]")
-		to_chat(src, "End Input: [endInput]")
+		src << "Invalid Coords"
+		src << "Start Input: [startInput]"
+		src << "End Input: [endInput]"
 		return
 
 	var/turf/Start = locate(text2num(startCoords[1]),text2num(startCoords[2]),text2num(startCoords[3]))
 	var/turf/End = locate(text2num(endCoords[1]),text2num(endCoords[2]),text2num(endCoords[3]))
 	if(!Start || !End)
-		to_chat(src, "Invalid Turfs")
-		to_chat(src, "Start Coords: [startCoords[1]] - [startCoords[2]] - [startCoords[3]]")
-		to_chat(src, "End Coords: [endCoords[1]] - [endCoords[2]] - [endCoords[3]]")
+		src << "Invalid Turfs"
+		src << "Start Coords: [startCoords[1]] - [startCoords[2]] - [startCoords[3]]"
+		src << "End Coords: [endCoords[1]] - [endCoords[2]] - [endCoords[3]]"
 		return
 
 	var/list/clusters = list("None"=CLUSTER_CHECK_NONE,"All"=CLUSTER_CHECK_ALL,"Sames"=CLUSTER_CHECK_SAMES,"Differents"=CLUSTER_CHECK_DIFFERENTS, \
@@ -178,24 +178,24 @@
 
 	var/moduleClusters = input("Cluster Flags (Cancel to leave unchanged from defaults)","Map Gen Settings") as null|anything in clusters
 	//null for default
-
+	
 	var/theCluster = 0
 	if(moduleClusters != "None")
 		if(!clusters[moduleClusters])
-			to_chat(src, "Invalid Cluster Flags")
+			src << "Invalid Cluster Flags"
 			return
 		theCluster = clusters[moduleClusters]
 	else
 		theCluster =  CLUSTER_CHECK_NONE
-
+	
 	if(theCluster)
 		for(var/datum/mapGeneratorModule/M in N.modules)
 			M.clusterCheckFlags = theCluster
 
 
-	to_chat(src, "Defining Region")
+	src << "Defining Region"
 	N.defineRegion(Start, End)
-	to_chat(src, "Region Defined")
-	to_chat(src, "Generating Region")
+	src << "Region Defined"
+	src << "Generating Region"
 	N.generate()
-	to_chat(src, "Generated Region")
+	src << "Generated Region"

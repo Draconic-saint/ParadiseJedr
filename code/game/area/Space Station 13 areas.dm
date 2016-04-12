@@ -17,6 +17,7 @@ NOTE: there are two lists of areas in the end of this file: centcom and station 
 
 /area
 	var/fire = null
+	var/atmos = 1
 	var/atmosalm = 0
 	var/poweralm = 1
 	var/party = null
@@ -56,19 +57,19 @@ NOTE: there are two lists of areas in the end of this file: centcom and station 
 	var/air_doors_activated = 0
 
 	var/tele_proof = 0
-	var/no_teleportlocs = 0
 
 /*Adding a wizard area teleport list because motherfucking lag -- Urist*/
 /*I am far too lazy to make it a proper list of areas so I'll just make it run the usual telepot routine at the start of the game*/
 var/list/teleportlocs = list()
 /hook/startup/proc/process_teleport_locs()
 	for(var/area/AR in world)
-		if(AR.no_teleportlocs) continue
 		if(teleportlocs.Find(AR.name)) continue
-		var/turf/picked = safepick(get_area_turfs(AR.type))
-		if (picked && (picked.z == ZLEVEL_STATION))
-			teleportlocs += AR.name
-			teleportlocs[AR.name] = AR
+		var/list/turfs = get_area_turfs(AR.type)
+		if(turfs.len)
+			var/turf/picked = pick(turfs)
+			if ((picked.z in config.station_levels))
+				teleportlocs += AR.name
+				teleportlocs[AR.name] = AR
 
 	teleportlocs = sortAssoc(teleportlocs)
 
@@ -145,7 +146,6 @@ var/list/ghostteleportlocs = list()
 //All shuttles show now be under shuttle since we have smooth-wall code.
 
 /area/shuttle
-	no_teleportlocs = 1
 	requires_power = 0
 
 /area/shuttle/arrival
@@ -302,10 +302,6 @@ var/list/ghostteleportlocs = list()
 /area/shuttle/syndicate_elite/station
 	name = "\improper Syndicate Elite Shuttle"
 	icon_state = "shuttlered2"
-
-/area/shuttle/assault_pod
-	name = "Steel Rain"
-	icon_state = "shuttle"
 
 /area/shuttle/administration
 	name = "\improper Administration Shuttle"
@@ -627,7 +623,6 @@ var/list/ghostteleportlocs = list()
 	name = "\improper Ninja Area Parent"
 	icon_state = "ninjabase"
 	requires_power = 0
-	no_teleportlocs = 1
 
 /area/ninja/outpost
 	name = "\improper SpiderClan Outpost"
@@ -640,7 +635,6 @@ var/list/ghostteleportlocs = list()
 	icon_state = "yellow"
 	requires_power = 0
 	lighting_use_dynamic = 0
-	no_teleportlocs = 1
 
 /area/vox_station/transit
 	name = "\improper Hyperspace"
@@ -1789,7 +1783,7 @@ area/security/podbay
 
 /area/toxins/xenobiology
 	name = "\improper Xenobiology Lab"
-	icon_state = "toxmix"
+	icon_state = "toxlab"
 
 /area/toxins/xenobiology/xenoflora_storage
 	name = "\improper Xenoflora Storage"
@@ -2408,16 +2402,11 @@ area/security/podbay
 
 /area/awaymission/beach
 	name = "Beach"
-	icon_state = "beach"
+	icon_state = "null"
 	luminosity = 1
 	lighting_use_dynamic = 0
 	requires_power = 0
 	ambientsounds = list('sound/ambience/shore.ogg', 'sound/ambience/seag1.ogg','sound/ambience/seag2.ogg','sound/ambience/seag2.ogg')
-
-/area/awaymission/undersea
-	name = "Undersea"
-	icon_state = "undersea"
-
 
 ////////////////////////AWAY AREAS///////////////////////////////////
 
@@ -2586,4 +2575,63 @@ var/list/the_station_areas = list (
 	/area/turret_protected/ai_upload_foyer,
 	/area/turret_protected/ai,
 )
+
+
+
+
+/area/beach
+	name = "Keelin's private beach"
+	icon_state = "null"
+	luminosity = 1
+	lighting_use_dynamic = 0
+	requires_power = 0
+	var/sound/mysound = null
+
+	New()
+		..()
+		var/sound/S = new/sound()
+		mysound = S
+		S.file = 'sound/ambience/shore.ogg'
+		S.repeat = 1
+		S.wait = 0
+		S.channel = 123
+		S.volume = 100
+		S.priority = 255
+		S.status = SOUND_UPDATE
+		process()
+
+	Entered(atom/movable/Obj,atom/OldLoc)
+		if(ismob(Obj))
+			if(Obj:client)
+				mysound.status = SOUND_UPDATE
+				Obj << mysound
+		return
+
+	Exited(atom/movable/Obj)
+		if(ismob(Obj))
+			if(Obj:client)
+				mysound.status = SOUND_PAUSED | SOUND_UPDATE
+				Obj << mysound
+
+	proc/process()
+		//set background = 1
+
+		var/sound/S = null
+		var/sound_delay = 0
+		if(prob(25))
+			S = sound(file=pick('sound/ambience/seag1.ogg','sound/ambience/seag2.ogg','sound/ambience/seag3.ogg'), volume=100)
+			sound_delay = rand(0, 50)
+
+		for(var/mob/living/carbon/human/H in src)
+//			if(H.s_tone > -55)	//ugh...nice/novel idea but please no.
+//				H.s_tone--
+//				H.update_body()
+			if(H.client)
+				mysound.status = SOUND_UPDATE
+				H << mysound
+				if(S)
+					spawn(sound_delay)
+						H << S
+
+		spawn(60) .()
 

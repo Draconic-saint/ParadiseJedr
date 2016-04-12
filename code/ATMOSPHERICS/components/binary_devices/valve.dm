@@ -74,7 +74,7 @@
 	if(!powered())
 		return
 	if(!src.allowed(user))
-		to_chat(user, "<span class='alert'>Access denied.</span>")
+		user << "<span class='alert'>Access denied.</span>"
 		return
 	..()
 

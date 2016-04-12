@@ -119,26 +119,26 @@ using metal and glass, it uses glass and reagents (usually sulfuric acis).
 			default_deconstruction_crowbar(O)
 			return
 		else
-			to_chat(user, "<span class='warning'>You can't load the [src.name] while it's opened.</span>")
+			user << "<span class='warning'>You can't load the [src.name] while it's opened.</span>"
 			return
 	if (disabled)
 		return
 	if (!linked_console)
-		to_chat(user, "<span class='warning'>The [name] must be linked to an R&D console first!</span>")
+		user << "<span class='warning'>The [name] must be linked to an R&D console first!</span>"
 		return 1
 	if (O.is_open_container())
 		return
 	if (!istype(O, /obj/item/stack/sheet/glass) && !istype(O, /obj/item/stack/sheet/mineral/gold) && !istype(O, /obj/item/stack/sheet/mineral/diamond))
-		to_chat(user, "<span class='warning'>You cannot insert this item into the [name]!</span>")
+		user << "<span class='warning'>You cannot insert this item into the [name]!</span>"
 		return
 	if (stat)
 		return
 	if (busy)
-		to_chat(user, "<span class='warning'>The [name] is busy. Please wait for completion of previous operation.</span>")
+		user << "<span class='warning'>The [name] is busy. Please wait for completion of previous operation.</span>"
 		return
 	var/obj/item/stack/sheet/stack = O
 	if ((TotalMaterials() + stack.perunit) > max_material_amount)
-		to_chat(user, "<span class='warning'>The [name] is full. Please remove glass from the protolathe in order to insert more.</span>")
+		user << "<span class='warning'>The [name] is full. Please remove glass from the protolathe in order to insert more.</span>"
 		return
 
 	var/amount = round(input("How many sheets do you want to add?") as num)
@@ -149,7 +149,7 @@ using metal and glass, it uses glass and reagents (usually sulfuric acis).
 
 	busy = 1
 	use_power(max(1000, (MINERAL_MATERIAL_AMOUNT*amount/10)))
-	to_chat(user, "<span class='notice'>You add [amount] sheets to the [src.name].</span>")
+	user << "<span class='notice'>You add [amount] sheets to the [src.name].</span>"
 	if(istype(stack, /obj/item/stack/sheet/glass))
 		g_amount += amount * MINERAL_MATERIAL_AMOUNT
 	else if(istype(stack, /obj/item/stack/sheet/mineral/gold))

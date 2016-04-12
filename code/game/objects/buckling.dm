@@ -36,9 +36,9 @@
 
 	if (isslime(M) || isAI(M))
 		if(M == usr)
-			to_chat(M, "<span class='warning'>You are unable to buckle yourself to the [src]!</span>")
+			M << "<span class='warning'>You are unable to buckle yourself to the [src]!</span>"
 		else
-			to_chat(usr, "<span class='warning'>You are unable to buckle [M] to the [src]!</span>")
+			usr << "<span class='warning'>You are unable to buckle [M] to the [src]!</span>"
 		return 0
 
 	M.buckled = src

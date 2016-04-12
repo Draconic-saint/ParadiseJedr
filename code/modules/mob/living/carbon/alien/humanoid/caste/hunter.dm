@@ -3,7 +3,10 @@
 	caste = "h"
 	maxHealth = 125
 	health = 125
+	storedPlasma = 100
+	max_plasma = 150
 	icon_state = "alienh_s"
+	plasma_rate = 5
 
 /mob/living/carbon/alien/humanoid/hunter/New()
 	var/datum/reagents/R = new/datum/reagents(100)
@@ -12,7 +15,6 @@
 	if(name == "alien hunter")
 		name = text("alien hunter ([rand(1, 1000)])")
 	real_name = name
-	internal_organs += new /obj/item/organ/internal/xenos/plasmavessel/hunter
 	..()
 
 /mob/living/carbon/alien/humanoid/hunter/handle_regular_hud_updates()
@@ -41,7 +43,7 @@
 	if(m_intent == "run" || resting)
 		..()
 	else
-		adjustPlasma(-heal_rate)
+		adjustToxLoss(-heal_rate)
 
 
 //Hunter verbs
@@ -50,7 +52,7 @@
 	leap_on_click = !leap_on_click
 	leap_icon.icon_state = "leap_[leap_on_click ? "on":"off"]"
 	if(message)
-		to_chat(src, "<span class='noticealien'>You will now [leap_on_click ? "leap at":"slash at"] enemies!</span>")
+		src << "<span class='noticealien'>You will now [leap_on_click ? "leap at":"slash at"] enemies!</span>"
 	else
 		return
 
@@ -65,14 +67,14 @@
 
 /mob/living/carbon/alien/humanoid/hunter/proc/leap_at(var/atom/A)
 	if(pounce_cooldown)
-		to_chat(src, "<span class='alertalien'>You are too fatigued to pounce right now!</span>")
+		src << "<span class='alertalien'>You are too fatigued to pounce right now!</span>"
 		return
 
 	if(leaping) //Leap while you leap, so you can leap while you leap
 		return
 
 	if(!has_gravity(src) || !has_gravity(A))
-		to_chat(src, "<span class='alertalien'>It is unsafe to leap without gravity!</span>")
+		src << "<span class='alertalien'>It is unsafe to leap without gravity!</span>"
 		//It's also extremely buggy visually, so it's balance+bugfix
 		return
 	if(lying)

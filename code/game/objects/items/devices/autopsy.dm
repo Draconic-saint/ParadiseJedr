@@ -79,7 +79,7 @@
 	set src in view(usr, 1)
 	set name = "Print Data"
 	if(usr.stat || !(istype(usr,/mob/living/carbon/human)))
-		to_chat(usr, "No.")
+		usr << "No."
 		return
 
 	var/scan_data = ""
@@ -151,7 +151,6 @@
 	for(var/mob/O in viewers(usr))
 		O.show_message("\red \the [src] rattles and prints out a sheet of paper.", 1)
 
-	playsound(loc, "sound/goonstation/machines/printer_thermal.ogg", 50, 1)
 	sleep(10)
 
 	var/obj/item/weapon/paper/P = new(usr.loc)
@@ -186,16 +185,16 @@
 		src.wdata = list()
 		src.chemtraces = list()
 		src.timeofdeath = null
-		to_chat(user, "\red A new patient has been registered.. Purging data for previous patient.")
+		user << "\red A new patient has been registered.. Purging data for previous patient."
 
 	src.timeofdeath = M.timeofdeath
 
 	var/obj/item/organ/external/S = M.get_organ(user.zone_sel.selecting)
 	if(!S)
-		to_chat(usr, "<b>You can't scan this body part.</b>")
+		usr << "<b>You can't scan this body part.</b>"
 		return
 	if(!S.open)
-		to_chat(usr, "<b>You have to cut the limb open first!</b>")
+		usr << "<b>You have to cut the limb open first!</b>"
 		return
 	for(var/mob/O in viewers(M))
 		O.show_message("\red [user.name] scans the wounds on [M.name]'s [S.name] with \the [src.name]", 1)

@@ -499,7 +499,7 @@
 			default_deconstruction_crowbar(W)
 			return 1
 		else
-			to_chat(user, "<span class='danger'>You can't load \the [name] while it's opened.</span>")
+			user << "<span class='danger'>You can't load \the [name] while it's opened.</span>"
 			return 1
 
 	if(istype(W, /obj/item/stack))
@@ -525,10 +525,10 @@
 				return ..()
 
 		if(being_built)
-			to_chat(user, "\The [src] is currently processing. Please wait until completion.")
+			user << "\The [src] is currently processing. Please wait until completion."
 			return
 		if(res_max_amount - resources[material] < MINERAL_MATERIAL_AMOUNT) //overstuffing the fabricator
-			to_chat(user, "\The [src] [material2name(material)] storage is full.")
+			user << "\The [src] [material2name(material)] storage is full."
 			return
 		var/obj/item/stack/sheet/stack = W
 		var/sname = "[stack.name]"
@@ -538,12 +538,12 @@
 			var/transfer_amount = min(stack.amount, round((res_max_amount - resources[material])/MINERAL_MATERIAL_AMOUNT,1))
 			resources[material] += transfer_amount * MINERAL_MATERIAL_AMOUNT
 			stack.use(transfer_amount)
-			to_chat(user, "You insert [transfer_amount] [sname] sheet\s into \the [src].")
+			user << "You insert [transfer_amount] [sname] sheet\s into \the [src]."
 			sleep(10)
 			updateUsrDialog()
 			overlays -= "fab-load-[material2name(material)]" //No matter what the overlay shall still be deleted
 		else
-			to_chat(user, "\The [src] cannot hold any more [sname] sheet\s.")
+			user << "\The [src] cannot hold any more [sname] sheet\s."
 		return
 
 /obj/machinery/spod_part_fabricator/proc/material2name(var/ID)

@@ -43,6 +43,8 @@ var/global/datum/controller/processScheduler/processScheduler
 
 	var/tmp/currentTick = 0
 
+	var/tmp/currentTickStart = 0
+
 	var/tmp/timeAllowance = 0
 
 	var/tmp/cpuAverage = 0
@@ -245,7 +247,7 @@ var/global/datum/controller/processScheduler/processScheduler
 
 /datum/controller/processScheduler/proc/recordStart(var/datum/controller/process/process, var/time = null)
 	if (isnull(time))
-		time = TimeOfGame
+		time = TimeOfHour
 		last_queued[process] = world.time
 		last_start[process] = time
 	else
@@ -254,7 +256,11 @@ var/global/datum/controller/processScheduler/processScheduler
 
 /datum/controller/processScheduler/proc/recordEnd(var/datum/controller/process/process, var/time = null)
 	if (isnull(time))
-		time = TimeOfGame
+		time = TimeOfHour
+
+	// If world.timeofday has rolled over, then we need to adjust.
+	if (time < last_start[process])
+		last_start[process] -= 36000
 
 	var/lastRunTime = time - last_start[process]
 
@@ -343,12 +349,13 @@ var/global/datum/controller/processScheduler/processScheduler
 		updateCurrentTickData()
 		return 0
 	else
-		return TimeOfTick
+		return TimeOfHour - currentTickStart
 
 /datum/controller/processScheduler/proc/updateCurrentTickData()
 	if (world.time > currentTick)
 		// New tick!
 		currentTick = world.time
+		currentTickStart = TimeOfHour
 		updateTimeAllowance()
 		cpuAverage = (world.cpu + cpuAverage + cpuAverage) / 3
 

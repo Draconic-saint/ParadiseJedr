@@ -14,7 +14,7 @@
 
 /* -- Disabled for now until it has a use --
 /obj/item/stack/tape_roll/attack_self(mob/user as mob)
-	to_chat(user, "You remove a length of tape from [src].")
+	user << "You remove a length of tape from [src]."
 
 	var/obj/item/weapon/ducttape/tape = new()
 	user.put_in_hands(tape)
@@ -71,7 +71,7 @@
 	if(!stuck)
 		return
 
-	to_chat(user, "You remove \the [initial(name)] from [stuck].")
+	user << "You remove \the [initial(name)] from [stuck]."
 
 	user.unEquip(src)
 	stuck.forceMove(get_turf(src))
@@ -91,8 +91,8 @@
 	if(target_turf != source_turf)
 		dir_offset = get_dir(source_turf, target_turf)
 		if(!(dir_offset in cardinal))
-			to_chat(user, "You cannot reach that from here.")// can only place stuck papers in cardinal directions, to
-			return											 // reduce papers around corners issue.
+			user << "You cannot reach that from here."		// can only place stuck papers in cardinal directions, to
+			return											// reduce papers around corners issue.
 
 	user.unEquip(src)
 	forceMove(source_turf)

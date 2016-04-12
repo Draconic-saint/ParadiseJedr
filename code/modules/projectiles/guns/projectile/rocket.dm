@@ -18,7 +18,7 @@
 
 /obj/item/weapon/gun/rocketlauncher/examine(mob/user)
 	if(..(user, 2))
-		to_chat(user, "\blue [rockets.len] / [max_rockets] rockets.")
+		user << "\blue [rockets.len] / [max_rockets] rockets."
 
 /obj/item/weapon/gun/rocketlauncher/attackby(obj/item/I as obj, mob/user as mob, params)
 	if(istype(I, /obj/item/ammo_casing/rocket))
@@ -26,10 +26,10 @@
 			user.drop_item()
 			I.loc = src
 			rockets += I
-			to_chat(user, "\blue You put the rocket in [src].")
-			to_chat(user, "\blue [rockets.len] / [max_rockets] rockets.")
+			user << "\blue You put the rocket in [src]."
+			user << "\blue [rockets.len] / [max_rockets] rockets."
 		else
-			to_chat(usr, "\red [src] cannot hold more rockets.")
+			usr << "\red [src] cannot hold more rockets."
 
 /obj/item/weapon/gun/rocketlauncher/can_fire()
 	return rockets.len
@@ -47,4 +47,4 @@
 		qdel(I)
 		return
 	else
-		to_chat(usr, "\red [src] is empty.")
+		usr << "\red [src] is empty."

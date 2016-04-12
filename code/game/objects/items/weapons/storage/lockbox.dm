@@ -20,34 +20,34 @@
 	attackby(obj/item/weapon/W as obj, mob/user as mob, params)
 		if (istype(W, /obj/item/weapon/card/id))
 			if(src.broken)
-				to_chat(user, "\red It appears to be broken.")
+				user << "\red It appears to be broken."
 				return
 			if(src.allowed(user))
 				src.locked = !( src.locked )
 				if(src.locked)
 					src.icon_state = src.icon_locked
-					to_chat(user, "\red You lock the [src.name]!")
+					user << "\red You lock the [src.name]!"
 					return
 				else
 					src.icon_state = src.icon_closed
-					to_chat(user, "\red You unlock the [src.name]!")
+					user << "\red You unlock the [src.name]!"
 					origin_tech = null //wipe out any origin tech if it's unlocked in any way so you can't double-dip tech levels at R&D.
 					return
 			else
-				to_chat(user, "\red Access Denied")
+				user << "\red Access Denied"
 		else if((istype(W, /obj/item/weapon/card/emag) || istype(W, /obj/item/weapon/melee/energy/blade)) && !broken)
 			emag_act(user)
 			return
 		if(!locked)
 			..()
 		else
-			to_chat(user, "\red Its locked!")
+			user << "\red Its locked!"
 		return
 
 
 	show_to(mob/user as mob)
 		if(locked)
-			to_chat(user, "\red Its locked!")
+			user << "\red Its locked!"
 		else
 			..()
 		return
@@ -56,7 +56,7 @@
 	if(!locked)
 		return ..()
 	if(!stop_messages)
-		to_chat(usr, "<span class='notice'>[src] is locked!</span>")
+		usr << "<span class='notice'>[src] is locked!</span>"
 	return 0
 
 /obj/item/weapon/storage/lockbox/emag_act(user as mob)
@@ -65,13 +65,9 @@
 		locked = 0
 		desc = "It appears to be broken."
 		icon_state = src.icon_broken
-		to_chat(user, "<span class='notice'>You unlock \the [src].</span>")
+		user << "<span class='notice'>You unlock \the [src].</span>"
 		origin_tech = null //wipe out any origin tech if it's unlocked in any way so you can't double-dip tech levels at R&D.
 		return
-
-/obj/item/weapon/storage/lockbox/hear_talk(mob/living/M as mob, msg)
-
-/obj/item/weapon/storage/lockbox/hear_message(mob/living/M as mob, msg)
 
 /obj/item/weapon/storage/lockbox/large
 	name = "Large lockbox"

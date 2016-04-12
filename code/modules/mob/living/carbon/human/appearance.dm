@@ -17,24 +17,14 @@
 	reset_hair()
 	return 1
 
-/mob/living/carbon/human/proc/change_gender(var/gender, var/update_dna = 1)
+/mob/living/carbon/human/proc/change_gender(var/gender)
 	if(src.gender == gender)
 		return
 
 	src.gender = gender
-
-	var/datum/sprite_accessory/hair/current_hair = hair_styles_list[h_style]
-	if(current_hair.gender != NEUTER && current_hair.gender != src.gender)
-		reset_head_hair()
-
-	var/datum/sprite_accessory/hair/current_fhair = facial_hair_styles_list[f_style]
-	if(current_fhair.gender != NEUTER && current_fhair.gender != src.gender)
-		reset_facial_hair()
-
-	if(update_dna)
-		update_dna()
-	sync_organ_dna(assimilate = 0)
+	reset_hair()
 	update_body()
+	update_dna()
 	return 1
 
 /mob/living/carbon/human/proc/change_hair(var/hair_style)
@@ -68,11 +58,8 @@
 	return 1
 
 /mob/living/carbon/human/proc/reset_hair()
-	reset_head_hair()
-	reset_facial_hair()
-
-/mob/living/carbon/human/proc/reset_head_hair()
 	var/list/valid_hairstyles = generate_valid_hairstyles()
+	var/list/valid_facial_hairstyles = generate_valid_facial_hairstyles()
 
 	if(valid_hairstyles.len)
 		h_style = pick(valid_hairstyles)
@@ -80,15 +67,13 @@
 		//this shouldn't happen
 		h_style = "Bald"
 
-	update_hair()
-
-/mob/living/carbon/human/proc/reset_facial_hair()
-	var/list/valid_facial_hairstyles = generate_valid_facial_hairstyles()
 	if(valid_facial_hairstyles.len)
 		f_style = pick(valid_facial_hairstyles)
 	else
 		//this shouldn't happen
 		f_style = "Shaved"
+
+	update_hair()
 	update_fhair()
 
 /mob/living/carbon/human/proc/change_eye_color(var/red, var/green, var/blue)
@@ -177,27 +162,9 @@
 			continue
 		if(gender == FEMALE && S.gender == MALE)
 			continue
-		if(species.flags & ALL_RPARTS) //If the user is a species who can have a robotic head...
-			var/obj/item/organ/external/head/H = organs_by_name["head"]
-			if(!H)
-				return
-			if(species.name in S.species_allowed) //If this is a hairstyle native to the user's species...
-				if(H.model == "Morpheus Cyberkinetics") //Check to see if they have the default head.
-					valid_hairstyles += hairstyle //Give them their hairstyles if they do.
-					continue
-				else //If they don't have the default head, they shouldn't be getting any hairstyles they wouldn't normally.
-					continue
-			else
-				if(H.model == "Morpheus Cyberkinetics") //If the hairstyle is not native to the user's species, and they're using the default head, don't let them access it.
-					continue
-				else
-					if("Human" in S.species_allowed) //If the user has a robotic head and the hairstyle can fit humans, let them use it as a wig for their humanoid robot head.
-						valid_hairstyles += hairstyle
-					continue
-		else
-			if(!(species.name in S.species_allowed)) //If the user is not a species who can have robotic heads, use the default handling.
-				continue
-			valid_hairstyles += hairstyle
+		if(!(species.name in S.species_allowed))
+			continue
+		valid_hairstyles += hairstyle
 
 	return valid_hairstyles
 
@@ -210,27 +177,9 @@
 			continue
 		if(gender == FEMALE && S.gender == MALE)
 			continue
-		if(species.flags & ALL_RPARTS) //If the user is a species who can have a robotic head...
-			var/obj/item/organ/external/head/H = organs_by_name["head"]
-			if(!H)
-				continue // No head, no hair
-			if(species.name in S.species_allowed) //If this is a facial hair style native to the user's species...
-				if(H.model == "Morpheus Cyberkinetics") //Check to see if they have the default head.
-					valid_facial_hairstyles += facialhairstyle //Give them their facial hair styles if they do.
-					continue
-				else //If they don't have the default head, they shouldn't be getting any facial hair styles they wouldn't normally.
-					continue
-			else
+		if(!(species.name in S.species_allowed))
+			continue
 
-				if(H.model == "Morpheus Cyberkinetics") //If the facial hair style is not native to the user's species, and they're using the default head, don't let them access it.
-					continue
-				else
-					if("Human" in S.species_allowed) //If the user has a robotic head and the facial hair style can fit humans, let them use it as a postiche for their humanoid robot head.
-						valid_facial_hairstyles += facialhairstyle
-					continue
-		else //If the user is not a species who can have robotic heads, use the default handling.
-			if(!(species.name in S.species_allowed))
-				continue
-			valid_facial_hairstyles += facialhairstyle
+		valid_facial_hairstyles += facialhairstyle
 
 	return valid_facial_hairstyles

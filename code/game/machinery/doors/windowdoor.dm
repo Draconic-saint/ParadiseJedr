@@ -40,17 +40,23 @@
 	close()
 
 /obj/machinery/door/window/Bumped(atom/movable/AM as mob|obj)
-	if(operating || !density)
+	if( operating || !src.density )
 		return
-	if (!ismob(AM))
-		if(istype(AM, /obj/mecha))
+	if (!( ismob(AM) ))
+		var/obj/machinery/bot/bot = AM
+		if(istype(bot))
+			if(src.check_access(bot.botcard))
+				open_and_close()
+			else
+				flick(text("[]deny", src.base_state), src)
+		else if(istype(AM, /obj/mecha))
 			var/obj/mecha/mecha = AM
 			if(mecha.occupant && src.allowed(mecha.occupant))
 				open_and_close()
 			else
 				flick(text("[]deny", src.base_state), src)
 		return
-	if (!ticker)
+	if (!( ticker ))
 		return
 	var/mob/M = AM
 	if(!M.restrained() && !M.small)
@@ -86,7 +92,7 @@
 
 //used in the AStar algorithm to determinate if the turf the door is on is passable
 /obj/machinery/door/window/CanAStarPass(var/obj/item/weapon/card/id/ID, var/to_dir)
-	return !density || (dir != to_dir) || (check_access(ID) && !(stat & NOPOWER))
+	return !density || (dir != to_dir) || check_access(ID)
 
 /obj/machinery/door/window/CheckExit(atom/movable/mover as mob|obj, turf/target as turf)
 	if(istype(mover) && mover.checkpass(PASSGLASS))
@@ -260,11 +266,11 @@
 
 	if(istype(I, /obj/item/weapon/screwdriver))
 		if(src.density || src.operating)
-			to_chat(user, "<span class='warning'>You need to open the door to access the maintenance panel.</span>")
+			user << "<span class='warning'>You need to open the door to access the maintenance panel.</span>"
 			return
 		playsound(src.loc, 'sound/items/Screwdriver.ogg', 50, 1)
 		src.p_open = !( src.p_open )
-		to_chat(user, "<span class='notice'>You [p_open ? "open":"close"] the maintenance panel of the [src.name].</span>")
+		user << "<span class='notice'>You [p_open ? "open":"close"] the maintenance panel of the [src.name].</span>"
 		return
 
 	if(istype(I, /obj/item/weapon/crowbar))
@@ -294,11 +300,11 @@
 					WA.created_name = src.name
 
 					if(emagged)
-						to_chat(user, "<span class='warning'>You discard the damaged electronics.</span>")
+						user << "<span class='warning'>You discard the damaged electronics.</span>"
 						qdel(src)
 						return
 
-					to_chat(user, "<span class='notice'>You removed the airlock electronics!</span>")
+					user << "<span class='notice'>You removed the airlock electronics!</span>"
 
 					var/obj/item/weapon/airlock_electronics/ae
 					if(!electronics)

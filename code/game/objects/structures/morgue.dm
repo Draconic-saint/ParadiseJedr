@@ -150,7 +150,7 @@
 	if (CM.stat || CM.restrained())
 		return
 
-	to_chat(CM, "<span class='alert'>You attempt to slide yourself out of \the [src]...</span>")
+	CM << "<span class='alert'>You attempt to slide yourself out of \the [src]...</span>"
 	src.attack_hand(CM)
 
 
@@ -192,7 +192,7 @@
 	if (user != O)
 		for(var/mob/B in viewers(user, 3))
 			if ((B.client && !( B.blinded )))
-				to_chat(B, text("\red [] stuffs [] into []!", user, O, src))
+				B << text("\red [] stuffs [] into []!", user, O, src)
 	return
 
 /obj/structure/m_tray/Destroy()
@@ -201,22 +201,6 @@
 	connected = null
 	return ..()
 
-/obj/structure/tray/m_tray/CanPass(atom/movable/mover, turf/target, height=0)
-	if(height == 0)
-		return 1
-
-	if(istype(mover) && mover.checkpass(PASSTABLE))
-		return 1
-	if(locate(/obj/structure/table) in get_turf(mover))
-		return 1
-	else
-		return 0
-
-/obj/structure/tray/m_tray/CanAStarPass(ID, dir, caller)
-	. = !density
-	if(ismovableatom(caller))
-		var/atom/movable/mover = caller
-		. = . || mover.checkpass(PASSTABLE)
 
 /*
  * Crematorium
@@ -274,7 +258,7 @@
 
 /obj/structure/crematorium/attack_hand(mob/user as mob)
 	if (cremating)
-		to_chat(usr, "\red It's locked.")
+		usr << "\red It's locked."
 		return
 	if ((connected) && (locked == 0))
 		for(var/atom/movable/A as mob|obj in connected.loc)
@@ -388,7 +372,7 @@
 	if (CM.stat || CM.restrained())
 		return
 
-	to_chat(CM, "<span class='alert'>You attempt to slide yourself out of \the [src]...</span>")
+	CM << "<span class='alert'>You attempt to slide yourself out of \the [src]...</span>"
 	src.attack_hand(CM)
 
 /*
@@ -429,7 +413,7 @@
 	if (user != O)
 		for(var/mob/B in viewers(user, 3))
 			if ((B.client && !( B.blinded )))
-				to_chat(B, text("\red [] stuffs [] into []!", user, O, src))
+				B << text("\red [] stuffs [] into []!", user, O, src)
 			//Foreach goto(99)
 	return
 
@@ -446,7 +430,7 @@
 				if (!C.cremating)
 					C.cremate(user)
 	else
-		to_chat(usr, "\red Access denied.")
+		usr << "\red Access denied."
 	return
 
 /hook/Login/proc/update_morgue(var/client/client, var/mob/L)
@@ -496,3 +480,4 @@
 					Morgue = B.loc
 			if (Morgue)
 				Morgue.update()
+

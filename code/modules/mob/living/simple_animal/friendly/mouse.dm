@@ -15,7 +15,8 @@
 	see_in_dark = 6
 	maxHealth = 5
 	health = 5
-	butcher_results = list(/obj/item/weapon/reagent_containers/food/snacks/meat = 1)
+	meat_type = /obj/item/weapon/reagent_containers/food/snacks/meat
+	meat_amount = 1
 	response_help  = "pets the"
 	response_disarm = "gently pushes aside the"
 	response_harm   = "stamps on the"
@@ -24,14 +25,11 @@
 	pass_flags = PASSTABLE | PASSGRILLE | PASSMOB
 	var/mouse_color //brown, gray and white, leave blank for random
 	layer = MOB_LAYER
-	atmos_requirements = list("min_oxy" = 16, "max_oxy" = 0, "min_tox" = 0, "max_tox" = 1, "min_co2" = 0, "max_co2" = 5, "min_n2" = 0, "max_n2" = 0)
+	min_oxy = 16 //Require atleast 16kPA oxygen
 	minbodytemp = 223		//Below -50 Degrees Celcius
 	maxbodytemp = 323	//Above 50 Degrees Celcius
 	universal_speak = 0
 	can_hide = 1
-	holder_type = /obj/item/weapon/holder/mouse
-	can_collar = 1
-	gold_core_spawnable = CHEM_MOB_SPAWN_FRIENDLY
 
 /mob/living/simple_animal/mouse/handle_automated_speech()
 	..()
@@ -41,22 +39,20 @@
 
 /mob/living/simple_animal/mouse/Life()
 	. = ..()
-	if(stat == UNCONSCIOUS)
+
+	if(!ckey && stat == CONSCIOUS && prob(0.5))
+		stat = UNCONSCIOUS
+		icon_state = "mouse_[mouse_color]_sleep"
+		wander = 0
+		speak_chance = 0
+		//snuffles
+	else if(stat == UNCONSCIOUS)
 		if(ckey || prob(1))
 			stat = CONSCIOUS
 			icon_state = "mouse_[mouse_color]"
 			wander = 1
 		else if(prob(5))
 			emote("snuffles")
-
-/mob/living/simple_animal/mouse/process_ai()
-	..()
-
-	if(prob(0.5))
-		stat = UNCONSCIOUS
-		icon_state = "mouse_[mouse_color]_sleep"
-		wander = 0
-		speak_chance = 0
 
 /mob/living/simple_animal/mouse/New()
 	..()
@@ -67,6 +63,7 @@
 	icon_dead = "mouse_[mouse_color]_dead"
 	desc = "It's a small [mouse_color] rodent, often seen hiding in maintenance areas and making a nuisance of itself."
 
+
 /mob/living/simple_animal/mouse/proc/splat()
 	src.health = 0
 	src.stat = DEAD
@@ -75,11 +72,6 @@
 	layer = MOB_LAYER
 	if(client)
 		client.time_died_as_mouse = world.time
-
-/mob/living/simple_animal/mouse/attack_hand(mob/living/carbon/human/M as mob)
-	if(M.a_intent == I_HELP)
-		get_scooped(M)
-	..()
 
 //make mice fit under tables etc? this was hacky, and not working
 /*
@@ -105,14 +97,14 @@
 //	return 1
 
 /mob/living/simple_animal/mouse/start_pulling(var/atom/movable/AM)//Prevents mouse from pulling things
-	to_chat(src, "<span class='warning'>You are too small to pull anything.</span>")
+	src << "<span class='warning'>You are too small to pull anything.</span>"
 	return
 
 /mob/living/simple_animal/mouse/Crossed(AM as mob|obj)
 	if( ishuman(AM) )
 		if(!stat)
 			var/mob/M = AM
-			to_chat(M, "\blue \icon[src] Squeek!")
+			M << "\blue \icon[src] Squeek!"
 			M << 'sound/effects/mousesqueek.ogg'
 	..()
 
@@ -145,4 +137,3 @@
 	response_help  = "pets"
 	response_disarm = "gently pushes aside"
 	response_harm   = "splats"
-	gold_core_spawnable = CHEM_MOB_SPAWN_INVALID

@@ -19,13 +19,13 @@
 /obj/item/weapon/card/id/guest/examine(mob/user)
 	..(user)
 	if (world.time < expiration_time)
-		to_chat(user, "<span class='notice'>This pass expires at [worldtime2text(expiration_time)].</span>")
+		user << "<span class='notice'>This pass expires at [worldtime2text(expiration_time)].</span>"
 	else
-		to_chat(user, "<span class='warning'>It expired at [worldtime2text(expiration_time)].</span>")
-	to_chat(user, "<span class='notice'>It grants access to following areas:</span>")
+		user << "<span class='warning'>It expired at [worldtime2text(expiration_time)].</span>"
+	user << "<span class='notice'>It grants access to following areas:</span>"
 	for (var/A in temp_access)
-		to_chat(user, "<span class='notice'>[get_access_desc(A)].</span>")
-	to_chat(user, "<span class='notice'>Issuing reason: [reason].</span>")
+		user << "<span class='notice'>[get_access_desc(A)].</span>"
+	user << "<span class='notice'>Issuing reason: [reason].</span>"
 
 /////////////////////////////////////////////
 //Guest pass terminal////////////////////////
@@ -56,7 +56,7 @@
 			giver = O
 			updateUsrDialog()
 		else
-			to_chat(user, "<span class='warning'>There is already ID card inside.</span>")
+			user << "<span class='warning'>There is already ID card inside.</span>"
 
 /obj/machinery/computer/guestpass/attack_ai(var/mob/user as mob)
 	return attack_hand(user)
@@ -118,7 +118,7 @@
 					if (dur > 0 && dur <= 30)
 						duration = dur
 					else
-						to_chat(usr, "<span class='warning'>Invalid duration.</span>")
+						usr << "<span class='warning'>Invalid duration.</span>"
 			if ("access")
 				var/A = text2num(href_list["access"])
 				if (A in accesses)
@@ -150,10 +150,9 @@
 				var/dat = "<h3>Activity log of guest pass terminal #[uid]</h3><br>"
 				for (var/entry in internal_log)
 					dat += "[entry]<br><hr>"
-//				to_chat(usr, "Printing the log, standby...")
+				//usr << "Printing the log, standby..."
 				//sleep(50)
 				var/obj/item/weapon/paper/P = new/obj/item/weapon/paper( loc )
-				playsound(loc, "sound/goonstation/machines/printer_dotmatrix.ogg", 50, 1)
 				P.name = "activity log"
 				P.info = dat
 
@@ -176,6 +175,6 @@
 					pass.reason = reason
 					pass.name = "guest pass #[number]"
 				else
-					to_chat(usr, "\red Cannot issue pass without issuing ID.")
+					usr << "\red Cannot issue pass without issuing ID."
 	updateUsrDialog()
 	return

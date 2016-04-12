@@ -133,8 +133,6 @@ var/global/list/rockTurfEdgeCache
 					M = new/turf/simulated/mineral/gibtonite(src)
 				if("Bananium")
 					M = new/turf/simulated/mineral/clown(src)
-				if("Tranquillite")
-					M = new/turf/simulated/mineral/mime(src)
 				if("BScrystal")
 					M = new/turf/simulated/mineral/bscrystal(src)
 			if(M)
@@ -158,7 +156,7 @@ var/global/list/rockTurfEdgeCache
 	mineralSpawnChanceList = list(
 		"Uranium" = 35, "Diamond" = 2,
 		"Gold" = 5, "Silver" = 5, "Plasma" = 25,
-		"Iron" = 30, "Bananium" = 15, "Tranquillite" = 15, "BScrystal" = 10)
+		"Iron" = 30, "Clown" = 15, "BScrystal" = 10)
 
 /turf/simulated/mineral/random/high_chance/New()
 	icon_state = "rock"
@@ -236,15 +234,6 @@ var/global/list/rockTurfEdgeCache
 	icon_state = "rock_Clown"
 	mineralType = /obj/item/weapon/ore/bananium
 	mineralName = "Bananium"
-	mineralAmt = 3
-	spreadChance = 0
-	spread = 0
-	hidden = 0
-
-/turf/simulated/mineral/mime
-	name = "tranquillite deposit"
-	icon_state = "rock_Mime"
-	mineralType = /obj/item/weapon/ore/tranquillite
 	mineralAmt = 3
 	spreadChance = 0
 	spread = 0
@@ -361,7 +350,7 @@ var/global/list/rockTurfEdgeCache
 /turf/simulated/mineral/attackby(var/obj/item/weapon/pickaxe/P as obj, mob/user as mob, params)
 
 	if (!user.IsAdvancedToolUser())
-		to_chat(usr, "<span class='warning'>You don't have the dexterity to do this!</span>")
+		usr << "<span class='warning'>You don't have the dexterity to do this!</span>"
 		return
 
 	if (istype(P, /obj/item/weapon/pickaxe))
@@ -372,12 +361,12 @@ var/global/list/rockTurfEdgeCache
 		if(last_act+P.digspeed > world.time)//prevents message spam
 			return
 		last_act = world.time
-		to_chat(user, "<span class='notice'>You start picking...</span>")
+		user << "<span class='notice'>You start picking...</span>"
 		P.playDigSound()
 
 		if(do_after(user, P.digspeed, target = src))
 			if(istype(src, /turf/simulated/mineral)) //sanity check against turf being deleted during digspeed delay
-				to_chat(user, "<span class='notice'>You finish cutting into the rock.</span>")
+				user << "<span class='notice'>You finish cutting into the rock.</span>"
 				P.update_icon()
 				gets_drilled(user)
 				feedback_add_details("pick_used_mining","[P.name]")
@@ -407,10 +396,10 @@ var/global/list/rockTurfEdgeCache
 	..()
 
 /turf/simulated/mineral/attack_alien(var/mob/living/carbon/alien/M)
-	to_chat(M, "<span class='notice'>You start digging into the rock...</span>")
+	M << "<span class='notice'>You start digging into the rock...</span>"
 	playsound(src, 'sound/effects/break_stone.ogg', 50, 1)
 	if(do_after(M, 40, target = src))
-		to_chat(M, "<span class='notice'>You tunnel into the rock.</span>")
+		M << "<span class='notice'>You tunnel into the rock.</span>"
 		gets_drilled()
 
 /turf/simulated/mineral/Bumped(AM as mob|obj)
@@ -475,14 +464,14 @@ var/global/list/rockTurfEdgeCache
 			return
 
 		if (dug)
-			to_chat(user, "<span class='warning'>This area has already been dug!</span>")
+			user << "<span class='warning'>This area has already been dug!</span>"
 			return
 
-		to_chat(user, "<span class='notice'>You start digging...</span>")
+		user << "<span class='notice'>You start digging...</span>"
 
 		sleep(20)
 		if ((user.loc == T && user.get_active_hand() == W))
-			to_chat(user, "<span class='notice'>You dig a hole.</span>")
+			user << "<span class='notice'>You dig a hole.</span>"
 			gets_dug()
 			return
 
@@ -493,14 +482,14 @@ var/global/list/rockTurfEdgeCache
 			return
 
 		if (dug)
-			to_chat(user, "<span class='warning'>This area has already been dug!</span>")
+			user << "<span class='warning'>This area has already been dug!</span>"
 			return
 
-		to_chat(user, "<span class='notice'>You start digging...</span>")
+		user << "<span class='notice'>You start digging...</span>"
 
 		sleep(P.digspeed)
 		if ((user.loc == T && user.get_active_hand() == W))
-			to_chat(user, "<span class='notice'>You dig a hole.</span>")
+			user << "<span class='notice'>You dig a hole.</span>"
 			gets_dug()
 			return
 

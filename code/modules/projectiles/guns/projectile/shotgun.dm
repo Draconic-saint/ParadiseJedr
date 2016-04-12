@@ -29,7 +29,7 @@
 			AC.loc = src
 			num_loaded++
 	if(num_loaded)
-		to_chat(user, "<span class='notice'>You load [num_loaded] shell\s into \the [src]!</span>")
+		user << "<span class='notice'>You load [num_loaded] shell\s into \the [src]!</span>"
 		A.update_icon()
 		update_icon()
 
@@ -72,7 +72,7 @@
 /obj/item/weapon/gun/projectile/shotgun/examine(mob/user)
 	..(user)
 	if (chambered)
-		to_chat(user, "A [chambered.BB ? "live" : "spent"] one is in the chamber.")
+		user << "A [chambered.BB ? "live" : "spent"] one is in the chamber."
 
 /obj/item/weapon/gun/projectile/shotgun/isHandgun() //You cannot, in fact, holster a shotgun.
 	return 0
@@ -117,13 +117,13 @@
 
 /obj/item/weapon/gun/projectile/shotgun/boltaction/attackby(var/obj/item/A as obj, mob/user as mob)
 	if(!bolt_open)
-		to_chat(user, "<span class='notice'>The bolt is closed!</span>")
+		user << "<span class='notice'>The bolt is closed!</span>"
 		return
 	. = ..()
 
 /obj/item/weapon/gun/projectile/shotgun/boltaction/examine(mob/user)
 	..(user)
-	to_chat(user, "The bolt is [bolt_open ? "open" : "closed"].")
+	user << "The bolt is [bolt_open ? "open" : "closed"]."
 
 /obj/item/weapon/gun/projectile/shotgun/boltaction/enchanted
 	name = "enchanted bolt action rifle"
@@ -191,9 +191,9 @@
 		CB.update_icon()
 		num_unloaded++
 	if (num_unloaded)
-		to_chat(user, "<span class = 'notice'>You break open \the [src] and unload [num_unloaded] shell\s.</span>")
+		user << "<span class = 'notice'>You break open \the [src] and unload [num_unloaded] shell\s.</span>"
 	else
-		to_chat(user, "<span class='notice'>[src] is empty.</span>")
+		user << "<span class='notice'>[src] is empty.</span>"
 
 /obj/item/weapon/gun/projectile/revolver/doublebarrel/isHandgun() //contrary to popular opinion, double barrels are not, shockingly, handguns
 	return 0
@@ -219,10 +219,10 @@
 		if(C.use(10))
 			slot_flags = SLOT_BACK
 			icon_state = "ishotgunsling"
-			to_chat(user, "<span class='notice'>You tie the lengths of cable to the shotgun, making a sling.</span>")
+			user << "<span class='notice'>You tie the lengths of cable to the shotgun, making a sling.</span>"
 			update_icon()
 		else
-			to_chat(user, "<span class='warning'>You need at least ten lengths of cable if you want to make a sling.</span>")
+			user << "<span class='warning'>You need at least ten lengths of cable if you want to make a sling.</span>"
 			return
 
 // Sawing guns related procs //
@@ -236,7 +236,7 @@
 
 /obj/item/weapon/gun/projectile/proc/sawoff(mob/user as mob)
 	if(sawn_state == SAWN_OFF)
-		to_chat(user, "<span class='notice'>\The [src] is already shortened.</span>")
+		user << "<span class='notice'>\The [src] is already shortened.</span>"
 		return
 
 	if(sawn_state == SAWN_SAWING)

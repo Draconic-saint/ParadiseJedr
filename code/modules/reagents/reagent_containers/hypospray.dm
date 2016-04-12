@@ -17,13 +17,13 @@
 
 /obj/item/weapon/reagent_containers/hypospray/attack(mob/living/M, mob/user)
 	if(!reagents.total_volume)
-		to_chat(user, "\red [src] is empty.")
+		user << "\red [src] is empty."
 		return
 	if(!istype(M))
 		return
 	if(reagents.total_volume && (ignore_flags || M.can_inject(user, 1)))
-		to_chat(user, "\blue You inject [M] with [src].")
-		to_chat(M, "\red You feel a tiny prick!")
+		user << "\blue You inject [M] with [src]."
+		M << "\red You feel a tiny prick!"
 
 		src.reagents.add_reagent(M)
 		if(M.reagents)
@@ -41,7 +41,7 @@
 				M.LAssailant = user
 
 			var/trans = reagents.trans_to(M, amount_per_transfer_from_this)
-			to_chat(user, "\blue [trans] units injected. [reagents.total_volume] units remaining in [src].")
+			user << "\blue [trans] units injected. [reagents.total_volume] units remaining in [src]."
 
 	return
 
@@ -102,9 +102,9 @@
 /obj/item/weapon/reagent_containers/hypospray/autoinjector/examine(mob/user)
 	..(user)
 	if(reagents && reagents.reagent_list.len)
-		to_chat(user, "\blue It is currently loaded.")
+		user << "\blue It is currently loaded."
 	else
-		to_chat(user, "\blue It is spent.")
+		user << "\blue It is spent."
 
 /obj/item/weapon/reagent_containers/hypospray/autoinjector/teporone //basilisks
 	name = "teporone autoinjector"

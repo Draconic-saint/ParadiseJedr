@@ -4,20 +4,19 @@
 
 /obj/machinery/status_display/supply_display/update()
 	if(!..() && mode == STATUS_DISPLAY_CUSTOM)
+		var/line1
+		var/line2
 		if(shuttle_master.supply.mode == SHUTTLE_IDLE)
 			if(shuttle_master.supply.z == ZLEVEL_STATION)
-				message1 = "CARGO"
-				message2 = "Docked"
-			else
-				message1 = "TIME"
-				message2 = worldtime2text()
+				line1 = "CARGO"
+				line2 = "Docked"
 		else
-			message1 = "CARGO"
-			message2 = shuttle_master.supply.getTimerStr()
-			if(lentext(message2) > CHARS_PER_LINE)
-				message2 = "Error"
+			line1 = "CARGO"
+			line2 = get_supply_shuttle_timer()
+			if(lentext(line2) > CHARS_PER_LINE)
+				line2 = "Error"
 
-		update_display(message1, message2)
+		update_display(line1, line2)
 		return 1
 	return 0
 

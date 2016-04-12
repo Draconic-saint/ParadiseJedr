@@ -77,11 +77,11 @@
 		set src in view(1)
 
 		if(usr.stat || usr.restrained() || usr.lying || !istype(usr, /mob/living))
-			to_chat(usr, "\red You can't do that.")
+			usr << "\red You can't do that."
 			return
 
 		if(!Adjacent(usr))
-			to_chat(usr, "You can't reach it.")
+			usr << "You can't reach it."
 			return
 
 		Reset()
@@ -365,7 +365,7 @@
 			os.attack_hand(user)
 			return
 
-		to_chat(user, "\The [src] won't boot!")
+		user << "\The [src] won't boot!"
 
 	attack_ai(var/mob/user as mob) // copypasta because server racks lose attack_hand()
 		if(stat)
@@ -390,7 +390,7 @@
 			os.attack_hand(user)
 			return
 
-		to_chat(user, "\The [src] won't boot!")
+		user << "\The [src] won't boot!"
 
 	interact()
 		if(stat)

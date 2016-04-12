@@ -20,6 +20,5 @@
 	density = 0
 	pass_flags = PASSTABLE | PASSMOB
 	can_hide = 1
-	butcher_results = list(/obj/item/weapon/reagent_containers/food/snacks/meat = 1)
-	can_collar = 1
-	gold_core_spawnable = CHEM_MOB_SPAWN_FRIENDLY
+	meat_type = /obj/item/weapon/reagent_containers/food/snacks/meat
+	meat_amount = 1

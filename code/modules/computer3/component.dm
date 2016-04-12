@@ -77,11 +77,11 @@
 
 	emag_act(user as mob)
 		if(!writer)
-			to_chat(usr, "You insert \the card, and the computer grinds, sparks, and beeps.  After a moment, the card ejects itself.")
+			usr << "You insert \the card, and the computer grinds, sparks, and beeps.  After a moment, the card ejects itself."
 			computer.emagged = 1
 			return 1
 		else
-			to_chat(usr, "You are unable to insert \the card, as the reader slot is occupied")
+			usr << "You are unable to insert \the card, as the reader slot is occupied"
 			return 0
 
 	attackby(var/obj/item/I as obj, var/mob/user as mob, params)
@@ -98,30 +98,30 @@
 			return 0
 		// This shouldn't happen, just in case..
 		if(slot == 2 && !dualslot)
-			to_chat(usr, "This device has only one card slot")
+			usr << "This device has only one card slot"
 			return 0
 
 		var/mob/living/L = usr
 		switch(slot)
 			if(1)
 				if(equip_to_reader(card, L))
-					to_chat(usr, "You insert the card into reader slot")
+					usr << "You insert the card into reader slot"
 				else
-					to_chat(usr, "There is already something in the reader slot.")
+					usr << "There is already something in the reader slot."
 			if(2)
 				if(equip_to_writer(card, L))
-					to_chat(usr, "You insert the card into writer slot")
+					usr << "You insert the card into writer slot"
 				else
-					to_chat(usr, "There is already something in the reader slot.")
+					usr << "There is already something in the reader slot."
 			if(3)
 				if(equip_to_reader(card, L))
-					to_chat(usr, "You insert the card into reader slot")
+					usr << "You insert the card into reader slot"
 				else if (equip_to_writer(card, L) && dualslot)
-					to_chat(usr, "You insert the card into writer slot")
+					usr << "You insert the card into writer slot"
 				else if (dualslot)
-					to_chat(usr, "There is already something in both slots.")
+					usr << "There is already something in both slots."
 				else
-					to_chat(usr, "There is already something in the reader slot.")
+					usr << "There is already something in the reader slot."
 
 	// Usage of insert() preferred, as it also tells result to the user.
 	proc/equip_to_reader(var/obj/item/weapon/card/card, var/mob/living/L)
@@ -147,35 +147,35 @@
 		switch(slot)
 			if(1)
 				if (remove_reader(L))
-					to_chat(L, "You remove the card from reader slot")
+					L << "You remove the card from reader slot"
 				else
-					to_chat(L, "There is no card in the reader slot")
+					L << "There is no card in the reader slot"
 			if(2)
 				if (remove_writer(L))
-					to_chat(L, "You remove the card from writer slot")
+					L << "You remove the card from writer slot"
 				else
-					to_chat(L, "There is no card in the writer slot")
+					L << "There is no card in the writer slot"
 			if(3)
 				if (remove_reader(L))
 					if (remove_writer(L))
-						to_chat(L, "You remove cards from both slots")
+						L << "You remove cards from both slots"
 					else
-						to_chat(L, "You remove the card from reader slot")
+						L << "You remove the card from reader slot"
 				else
 					if(remove_writer(L))
-						to_chat(L, "You remove the card from writer slot")
+						L << "You remove the card from writer slot"
 					else
-						to_chat(L, "There are no cards in both slots")
+						L << "There are no cards in both slots"
 			if(4)
 				if (!remove_reader(L))
 					if (remove_writer(L))
-						to_chat(L, "You remove the card from writer slot")
+						L << "You remove the card from writer slot"
 					else if (!dualslot)
-						to_chat(L, "There is no card in the reader slot")
+						L << "There is no card in the reader slot"
 					else
-						to_chat(L, "There are no cards in both slots")
+						L << "There are no cards in both slots"
 				else
-					to_chat(L, "You remove the card from reader slot")
+					L << "You remove the card from reader slot"
 
 
 	proc/remove_reader(var/mob/living/L)
@@ -239,7 +239,7 @@
 
 		if(slot == 1)				// 1: writer
 			if(writer != null)
-				to_chat(usr, "There's already a card in that slot!")
+				usr << "There's already a card in that slot!"
 				return 0
 			var/mob/living/L = usr
 			L.drop_item()
@@ -248,7 +248,7 @@
 			return 1
 		else if(slot == 2)			// 2: reader
 			if(reader != null)
-				to_chat(usr, "There's already a card in that slot!")
+				usr << "There's already a card in that slot!"
 				return 0
 			var/mob/living/L = usr
 			L.drop_item()
@@ -257,7 +257,7 @@
 			return 1
 		else						// 0: auto
 			if(reader && writer)
-				to_chat(usr, "Both slots are full!")
+				usr << "Both slots are full!"
 				return 0
 			var/mob/living/L = usr
 			L.drop_item()

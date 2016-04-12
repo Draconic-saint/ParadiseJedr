@@ -138,7 +138,7 @@
 	else
 		t5 = in_range(src, usr) || src.loc == usr
 
-//	to_chat(world, "according to dblclick(), t5 is [t5]")
+//	world << "according to dblclick(), t5 is [t5]"
 
 	// ------- ACTUALLY DETERMINING STUFF -------
 	if (((t5 || (W && (W.flags & USEDELAY))) && !( istype(src, /obj/screen) )))

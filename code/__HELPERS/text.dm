@@ -203,6 +203,13 @@ proc/checkhtml(var/t)
  * Text modification
  */
 // See bygex.dm
+#ifndef USE_BYGEX
+/proc/replacetext(text, find, replacement)
+	return list2text(text2list(text, find), replacement)
+
+/proc/replacetextEx(text, find, replacement)
+	return list2text(text2listEx(text, find), replacement)
+#endif
 /proc/replace_characters(var/t,var/list/repl_chars)
 	for(var/char in repl_chars)
 		t = replacetext(t, char, repl_chars[char])
@@ -316,7 +323,7 @@ proc/checkhtml(var/t)
 //This proc strips html properly, but it's not lazy like the other procs.
 //This means that it doesn't just remove < and > and call it a day.
 //Also limit the size of the input, if specified.
-/proc/strip_html_properly(var/input, var/max_length = MAX_MESSAGE_LEN, allow_lines = 0)
+/proc/strip_html_properly(var/input, var/max_length = MAX_MESSAGE_LEN)
 	if(!input)
 		return
 	var/opentag = 1 //These store the position of < and > respectively.
@@ -338,10 +345,10 @@ proc/checkhtml(var/t)
 			break
 	if(max_length)
 		input = copytext(input,1,max_length)
-	return sanitize(input, allow_lines ? list("\t" = " ") : list("\n" = " ", "\t" = " "))
+	return sanitize(input)
 
-/proc/trim_strip_html_properly(var/input, var/max_length = MAX_MESSAGE_LEN, allow_lines = 0)
-    return trim(strip_html_properly(input, max_length, allow_lines))
+/proc/trim_strip_html_properly(var/input, var/max_length = MAX_MESSAGE_LEN)
+    return trim(strip_html_properly(input, max_length))
 
 //Used in preferences' SetFlavorText and human's set_flavor verb
 //Previews a string of len or less length
@@ -350,7 +357,7 @@ proc/checkhtml(var/t)
 		if(!lentext(string))
 			return "\[...\]"
 		else
-			return html_encode(string) //NO DECODED HTML YOU CHUCKLEFUCKS
+			return string
 	else
 		return "[copytext_preserve_html(string, 1, 37)]..."
 

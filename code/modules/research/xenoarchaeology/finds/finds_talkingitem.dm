@@ -5,6 +5,7 @@
 // I genuinely tried to Add and Remove them from var and proc lists, but just couldn't get it working
 
 //for easy reference
+
 /obj/var/datum/talking_atom/talking_atom
 
 /datum/talking_atom
@@ -40,7 +41,7 @@
 		/*var/l = lentext(msg)
 		if(findtext(msg," ",l,l+1)==0)
 			msg+=" "*/
-		seperate = splittext(msg, " ")
+		seperate = text2list(msg, " ")
 
 	for(var/Xa = 1,Xa<seperate.len,Xa++)
 		var/next = Xa + 1
@@ -51,7 +52,7 @@
 		var/list/w = heard_words["[lowertext(seperate[Xa])]"]
 		if(w)
 			w.Add("[lowertext(seperate[next])]")
-//		to_chat(world, "Adding [lowertext(seperate[next])] to [lowertext(seperate[Xa])]")
+		//world << "Adding [lowertext(seperate[next])] to [lowertext(seperate[Xa])]"
 
 	if(prob(30))
 		var/list/options = list("[holder_atom] seems to be listening intently to [source]...",\
@@ -66,10 +67,10 @@
 /*/obj/item/weapon/talkingcrystal/proc/debug()
 	//set src in view()
 	for(var/v in heard_words)
-		to_chat(world, "[uppertext(v)]")
+		world << "[uppertext(v)]"
 		var/list/d = heard_words["[v]"]
 		for(var/X in d)
-			to_chat(world, "[X]")*/
+			world << "[X]"*/
 
 /datum/talking_atom/proc/SaySomething(var/word = null)
 	if(!holder_atom)
@@ -81,7 +82,7 @@
 	if(!word)
 		text = "[pick(heard_words)]"
 	else
-		text = pick(splittext(word, " "))
+		text = pick(text2list(word, " "))
 	if(lentext(text)==1)
 		text=uppertext(text)
 	else
@@ -121,5 +122,5 @@
 			listening|=M
 
 	for(var/mob/M in listening)
-		to_chat(M, "\icon[holder_atom] <b>[holder_atom]</b> reverberates, \blue\"[msg]\"")
+		M << "\icon[holder_atom] <b>[holder_atom]</b> reverberates, \blue\"[msg]\""
 	last_talk_time = world.time

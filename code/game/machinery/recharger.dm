@@ -16,11 +16,6 @@
 /obj/machinery/recharger/attackby(obj/item/weapon/G as obj, mob/user as mob, params)
 	if(istype(user,/mob/living/silicon))
 		return
-
-	if(!user.canUnEquip(G, 0))
-		to_chat(user, "<span class='warning'>[G] is stuck to your hand, you can't put it in [src]!</span>")
-		return
-
 	if(istype(G, /obj/item/weapon/gun/energy) || istype(G, /obj/item/weapon/melee/baton) || istype(G,/obj/item/device/laptop) || istype(G, /obj/item/weapon/rcs))
 		if(charging)
 			return
@@ -28,22 +23,22 @@
 		// Checks to make sure he's not in space doing it, and that the area got proper power.
 		var/area/a = get_area(src)
 		if(!isarea(a))
-			to_chat(user, "\red The [name] blinks red as you try to insert the item!")
+			user << "\red The [name] blinks red as you try to insert the item!"
 			return
 		if(a.power_equip == 0 && a.requires_power)
-			to_chat(user, "\red The [name] blinks red as you try to insert the item!")
+			user << "\red The [name] blinks red as you try to insert the item!"
 			return
 
 		if (istype(G, /obj/item/weapon/gun/energy))
 			var/obj/item/weapon/gun/energy/E = G
 			if(!E.can_charge)
-				to_chat(user, "<span class='notice'>Your gun has no external power connector.</span>")
+				user << "<span class='notice'>Your gun has no external power connector.</span>"
 				return
 
 		if(istype(G, /obj/item/device/laptop))
 			var/obj/item/device/laptop/L = G
 			if(!L.stored_computer.battery)
-				to_chat(user, "There's no battery in it!")
+				user << "There's no battery in it!"
 				return
 
 		user.drop_item()
@@ -53,10 +48,10 @@
 		update_icon()
 	else if(istype(G, /obj/item/weapon/wrench))
 		if(charging)
-			to_chat(user, "\red Remove the weapon first!")
+			user << "\red Remove the weapon first!"
 			return
 		anchored = !anchored
-		to_chat(user, "You [anchored ? "attached" : "detached"] the recharger.")
+		user << "You [anchored ? "attached" : "detached"] the recharger."
 		playsound(loc, 'sound/items/Ratchet.ogg', 75, 1)
 
 /obj/machinery/recharger/attack_hand(mob/user as mob)

@@ -12,7 +12,7 @@
 	attack_verb = list("whipped", "lashed", "disciplined", "tickled")
 
 	suicide_act(mob/user)
-		to_chat(viewers(user), "\red <b>[user] is strangling \himself with the [src.name]! It looks like \he's trying to commit suicide.</b>")
+		viewers(user) << "\red <b>[user] is strangling \himself with the [src.name]! It looks like \he's trying to commit suicide.</b>"
 		return (OXYLOSS)
 
 
@@ -28,9 +28,9 @@
 /obj/item/weapon/wire/attack_self(mob/user as mob)
 	if (src.laying)
 		src.laying = 0
-		to_chat(user, "\blue You're done laying wire!")
+		user << "\blue You're done laying wire!"
 	else
-		to_chat(user, "\blue You are not using this to lay wire...")
+		user << "\blue You are not using this to lay wire..."
 	return
 
 

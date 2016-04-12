@@ -15,7 +15,7 @@
 		return attack_hand(user)
 
 	attack_hand(mob/user as mob)
-		to_chat(user, "Civilians: NT is recruiting! Please head SOUTH to the NT Recruitment office to join the station's crew!")
+		user << "Civilians: NT is recruiting! Please head SOUTH to the NT Recruitment office to join the station's crew!"
 
 /obj/structure/ninjatele
 
@@ -48,12 +48,12 @@
 					playsound(user.loc, 'sound/effects/sparks2.ogg', 50, 1)
 					anim(user.loc,user,'icons/mob/mob.dmi',,"phasein",,user.dir)
 
-					to_chat(user, "\blue <b>VOID-Shift</b> translocation successful")
+					user <<"\blue <b>VOID-Shift</b> translocation successful"
 
 				if("No")
 
-					to_chat(user, "\red <b>Process aborted!</b>")
+					user <<"\red <b>Process aborted!</b>"
 
 					return
 		else
-			to_chat(user, "\red <B>FÄ†AL ï¿½Rrï¿½R</B>: Å§er nt recgnized, c-cntr-rä£§-Ã§ Ã¤cked.")
+			user<< "\red <B>FÄ†AL ï¿½Rrï¿½R</B>: µ§er n¤t rec¤gnized, c-c¤ntr-r¤£§-£§ £¤cked."

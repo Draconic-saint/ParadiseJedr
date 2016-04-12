@@ -23,7 +23,7 @@
 		msg += "</span>"
 	msg += "*---------*</span>"
 
-	to_chat(user, msg)
+	user << msg
 	user.showLaws(src)
 
 

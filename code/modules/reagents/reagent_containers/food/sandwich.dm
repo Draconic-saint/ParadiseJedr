@@ -25,16 +25,16 @@
 			sandwich_limit += 4
 
 	if(src.contents.len > sandwich_limit)
-		to_chat(user, "\red If you put anything else on \the [src] it's going to collapse.")
+		user << "\red If you put anything else on \the [src] it's going to collapse."
 		return
 	else if(istype(W,/obj/item/weapon/shard))
-		to_chat(user, "\blue You hide [W] in \the [src].")
+		user << "\blue You hide [W] in \the [src]."
 		user.drop_item()
 		W.loc = src
 		update()
 		return
 	else if(istype(W,/obj/item/weapon/reagent_containers/food/snacks))
-		to_chat(user, "\blue You layer [W] over \the [src].")
+		user << "\blue You layer [W] over \the [src]."
 		var/obj/item/weapon/reagent_containers/F = W
 		F.reagents.trans_to(src, F.reagents.total_volume)
 		user.drop_item()
@@ -83,7 +83,7 @@
 /obj/item/weapon/reagent_containers/food/snacks/csandwich/examine(mob/user)
 	..(user)
 	var/obj/item/O = pick(contents)
-	to_chat(user, "\blue You think you can see [O.name] in there.")
+	user << "\blue You think you can see [O.name] in there."
 
 /obj/item/weapon/reagent_containers/food/snacks/csandwich/attack(mob/M as mob, mob/user as mob, def_zone)
 
@@ -98,7 +98,7 @@
 		H = M
 
 	if(H && shard && M == user) //This needs a check for feeding the food to other people, but that could be abusable.
-		to_chat(H, "\red You lacerate your mouth on a [shard.name] in the sandwich!")
+		H << "\red You lacerate your mouth on a [shard.name] in the sandwich!"
 		H.adjustBruteLoss(5) //TODO: Target head if human.
 	..()
 */

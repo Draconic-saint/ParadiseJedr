@@ -70,7 +70,7 @@
 
 /obj/item/weapon/shield/energy/attack_self(mob/living/carbon/human/user)
 	if(user.disabilities & CLUMSY && prob(50))
-		to_chat(user, "<span class='warning'>You beat yourself in the head with [src].</span>")
+		user << "<span class='warning'>You beat yourself in the head with [src].</span>"
 		user.take_organ_damage(5)
 	active = !active
 	icon_state = "eshield[active]"
@@ -81,14 +81,14 @@
 		throw_speed = 2
 		w_class = 4
 		playsound(user, 'sound/weapons/saberon.ogg', 35, 1)
-		to_chat(user, "<span class='notice'>[src] is now active.</span>")
+		user << "<span class='notice'>[src] is now active.</span>"
 	else
 		force = 3
 		throwforce = 3
 		throw_speed = 3
 		w_class = 1
 		playsound(user, 'sound/weapons/saberoff.ogg', 35, 1)
-		to_chat(user, "<span class='notice'>[src] can now be concealed.</span>")
+		user << "<span class='notice'>[src] can now be concealed.</span>"
 	if(istype(user,/mob/living/carbon/human))
 		var/mob/living/carbon/human/H = user
 		H.update_inv_l_hand()
@@ -123,14 +123,14 @@
 		throw_speed = 2
 		w_class = 4
 		slot_flags = SLOT_BACK
-		to_chat(user, "<span class='notice'>You extend \the [src].</span>")
+		user << "<span class='notice'>You extend \the [src].</span>"
 	else
 		force = 3
 		throwforce = 3
 		throw_speed = 3
 		w_class = 3
 		slot_flags = null
-		to_chat(user, "<span class='notice'>[src] can now be concealed.</span>")
+		user << "<span class='notice'>[src] can now be concealed.</span>"
 	if(istype(user,/mob/living/carbon/human))
 		var/mob/living/carbon/human/H = user
 		H.update_inv_l_hand()
@@ -157,10 +157,10 @@
 /obj/item/weapon/cloaking_device/attack_self(mob/user as mob)
 	src.active = !( src.active )
 	if (src.active)
-		to_chat(user, "\blue The cloaking device is now active.")
+		user << "\blue The cloaking device is now active."
 		src.icon_state = "shield1"
 	else
-		to_chat(user, "\blue The cloaking device is now inactive.")
+		user << "\blue The cloaking device is now inactive."
 		src.icon_state = "shield0"
 	src.add_fingerprint(user)
 	return

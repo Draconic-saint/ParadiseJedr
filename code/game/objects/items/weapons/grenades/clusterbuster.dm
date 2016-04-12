@@ -78,6 +78,7 @@
 /////////////////////////////////
 /obj/item/weapon/grenade/flashbang/cluster
 	icon_state = "flashbang_active"
+	banglet = 1
 
 /obj/item/weapon/grenade/clusterbuster/emp
 	name = "Electromagnetic Storm"
@@ -133,7 +134,7 @@
 
 /obj/item/weapon/grenade/clusterbuster/nervegas
 	name = "Nerve Gas Clusterbomb"
-	payload = /obj/item/weapon/grenade/chem_grenade/saringas
+	payload = /obj/item/weapon/grenade/chem_grenade/tabungas
 
 /obj/item/weapon/grenade/clusterbuster/megadirt
 	name = "Megamaid's Revenge Grenade"

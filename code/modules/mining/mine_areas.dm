@@ -65,6 +65,3 @@
 
 /area/mine/west_outpost
 	name = "West Mining Outpost"
-
-/area/mine/podbay
-	name = "Mining Podbay"
