@@ -5,34 +5,35 @@
 	icon_screen = "dna"
 	icon_keyboard = "med_key"
 	density = 1
-	req_access = list(access_research)
-	var/obj/item/weapon/book/databook/databook// Currently loaded databook.
+	var/obj/item/weapon/book/databook/databook=null
+	// Currently loaded databook.
 	var/init = 1
 
 	var/A
-	var/unsolvedA
+	var/unsolvedA = "None selected"
 
 	var/B
-	var/unsolvedB
+	var/unsolvedB = "None selected"
 
 	var/C
-	var/unsolvedC
+	var/unsolvedC = "None selected"
 
 	var/D
-	var/unsolvedD
+	var/unsolvedD = "None selected"
 
 	var/E
-	var/unsolvedE
+	var/unsolvedE = "None selected"
 
 
 /obj/machinery/computer/decryption/New()
 	..()
 
-
 /obj/machinery/computer/decryption/attack_hand(mob/user)
 	if(..())
 		return
-	interact(user)
+	ui_interact(user)
+
+
 
 /obj/machinery/computer/decryption/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	if(istype(W,/obj/item/weapon/book/databook))
@@ -46,36 +47,44 @@
 			user << "You load [W] into [src]."
 			return
 
-/obj/machinery/computer/decryption/attack_ai(mob/user)
-	src.attack_hand(user)
-
-/obj/machinery/computer/decryption/interact(mob/user)
-	ui_interact(user)
 
 // only open when book is inside, need fixin
 /obj/machinery/computer/decryption/ui_interact(mob/user, ui_key = "main", var/datum/nanoui/ui = null, var/force_open = 1)
 
 	var/data[0]
 
+	data["bookTitle"]="Nothing"
 
-	data["bookTitle"]=databook.name
+	if(databook)
+		data["bookTitle"]=databook.name
+		data["keyA"]=databook.keyfragA
+		data["keyB"]=databook.keyfragB
+		data["keyC"]=databook.keyfragC
+		data["keyD"]=databook.keyfragD
+		data["keyE"]=databook.keyfragE
+		data["unsolvedA"]=unsolvedA
+		data["unsolvedB"]=unsolvedB
+		data["unsolvedC"]=unsolvedC
+		data["unsolvedD"]=unsolvedD
+		data["unsolvedE"]=unsolvedE
+	else
+		data["keyA"]=0
+		data["keyB"]=0
+		data["keyC"]=0
+		data["keyD"]=0
+		data["keyE"]=0
+		data["unsolvedA"]=""
+		data["unsolvedB"]=""
+		data["unsolvedC"]=""
+		data["unsolvedD"]=""
+		data["unsolvedE"]=""
 
-
-	data["keyA"]=databook.keyfragA
-	data["keyB"]=databook.keyfragB
-	data["keyC"]=databook.keyfragC
-	data["keyD"]=databook.keyfragD
-	data["keyE"]=databook.keyfragE
 
 	data["init"]= 1
 	if(init == 0)
 		data["init"]=0
 
-	data["unsolvedA"]=unsolvedA
-	data["unsolvedB"]=unsolvedB
-	data["unsolvedC"]=unsolvedC
-	data["unsolvedD"]=unsolvedD
-	data["unsolvedE"]=unsolvedE
+
 
 	if (data["init"]== 1)
 		data["selectedkeyA"]="None."
@@ -109,7 +118,7 @@
     // update the ui with data if it exists, returns null if no ui is passed/found or if force_open is 1/true
 	ui = nanomanager.try_update_ui(user, src, ui_key, ui, data, force_open)
 	if (!ui)
-		ui = new(user, src, ui_key, "Decryption.tmpl", "Decryption", 550, 655)
+		ui = new(user, src, ui_key, "Decryption.tmpl", "Decryption", 550, 855)
 		ui.set_initial_data(data)
 		ui.open()
 		ui.set_auto_update(1)
@@ -122,9 +131,8 @@
 
 
 	if(href_list["eject_book"])
-		if(!databook) return
+
 		databook.loc = get_turf(src)
-		visible_message("\icon[src] [src] open ups and slowly ejects out [databook].")
 		databook = null
 
 
@@ -144,7 +152,7 @@
 		unsolvedE = input("Select cypher key fragment Epsilon","Key fragment Epsilon",E) in databook.keyfraglist
 
 	if(href_list["solve"])
-		if(unsolvedA== null||unsolvedB== null||unsolvedC== null||unsolvedD== null||unsolvedE == null)
+		if(unsolvedA==""||unsolvedB== ""||unsolvedC== ""||unsolvedD== ""||unsolvedE == "")
 			init = 1
 		else
 			init = 0
