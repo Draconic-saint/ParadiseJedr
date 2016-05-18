@@ -48,7 +48,6 @@
 			return
 
 
-// only open when book is inside, need fixin
 /obj/machinery/computer/decryption/ui_interact(mob/user, ui_key = "main", var/datum/nanoui/ui = null, var/force_open = 1)
 
 	var/data[0]
@@ -161,6 +160,10 @@
 			C = unsolvedC
 			D = unsolvedD
 			E = unsolvedE
+			if(A==databook.keyfragA&&B==databook.keyfragB&&C==databook.keyfragC&&D==databook.keyfragD&&E==databook.keyfragE)
+				init = 0
+				new /obj/item/weapon/reagent_containers/food/snacks/cookie(src.loc)
+				new /obj/effect/spawner/lootdrop/databooks(src.loc)
 
 	usr.set_machine(src)
 	src.add_fingerprint(usr)
