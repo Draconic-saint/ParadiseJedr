@@ -161,7 +161,7 @@
 			D = unsolvedD
 			E = unsolvedE
 			if(A==databook.keyfragA&&B==databook.keyfragB&&C==databook.keyfragC&&D==databook.keyfragD&&E==databook.keyfragE)
-				init = 0
+				//Right now, we have no functional loot, so it gives cookies, and more books to solve.
 				new /obj/item/weapon/reagent_containers/food/snacks/cookie(src.loc)
 				new /obj/effect/spawner/lootdrop/databooks(src.loc)
 
