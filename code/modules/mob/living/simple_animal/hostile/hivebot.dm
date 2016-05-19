@@ -18,6 +18,7 @@
 	projectilesound = 'sound/weapons/Gunshot.ogg'
 	projectiletype = /obj/item/projectile/hivebotbullet
 	faction = list("hivebot")
+	check_friendly_fire = 1
 	atmos_requirements = list("min_oxy" = 0, "max_oxy" = 0, "min_tox" = 0, "max_tox" = 0, "min_co2" = 0, "max_co2" = 0, "min_n2" = 0, "max_n2" = 0)
 	minbodytemp = 0
 	speak_emote = list("states")
@@ -40,6 +41,7 @@
 	name = "Strong Hivebot"
 	desc = "A robot, this one is armed and looks tough!"
 	health = 80
+	maxHealth = 80
 	ranged = 1
 
 /mob/living/simple_animal/hostile/hivebot/death()
@@ -100,9 +102,8 @@
 		qdel(src)
 	return
 
-/mob/living/simple_animal/hostile/hivebot/tele/process_ai()
-	. = ..()
-	if(!.)
+/mob/living/simple_animal/hostile/hivebot/tele/handle_automated_action()
+	if(!..())
 		return
 	if(prob(2))//Might be a bit low, will mess with it likely
 		warpbots()

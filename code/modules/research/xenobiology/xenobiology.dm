@@ -199,7 +199,7 @@
 		to_chat(user, "<span class='warning'>The potion won't work on [SM].</span>")
 		return ..()
 
-	to_chat(user, "<span class='notice'>You offer the sentience potion to [SM]...</span>")
+	to_chat(user, "<span class='notice'>You offer [src] sentience potion to [SM]...</span>")
 	being_used = 1
 
 	var/list/candidates = pollCandidates("Do you want to play as [SM.name]?", ROLE_SENTIENT, 0, 100)
@@ -222,7 +222,6 @@
 		to_chat(user, "<span class='notice'>[M] looks interested for a moment, but then looks back down. Maybe you should try again later.</span>")
 		being_used = 0
 		..()
-
 
 /obj/item/slimepotion/steroid
 	name = "slime steroid"

@@ -142,6 +142,11 @@ var/global/nologevent = 0
 			if(istype(M, /mob/dead/observer))
 				body += "<a href='?_src_=holder;incarn_ghost=\ref[M]'>Re-incarnate</a> | "
 
+			if(ispAI(M))
+				body += "<B>Is a pAI</B> "
+			else
+				body += "<A href='?_src_=holder;makePAI=\ref[M]'>Make pAI</A> | "
+
 			// DNA2 - Admin Hax
 			if(M.dna && iscarbon(M))
 				body += "<br><br>"
@@ -747,6 +752,10 @@ var/global/nologevent = 0
 		return 1
 	if(M.mind in ticker.mode.changelings)
 		if (ticker.mode.config_tag == "changeling")
+			return 2
+		return 1
+	if(M.mind in ticker.mode.abductors)
+		if (ticker.mode.config_tag == "abduction")
 			return 2
 		return 1
 	if(isrobot(M))

@@ -24,6 +24,7 @@
 	var/weapon2
 	unsuitable_atmos_damage = 15
 	faction = list("syndicate")
+	check_friendly_fire = 1
 	status_flags = CANPUSH
 
 /mob/living/simple_animal/hostile/syndicate/death()
@@ -70,7 +71,7 @@
 	if(!Proj)	return
 	if(prob(65))
 		if((Proj.damage_type == BRUTE || Proj.damage_type == BURN))
-			src.health -= Proj.damage
+			adjustHealth(Proj.damage)
 	else
 		visible_message("\red <B>[src] blocks [Proj] with its shield!</B>")
 	return 0

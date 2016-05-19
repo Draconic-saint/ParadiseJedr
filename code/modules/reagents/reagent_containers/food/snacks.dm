@@ -787,7 +787,7 @@
 	New()
 		..()
 		reagents.add_reagent("nutriment", 6)
-		reagents.add_reagent("mannitol", 6)
+		reagents.add_reagent("prions", 10)
 		bitesize = 2
 
 /obj/item/weapon/reagent_containers/food/snacks/ghostburger
@@ -1339,7 +1339,7 @@
 
 	New()
 		..()
-		reagents.add_reagent("????", 1)
+		reagents.add_reagent("????", 5)
 		reagents.add_reagent("carbon", 3)
 		bitesize = 2
 
@@ -2206,6 +2206,9 @@
 		..()
 		reagents.add_reagent("nutriment", 8)
 		reagents.add_reagent("gold", 5)
+		spawn(1)
+			reagents.del_reagent("egg")
+			reagents.update_total()
 		bitesize = 3
 
 /obj/item/weapon/reagent_containers/food/snacks/dough_ball
@@ -2581,6 +2584,9 @@
 	New()
 		..()
 		reagents.add_reagent("nutriment", 6)
+		spawn(1)
+			reagents.del_reagent("egg")
+			reagents.update_total()
 		bitesize = 2
 
 /obj/item/weapon/reagent_containers/food/snacks/breadslice
@@ -3013,6 +3019,9 @@
 		..()
 		reagents.add_reagent("nutriment", 2)
 		reagents.add_reagent("sugar", 5)
+		spawn(1)
+			reagents.del_reagent("egg")
+			reagents.update_total()
 		bitesize = 2
 
 /obj/item/weapon/reagent_containers/food/snacks/friedbanana

@@ -1097,6 +1097,11 @@ var/list/slot_equipment_priority = list( \
 /mob/proc/IsAdvancedToolUser()//This might need a rename but it should replace the can this mob use things check
 	return 0
 
+/mob/proc/swap_hand()
+	return
+
+/mob/proc/activate_hand(selhand)
+	return
 
 /mob/proc/Jitter(amount)
 	jitteriness = max(jitteriness, amount, 0)
@@ -1269,8 +1274,8 @@ mob/proc/yank_out_object()
 	set name = "Respawn as NPC"
 	set category = "Ghost"
 
-	if(jobban_isbanned(usr, "NPC"))
-		to_chat(usr, "<span class='warning'>You are banned from playing as NPC's.</span>")
+	if(jobban_isbanned(usr, ROLE_SENTIENT))
+		to_chat(usr, "<span class='warning'>You are banned from playing as sentient animals.</span>")
 		return
 
 	if(!ticker || ticker.current_state < 3)
@@ -1344,16 +1349,18 @@ mob/proc/yank_out_object()
 		ghost.notify_cloning(message, sound, source)
 		return ghost
 
-/mob/proc/fakevomit(green=0) //for aesthetic vomits that need to be instant and do not stun. -Fox
+/mob/proc/fakevomit(green = 0, no_text = 0) //for aesthetic vomits that need to be instant and do not stun. -Fox
 	if(stat==DEAD)
 		return
 	var/turf/location = loc
 	if (istype(location, /turf/simulated))
 		if(green)
-			src.visible_message("<span class='warning'>[src] vomits up some green goo!</span>","<span class='warning'>You vomit up some green goo!</span>")
+			if(!no_text)
+				visible_message("<span class='warning'>[src] vomits up some green goo!</span>","<span class='warning'>You vomit up some green goo!</span>")
 			new /obj/effect/decal/cleanable/vomit/green(location)
 		else
-			src.visible_message("<span class='warning'>[src] pukes all over \himself!</span>","<span class='warning'>You puke all over yourself!</span>")
+			if(!no_text)
+				visible_message("<span class='warning'>[src] pukes all over \himself!</span>","<span class='warning'>You puke all over yourself!</span>")
 			location.add_vomit_floor(src, 1)
 		playsound(location, 'sound/effects/splat.ogg', 50, 1)
 
@@ -1425,3 +1432,9 @@ mob/proc/yank_out_object()
 
 /mob/proc/get_access()
 	return list() //must return list or IGNORE_ACCESS
+
+/mob/proc/faction_check(mob/target)
+	for(var/F in faction)
+		if(F in target.faction)
+			return 1
+	return 0

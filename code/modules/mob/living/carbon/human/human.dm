@@ -37,6 +37,8 @@
 	prev_gender = gender // Debug for plural genders
 	make_blood()
 
+	martial_art = default_martial_art
+
 	var/mob/M = src
 	faction |= "\ref[M]" //what
 
@@ -72,38 +74,30 @@
 	status_flags = GODMODE|CANPUSH
 
 /mob/living/carbon/human/skrell/New(var/new_loc)
-	h_style = "Skrell Male Tentacles"
 	..(new_loc, "Skrell")
 
 /mob/living/carbon/human/tajaran/New(var/new_loc)
-	ha_style = "Tajaran Ears"
 	..(new_loc, "Tajaran")
 
 /mob/living/carbon/human/vulpkanin/New(var/new_loc)
-	h_style = "Bald"
 	..(new_loc, "Vulpkanin")
 
 /mob/living/carbon/human/unathi/New(var/new_loc)
-	h_style = "Unathi Horns"
 	..(new_loc, "Unathi")
 
 /mob/living/carbon/human/vox/New(var/new_loc)
-	h_style = "Short Vox Quills"
 	..(new_loc, "Vox")
 
 /mob/living/carbon/human/voxarmalis/New(var/new_loc)
-	h_style = "Bald"
 	..(new_loc, "Vox Armalis")
 
 /mob/living/carbon/human/skeleton/New(var/new_loc)
-	h_style = "Bald"
 	..(new_loc, "Skeleton")
 
 /mob/living/carbon/human/kidan/New(var/new_loc)
 	..(new_loc, "Kidan")
 
 /mob/living/carbon/human/plasma/New(var/new_loc)
-	h_style = "Bald"
 	..(new_loc, "Plasmaman")
 
 /mob/living/carbon/human/slime/New(var/new_loc)
@@ -112,32 +106,32 @@
 /mob/living/carbon/human/grey/New(var/new_loc)
 	..(new_loc, "Grey")
 
+/mob/living/carbon/human/abductor/New(var/new_loc)
+	..(new_loc, "Abductor")
+
 /mob/living/carbon/human/human/New(var/new_loc)
 	..(new_loc, "Human")
 
 /mob/living/carbon/human/diona/New(var/new_loc)
-	h_style = "Bald"
 	..(new_loc, "Diona")
 
 /mob/living/carbon/human/machine/New(var/new_loc)
-	h_style = "blue IPC screen"
 	..(new_loc, "Machine")
 
 /mob/living/carbon/human/shadow/New(var/new_loc)
-	h_style = "Bald"
 	..(new_loc, "Shadow")
 
 /mob/living/carbon/human/golem/New(var/new_loc)
-	h_style = "Bald"
 	..(new_loc, "Golem")
 
 /mob/living/carbon/human/wryn/New(var/new_loc)
-	h_style = "Antennae"
 	..(new_loc, "Wryn")
 
 /mob/living/carbon/human/nucleation/New(var/new_loc)
-	h_style = "Nucleation Crystals"
 	..(new_loc, "Nucleation")
+
+/mob/living/carbon/human/drask/New(var/new_loc)
+	..(new_loc, "Drask")
 
 /mob/living/carbon/human/monkey/New(var/new_loc)
 	..(new_loc, "Monkey")
@@ -688,6 +682,8 @@
 
 //repurposed proc. Now it combines get_id_name() and get_face_name() to determine a mob's name variable. Made into a seperate proc as it'll be useful elsewhere
 /mob/living/carbon/human/get_visible_name()
+	if(name_override)
+		return name_override
 	if(wear_mask && (wear_mask.flags_inv & HIDEFACE))	//Wearing a mask which hides our face, use id-name if possible
 		return get_id_name("Unknown")
 	if(head && (head.flags_inv & HIDEFACE))
@@ -1348,6 +1344,15 @@
 		update_inv_shoes(1)
 		return 1
 
+/mob/living/carbon/human/cuff_resist(obj/item/I)
+	if(HULK in mutations)
+		say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ))
+		if(..(I, cuff_break = 1))
+			unEquip(I)
+	else
+		if(..())
+			unEquip(I)
+
 /mob/living/carbon/human/get_visible_implants(var/class = 0)
 
 	var/list/visible_implants = list()
@@ -1485,6 +1490,15 @@
 
 	species.create_organs(src)
 
+	//Handle default hair/head accessories for created mobs.
+	var/obj/item/organ/external/head/H = get_organ("head")
+	if(species.default_hair)
+		H.h_style = species.default_hair
+	if(species.default_fhair)
+		H.f_style = species.default_fhair
+	if(species.default_headacc)
+		H.ha_style = species.default_headacc
+
 	if(!dna)
 		dna = new /datum/dna(null)
 		dna.species = species.name
@@ -1575,27 +1589,39 @@
 		to_chat(src, "<span class='warning'>You cannot change your monitor or optical display in your current state.</span>")
 		return
 
+	var/obj/item/organ/external/head/head_organ = get_organ("head")
+	if(!head_organ || head_organ.is_stump() || (head_organ.status & ORGAN_DESTROYED)) //If the rock'em-sock'em robot's head came off during a fight, they shouldn't be able to change their screen/optics.
+		to_chat(src, "<span class='warning'>Where's your head at? Can't change your monitor/display without one.</span>")
+		return
+
 	if(species.flags & ALL_RPARTS) //If they can have a fully cybernetic body...
-		if(client.prefs.rlimb_data["head"]) //If head is present here, that means it's not the default Morpheus. Thus, no screen to adjust. Instead, let them change the colour of their optics!
+		var/datum/robolimb/robohead = all_robolimbs[head_organ.model]
+		if(!head_organ)
+			return
+		if(!robohead.is_monitor) //If they've got a prosthetic head and it isn't a monitor, they've no screen to adjust. Instead, let them change the colour of their optics!
 			var/optic_colour = input(src, "Select optic colour", rgb(r_markings, g_markings, b_markings)) as color|null
+			if(incapacitated())
+				to_chat(src, "<span class='warning'>You were interrupted while changing the colour of your optics.</span>")
+				return
 			if(optic_colour)
 				r_markings = hex2num(copytext(optic_colour, 2, 4))
 				g_markings = hex2num(copytext(optic_colour, 4, 6))
 				b_markings = hex2num(copytext(optic_colour, 6, 8))
 
 			update_markings()
-		else if(!client.prefs.rlimb_data["head"])//Means that the character has the default Morpheus head, which has a screen. Time to customize.
+		else if(robohead.is_monitor) //Means that the character's head is a monitor (has a screen). Time to customize.
 			var/list/hair = list()
 			for(var/i in hair_styles_list)
 				var/datum/sprite_accessory/hair/tmp_hair = hair_styles_list[i]
-				if(species.name in tmp_hair.species_allowed)
+				if((head_organ.species.name in tmp_hair.species_allowed) && (robohead.company in tmp_hair.models_allowed)) //Populate the list of available monitor styles only with styles that the monitor-head is allowed to use.
 					hair += i
 
-			var/new_style = input(src, "Select a monitor display", "Monitor Display", h_style)  as null|anything in hair
+			var/new_style = input(src, "Select a monitor display", "Monitor Display", head_organ.h_style)  as null|anything in hair
 			if(incapacitated())
+				to_chat(src, "<span class='warning'>You were interrupted while changing your monitor display.</span>")
 				return
 			if(new_style)
-				h_style = new_style
+				head_organ.h_style = new_style
 
 		update_hair()
 

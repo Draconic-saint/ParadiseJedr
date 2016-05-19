@@ -716,6 +716,7 @@
 					/obj/item/weapon/reagent_containers/food/drinks/cans/cola = 8,
 					/obj/item/weapon/reagent_containers/food/drinks/cans/sodawater = 15,
 					/obj/item/weapon/reagent_containers/food/drinks/drinkingglass = 30,
+					/obj/item/weapon/reagent_containers/food/drinks/drinkingglass/shotglass = 30,
 					/obj/item/weapon/reagent_containers/food/drinks/ice = 9)
 	contraband = list(/obj/item/weapon/reagent_containers/food/drinks/tea = 10)
 	vend_delay = 15
@@ -972,7 +973,7 @@
 						/obj/item/seeds/teaasperaseed = 3,/obj/item/seeds/tobaccoseed = 3,/obj/item/seeds/tomatoseed = 3,
 						/obj/item/seeds/towermycelium = 3,/obj/item/seeds/watermelonseed = 3,/obj/item/seeds/wheatseed = 3,/obj/item/seeds/whitebeetseed = 3)
 	contraband = list(/obj/item/seeds/amanitamycelium = 2,/obj/item/seeds/glowshroom = 2,/obj/item/seeds/libertymycelium = 2,/obj/item/seeds/nettleseed = 2,
-						/obj/item/seeds/plumpmycelium = 2,/obj/item/seeds/random = 2, /obj/item/seeds/reishimycelium = 2)
+						/obj/item/seeds/plumpmycelium = 2,/obj/item/seeds/random = 2, /obj/item/seeds/reishimycelium = 2, /obj/item/seeds/brownmold = 2)
 	premium = list(/obj/item/weapon/reagent_containers/spray/waterflower = 1)
 
 /**
