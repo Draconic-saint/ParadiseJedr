@@ -161,9 +161,10 @@
 			D = unsolvedD
 			E = unsolvedE
 			if(A==databook.keyfragA&&B==databook.keyfragB&&C==databook.keyfragC&&D==databook.keyfragD&&E==databook.keyfragE)
-				init = 0
 				new /obj/item/weapon/reagent_containers/food/snacks/cookie(src.loc)
 				new /obj/effect/spawner/lootdrop/databooks(src.loc)
+				qdel(databook)
+				databook=null
 
 	usr.set_machine(src)
 	src.add_fingerprint(usr)
