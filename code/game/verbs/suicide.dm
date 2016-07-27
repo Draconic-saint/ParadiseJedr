@@ -3,7 +3,7 @@
 /mob/living/carbon/human/proc/do_suicide(damagetype, byitem)
 	var/threshold = (config.health_threshold_crit + config.health_threshold_dead) / 2
 	var/dmgamt = maxHealth - threshold
-	
+
 	var/damage_mod = 1
 	switch(damagetype) //Sorry about the magic numbers.
 					   //brute = 1, burn = 2, tox = 4, oxy = 8
@@ -52,11 +52,11 @@
 /mob/living/carbon/human/verb/suicide()
 	set hidden = 1
 
-	if (stat == DEAD)
+	if(stat == DEAD)
 		to_chat(src, "You're already dead!")
 		return
 
-	if (!ticker)
+	if(!ticker)
 		to_chat(src, "You can't commit suicide before the game starts!")
 		return
 
@@ -65,7 +65,7 @@
 		to_chat(src, "You try to bring yourself to commit suicide, but - something prevents you!")
 		return
 
-	if (suiciding)
+	if(suiciding)
 		to_chat(src, "You're already committing suicide! Be patient!")
 		return
 
@@ -88,15 +88,15 @@
 /mob/living/carbon/brain/verb/suicide()
 	set hidden = 1
 
-	if (stat == 2)
+	if(stat == 2)
 		to_chat(src, "You're already dead!")
 		return
 
-	if (!ticker)
+	if(!ticker)
 		to_chat(src, "You can't commit suicide before the game starts!")
 		return
 
-	if (suiciding)
+	if(suiciding)
 		to_chat(src, "You're already committing suicide! Be patient!")
 		return
 
@@ -113,11 +113,11 @@
 /mob/living/silicon/ai/verb/suicide()
 	set hidden = 1
 
-	if (stat == 2)
+	if(stat == 2)
 		to_chat(src, "You're already dead!")
 		return
 
-	if (suiciding)
+	if(suiciding)
 		to_chat(src, "You're already committing suicide! Be patient!")
 		return
 
@@ -133,11 +133,11 @@
 /mob/living/silicon/robot/verb/suicide()
 	set hidden = 1
 
-	if (stat == 2)
+	if(stat == 2)
 		to_chat(src, "You're already dead!")
 		return
 
-	if (suiciding)
+	if(suiciding)
 		to_chat(src, "You're already committing suicide! Be patient!")
 		return
 
@@ -161,20 +161,20 @@
 		var/obj/item/device/paicard/card = loc
 		card.removePersonality()
 		var/turf/T = get_turf_or_move(card.loc)
-		for (var/mob/M in viewers(T))
+		for(var/mob/M in viewers(T))
 			M.show_message("\blue [src] flashes a message across its screen, \"Wiping core files. Please acquire a new personality to continue using pAI device functions.\"", 3, "\blue [src] bleeps electronically.", 2)
-		death(0)
+		death(0, 1)
 	else
 		to_chat(src, "Aborting suicide attempt.")
 
 /mob/living/carbon/alien/humanoid/verb/suicide()
 	set hidden = 1
 
-	if (stat == 2)
+	if(stat == 2)
 		to_chat(src, "You're already dead!")
 		return
 
-	if (suiciding)
+	if(suiciding)
 		to_chat(src, "You're already committing suicide! Be patient!")
 		return
 
@@ -190,11 +190,11 @@
 
 /mob/living/carbon/slime/verb/suicide()
 	set hidden = 1
-	if (stat == 2)
+	if(stat == 2)
 		to_chat(src, "You're already dead!")
 		return
 
-	if (suiciding)
+	if(suiciding)
 		to_chat(src, "You're already committing suicide! Be patient!")
 		return
 

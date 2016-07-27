@@ -23,7 +23,6 @@
 	name = "robotic cavity implant"
 	steps = list(/datum/surgery_step/robotics/external/unscrew_hatch,/datum/surgery_step/robotics/external/open_hatch,/datum/surgery_step/cavity/place_item,/datum/surgery_step/robotics/external/close_hatch)
 	possible_locs = list("chest","head","groin")
-	allowed_mob = list(/mob/living/carbon/human/machine)
 
 /datum/surgery/cavity_implant/can_start(mob/user, mob/living/carbon/target)
 	if(target.get_species() == "Machine")
@@ -43,22 +42,22 @@
 	return affected && affected.open == (affected.encased ? 3 : 2) && !(affected.status & ORGAN_BLEEDING)
 
 /datum/surgery_step/cavity/proc/get_max_wclass(obj/item/organ/external/affected)
-	switch (affected.limb_name)
-		if ("head")
+	switch(affected.limb_name)
+		if("head")
 			return 1
-		if ("chest")
+		if("chest")
 			return 3
-		if ("groin")
+		if("groin")
 			return 2
 	return 0
 
 /datum/surgery_step/cavity/proc/get_cavity(obj/item/organ/external/affected)
-	switch (affected.limb_name)
-		if ("head")
+	switch(affected.limb_name)
+		if("head")
 			return "cranial"
-		if ("chest")
+		if("chest")
 			return "thoracic"
-		if ("groin")
+		if("groin")
 			return "abdominal"
 	return ""
 
@@ -143,7 +142,7 @@
 
 
 /datum/surgery_step/cavity/place_item/can_use(mob/living/user, mob/living/carbon/human/target, target_zone, obj/item/tool,datum/surgery/surgery)
-	if (!ishuman(target))
+	if(!ishuman(target))
 		return 0
 	var/obj/item/organ/external/affected = target.get_organ(target_zone)
 	var/can_fit = affected && !affected.hidden && affected.cavity && tool.w_class <= get_max_wclass(affected)
@@ -231,7 +230,6 @@
 	name = "implant removal"
 	steps = list(/datum/surgery_step/robotics/external/unscrew_hatch,/datum/surgery_step/robotics/external/open_hatch,/datum/surgery_step/cavity/implant_removal,/datum/surgery_step/robotics/external/close_hatch)
 	possible_locs = list("chest")//head is for borers..i can put it elsewhere
-	allowed_mob = list(/mob/living/carbon/human/machine)
 
 /datum/surgery/cavity_implant_rem/can_start(mob/user, mob/living/carbon/target)
 	if(target.get_species() == "Machine")
@@ -294,10 +292,10 @@
 /datum/surgery_step/cavity/implant_removal/fail_step(mob/living/user, mob/living/carbon/human/target, target_zone, obj/item/tool,datum/surgery/surgery)
 	..()
 	var/obj/item/organ/external/chest/affected = target.get_organ(target_zone)
-	if (affected.implants.len)
+	if(affected.implants.len)
 		var/fail_prob = 10
 		fail_prob += 100 - tool_quality(tool)
-		if (prob(fail_prob))
+		if(prob(fail_prob))
 			var/obj/item/weapon/implant/imp = affected.implants[1]
 			user.visible_message("<span class='warning'> Something beeps inside [target]'s [affected.name]!</span>")
 			playsound(imp.loc, 'sound/items/countdown.ogg', 75, 1, -3)

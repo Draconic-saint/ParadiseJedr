@@ -28,17 +28,6 @@
 	var/storage_name = "Cryogenic Oversight Control"
 	var/allow_items = 1
 
-/obj/machinery/computer/cryopod/robot
-	name = "robotic storage console"
-	desc = "An interface between crew and the robotic storage systems"
-	icon = 'icons/obj/robot_storage.dmi'
-	icon_state = "console"
-	circuit = /obj/item/weapon/circuitboard/robotstoragecontrol
-
-	storage_type = "cyborgs"
-	storage_name = "Robotic Storage Control"
-	allow_items = 0
-
 /obj/machinery/computer/cryopod/attack_ai()
 	src.attack_hand()
 
@@ -51,7 +40,7 @@
 
 	var/dat
 
-	if (!( ticker ))
+	if(!( ticker ))
 		return
 
 	dat += "<hr/><br/><b>[storage_name]</b><br/>"
@@ -146,7 +135,6 @@
 
 //Decorative structures to go alongside cryopods.
 /obj/structure/cryofeed
-
 	name = "cryogenic feed"
 	desc = "A bewildering tangle of machinery and pipes."
 	icon = 'icons/obj/Cryogenic2.dmi'
@@ -218,23 +206,6 @@
 	orient_right = 1
 	icon_state = "body_scanner_0-r"
 
-/obj/machinery/cryopod/robot
-	name = "robotic storage unit"
-	desc = "A storage unit for robots."
-	icon = 'icons/obj/robot_storage.dmi'
-	icon_state = "pod_0"
-	base_icon_state = "pod_0"
-	occupied_icon_state = "pod_1"
-	on_store_message = "has entered robotic storage."
-	on_store_name = "Robotic Storage Oversight"
-	on_enter_occupant_message = "The storage unit broadcasts a sleep signal to you. Your systems start to shut down, and you enter low-power mode."
-	allow_occupant_types = list(/mob/living/silicon/robot)
-	disallow_occupant_types = list(/mob/living/silicon/robot/drone)
-
-/obj/machinery/cryopod/robot/right
-	orient_right = 1
-	icon_state = "pod_0-r"
-
 /obj/machinery/cryopod/New()
 	announce = new /obj/item/device/radio/intercom(src)
 
@@ -298,22 +269,6 @@
 
 // This function can not be undone; do not call this unless you are sure
 // Also make sure there is a valid control computer
-/obj/machinery/cryopod/robot/despawn_occupant()
-	var/mob/living/silicon/robot/R = occupant
-	if(!istype(R)) return ..()
-
-	R.contents -= R.mmi
-	qdel(R.mmi)
-	for(var/obj/item/I in R.module) // the tools the borg has; metal, glass, guns etc
-		for(var/obj/item/O in I) // the things inside the tools, if anything; mainly for janiborg trash bags
-			O.loc = R
-		qdel(I)
-	qdel(R.module)
-
-	return ..()
-
-// This function can not be undone; do not call this unless you are sure
-// Also make sure there is a valid control computer
 /obj/machinery/cryopod/proc/despawn_occupant()
 	//Drop all items into the pod.
 	for(var/obj/item/W in occupant)
@@ -364,7 +319,7 @@
 		else if(O.target && istype(O.target,/datum/mind))
 			if(O.target == occupant.mind)
 				if(O.owner && O.owner.current)
-					to_chat(O.owner.current, "<span class='warning'>You get the feeling your target is no longer within your reach. Time for Plan [pick(list("A","B","C","D","X","Y","Z"))]...</span>")
+					to_chat(O.owner.current, "<span class='userdanger'>You get the feeling your target is no longer within reach. Time for Plan [pick("A","B","C","D","X","Y","Z")]. Objectives updated!</span>")
 				O.target = null
 				spawn(1) //This should ideally fire after the occupant is deleted.
 					if(!O) return
@@ -389,16 +344,18 @@
 
 	// Delete them from datacore.
 
+	var/announce_rank = null
 	if(PDA_Manifest.len)
 		PDA_Manifest.Cut()
 	for(var/datum/data/record/R in data_core.medical)
-		if ((R.fields["name"] == occupant.real_name))
+		if((R.fields["name"] == occupant.real_name))
 			qdel(R)
 	for(var/datum/data/record/T in data_core.security)
-		if ((T.fields["name"] == occupant.real_name))
+		if((T.fields["name"] == occupant.real_name))
 			qdel(T)
 	for(var/datum/data/record/G in data_core.general)
-		if ((G.fields["name"] == occupant.real_name))
+		if((G.fields["name"] == occupant.real_name))
+			announce_rank = G.fields["rank"]
 			qdel(G)
 
 	if(orient_right)
@@ -406,23 +363,23 @@
 	else
 		icon_state = base_icon_state
 
-	//TODO: Check objectives/mode, update new targets if this mob is the target, spawn new antags?
-
-	//This should guarantee that ghosts don't spawn.
-	occupant.ckey = null
-
 	//Make an announcement and log the person entering storage.
 	control_computer.frozen_crew += "[occupant.real_name]"
 
 	var/ailist[] = list()
-	for (var/mob/living/silicon/ai/A in living_mob_list)
+	for(var/mob/living/silicon/ai/A in living_mob_list)
 		ailist += A
-	if (ailist.len)
+	if(ailist.len)
 		var/mob/living/silicon/ai/announcer = pick(ailist)
-		announcer.say(";[occupant.real_name] [on_store_message]")
+		if (announce_rank)
+			announcer.say(";[occupant.real_name] ([announce_rank]) [on_store_message]")
+		else
+			announcer.say(";[occupant.real_name] [on_store_message]")
 	else
-		announce.autosay("[occupant.real_name] [on_store_message]", "[on_store_name]")
-
+		if (announce_rank)
+			announce.autosay("[occupant.real_name]  ([announce_rank]) [on_store_message]", "[on_store_name]")
+		else
+			announce.autosay("[occupant.real_name] [on_store_message]", "[on_store_name]")
 	visible_message("<span class='notice'>\The [src] hums and hisses as it moves [occupant.real_name] into storage.</span>")
 
 	// Delete the mob.
@@ -682,7 +639,6 @@
 	return
 
 /obj/machinery/cryopod/proc/go_out()
-
 	if(!occupant)
 		return
 
@@ -704,3 +660,45 @@
 //Attacks/effects.
 /obj/machinery/cryopod/blob_act()
 	return //Sorta gamey, but we don't really want these to be destroyed.
+
+/obj/machinery/computer/cryopod/robot
+	name = "robotic storage console"
+	desc = "An interface between crew and the robotic storage systems"
+	icon = 'icons/obj/robot_storage.dmi'
+	icon_state = "console"
+	circuit = /obj/item/weapon/circuitboard/robotstoragecontrol
+
+	storage_type = "cyborgs"
+	storage_name = "Robotic Storage Control"
+	allow_items = 0
+
+/obj/machinery/cryopod/robot
+	name = "robotic storage unit"
+	desc = "A storage unit for robots."
+	icon = 'icons/obj/robot_storage.dmi'
+	icon_state = "pod_0"
+	base_icon_state = "pod_0"
+	occupied_icon_state = "pod_1"
+	on_store_message = "has entered robotic storage."
+	on_store_name = "Robotic Storage Oversight"
+	on_enter_occupant_message = "The storage unit broadcasts a sleep signal to you. Your systems start to shut down, and you enter low-power mode."
+	allow_occupant_types = list(/mob/living/silicon/robot)
+	disallow_occupant_types = list(/mob/living/silicon/robot/drone)
+
+/obj/machinery/cryopod/robot/right
+	orient_right = 1
+	icon_state = "pod_0-r"
+
+/obj/machinery/cryopod/robot/despawn_occupant()
+	var/mob/living/silicon/robot/R = occupant
+	if(!istype(R)) return ..()
+
+	R.contents -= R.mmi
+	qdel(R.mmi)
+	for(var/obj/item/I in R.module) // the tools the borg has; metal, glass, guns etc
+		for(var/obj/item/O in I) // the things inside the tools, if anything; mainly for janiborg trash bags
+			O.loc = R
+		qdel(I)
+	qdel(R.module)
+
+	return ..()

@@ -30,7 +30,7 @@
 	var/newscaster_announcements = null
 	var/ert_disabled = 0
 	var/uplink_welcome = "Syndicate Uplink Console:"
-	var/uplink_uses = 10
+	var/uplink_uses = 20
 
 	var/const/waittime_l = 600  //lower bound on time before intercept arrives (in tenths of seconds)
 	var/const/waittime_h = 1800 //upper bound on time before intercept arrives (in tenths of seconds)
@@ -87,7 +87,7 @@
 /datum/game_mode/proc/process_job_tasks()
 	var/obj/machinery/message_server/useMS = null
 	if(message_servers)
-		for (var/obj/machinery/message_server/MS in message_servers)
+		for(var/obj/machinery/message_server/MS in message_servers)
 			if(MS.active)
 				useMS = MS
 				break
@@ -95,7 +95,7 @@
 		if(M.mind)
 			var/obj/item/device/pda/P=null
 			for(var/obj/item/device/pda/check_pda in PDAs)
-				if (check_pda.owner==M.name)
+				if(check_pda.owner==M.name)
 					P=check_pda
 					break
 			var/count=0
@@ -334,7 +334,7 @@
 //Reports player logouts//
 //////////////////////////
 proc/display_roundstart_logout_report()
-	var/msg = "\blue <b>Roundstart logout report\n\n"
+	var/msg = "<span class='notice'>Roundstart logout report</span>\n\n"
 	for(var/mob/living/L in mob_list)
 
 		if(L.ckey)
